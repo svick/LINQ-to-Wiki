@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqToWiki", "LinqToWiki\LinqToWiki.csproj", "{98C63DD2-A2D0-4982-8C8B-ED5AF8AA1EDF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqToWiki.Test", "LinqToWiki.Test\LinqToWiki.Test.csproj", "{8FDD3001-7AAA-498E-A17E-ECE63C6E1865}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{98C63DD2-A2D0-4982-8C8B-ED5AF8AA1EDF}.Debug|x86.ActiveCfg = Debug|x86
+		{98C63DD2-A2D0-4982-8C8B-ED5AF8AA1EDF}.Debug|x86.Build.0 = Debug|x86
+		{98C63DD2-A2D0-4982-8C8B-ED5AF8AA1EDF}.Release|x86.ActiveCfg = Release|x86
+		{98C63DD2-A2D0-4982-8C8B-ED5AF8AA1EDF}.Release|x86.Build.0 = Release|x86
+		{8FDD3001-7AAA-498E-A17E-ECE63C6E1865}.Debug|x86.ActiveCfg = Debug|x86
+		{8FDD3001-7AAA-498E-A17E-ECE63C6E1865}.Debug|x86.Build.0 = Debug|x86
+		{8FDD3001-7AAA-498E-A17E-ECE63C6E1865}.Release|x86.ActiveCfg = Release|x86
+		{8FDD3001-7AAA-498E-A17E-ECE63C6E1865}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
