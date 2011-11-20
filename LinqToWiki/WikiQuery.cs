@@ -1,39 +1,34 @@
 using System;
 using System.Linq.Expressions;
+using LinqToWiki.Expressions;
 using LinqToWiki.Parameters;
 
 namespace LinqToWiki
 {
-    public class WikiQuery<TWhere, TOrderBy, TSelect>
+    public class WikiQuery<TWhere, TOrderBy, TSelect> : WikiQueryResult<TSelect, TSelect>
     {
-        private readonly Wiki m_wiki;
-        private readonly QueryParameter m_parameters;
-
-        public WikiQuery(Wiki wiki, QueryParameter parameters)
-        {
-            m_wiki = wiki;
-            m_parameters = parameters;
-        }
+        public WikiQuery(Wiki wiki, QueryParameters<TSelect, TSelect> parameters)
+            : base(wiki, parameters)
+        {}
 
         public WikiQuery<TWhere, TOrderBy, TSelect> Where(Expression<Func<TWhere, bool>> predicate)
         {
-            WhereExpressionParser.Parse(predicate, m_parameters);
-            return this;
+            return new WikiQuery<TWhere, TOrderBy, TSelect>(Wiki, ExpressionParser.ParseWhere(predicate, Parameters));
         }
 
-        public WikiQuery<TWhere, TOrderBy, TSelect> OrderBy<TResult>(Expression<Func<TOrderBy, TResult>> keySelector)
+        public WikiQuery<TWhere, TOrderBy, TSelect> OrderBy<TKey>(Expression<Func<TOrderBy, TKey>> keySelector)
         {
-            return this;
+            return new WikiQuery<TWhere, TOrderBy, TSelect>(Wiki, ExpressionParser.ParseOrderBy(keySelector, Parameters, true));
         }
 
-        public WikiQuery<TWhere, TOrderBy, TSelect> OrderByDescending<TResult>(Expression<Func<TOrderBy, TResult>> selector)
+        public WikiQuery<TWhere, TOrderBy, TSelect> OrderByDescending<TKey>(Expression<Func<TOrderBy, TKey>> keySelector)
         {
-            return this;
+            return new WikiQuery<TWhere, TOrderBy, TSelect>(Wiki, ExpressionParser.ParseOrderBy(keySelector, Parameters, false));
         }
 
-        public WikiQueryResult<TResult> Select<TResult>(Expression<Func<TSelect, TResult>> selector)
+        public WikiQueryResult<TSelect, TResult> Select<TResult>(Expression<Func<TSelect, TResult>> selector)
         {
-            return new WikiQueryResult<TResult>();
+            return new WikiQueryResult<TSelect, TResult>(Wiki, ExpressionParser.ParseSelect(selector, Parameters));
         }
     }
 }

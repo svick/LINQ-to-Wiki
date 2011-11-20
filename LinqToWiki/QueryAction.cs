@@ -11,12 +11,14 @@ namespace LinqToWiki
             m_wiki = wiki;
         }
 
-        public WikiQuery<CategoryMembersWhere, CategoryMembersOrderBy, CategoryMembersSelect> CategoryMembers(string title)
+        public WikiQuery<CategoryMembersWhere, CategoryMembersOrderBy, CategoryMembersSelect> CategoryMembers(
+            string title)
         {
-            var parameters = QueryParameter.WithAction(Parameters.QueryAction.Query)
-                .AddType(QueryType.CategoryMembers)
+            var parameters = QueryParameters.Create<CategoryMembersSelect>(
+                Parameters.QueryAction.Query, QueryType.CategoryMembers)
                 .AddSingleValue("title", title);
-            return new WikiQuery<CategoryMembersWhere, CategoryMembersOrderBy, CategoryMembersSelect>(m_wiki, parameters);
+            return new WikiQuery<CategoryMembersWhere, CategoryMembersOrderBy, CategoryMembersSelect>(
+                m_wiki, parameters);
         }
     }
 }

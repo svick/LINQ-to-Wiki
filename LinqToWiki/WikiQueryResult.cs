@@ -1,18 +1,29 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using LinqToWiki.Parameters;
 
 namespace LinqToWiki
 {
-    public class WikiQueryResult<T>
+    public class WikiQueryResult<TSource, TResult>
     {
-        public List<T> ToList()
+        protected Wiki Wiki { get; private set; }
+        protected QueryParameters<TSource, TResult> Parameters { get; private set; }
+
+        public WikiQueryResult(Wiki wiki, QueryParameters<TSource, TResult> parameters)
         {
-            return new List<T>();
+            Wiki = wiki;
+            Parameters = parameters;
         }
 
-        public IEnumerable<T> ToEnumerable()
+        public List<TResult> ToList()
         {
-            return Enumerable.Empty<T>();
+            return ToEnumerable().ToList();
+        }
+
+        public IEnumerable<TResult> ToEnumerable()
+        {
+            throw new NotImplementedException();
         }
     }
 }

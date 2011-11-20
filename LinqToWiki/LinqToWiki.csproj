@@ -37,6 +37,9 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="IQToolkit">
+      <HintPath>..\Lib\IQToolkit.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -49,15 +52,14 @@
     <Compile Include="CategoryMembersOrderBy.cs" />
     <Compile Include="CategoryMembersSelect.cs" />
     <Compile Include="CategoryMembersWhere.cs" />
+    <Compile Include="Expressions\ExpressionParser.cs" />
+    <Compile Include="Expressions\UsedPropertiesGatherer.cs" />
     <Compile Include="IQueryRepresentation.cs" />
     <Compile Include="Namespace.cs" />
     <Compile Include="Parameters\NameValuesParameter.cs" />
-    <Compile Include="Parameters\QueryActionParameter.cs" />
-    <Compile Include="Parameters\QueryParameter.cs" />
-    <Compile Include="Parameters\QueryTypeParameter.cs" />
+    <Compile Include="Parameters\QueryParameters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryAction.cs" />
-    <Compile Include="WhereExpressionParser.cs" />
     <Compile Include="Wiki.cs" />
     <Compile Include="WikiQuery.cs" />
     <Compile Include="WikiQueryResult.cs" />
