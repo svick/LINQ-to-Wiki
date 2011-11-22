@@ -1,4 +1,6 @@
-﻿namespace LinqToWiki.Test
+﻿using System;
+
+namespace LinqToWiki.Test
 {
     static class Program
     {
@@ -9,7 +11,10 @@
                 (from cm in wiki.Query.CategoryMembers("Category:Mathematics")
                  where cm.Namespace == Namespace.Article
                  orderby cm.Timestamp descending
-                 select new { cm.Id, cm.Title, cm.SortKey }).ToList();
+                 select new { cm.PageId, cm.Title, cm.SortKey }).ToList();
+
+            foreach (var result in results)
+                Console.WriteLine(result);
         }
     }
 }

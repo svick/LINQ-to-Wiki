@@ -4,37 +4,10 @@ using System.Collections.Generic;
 namespace LinqToWiki.Parameters
 {
     /// <summary>
-    /// The type of query.
-    /// </summary>
-    public enum QueryType
-    {
-        CategoryMembers
-    }
-
-    /// <summary>
-    /// What action does the query represent, is represented as <c>action</c> in the query.
-    /// </summary>
-    public enum QueryAction
-    {
-        Query
-    }
-
-    /// <summary>
     /// Non-generic part of <see cref="QueryParameters{TSource,TResult}"/>.
     /// </summary>
     public abstract class QueryParameters
     {
-        /// <summary>
-        /// What action does the query represent, is represented as <c>action</c> in the query.
-        /// </summary>
-        public QueryAction Action { get; protected set; }
-
-        /// <summary>
-        /// What type of query is this.
-        /// Is non-null only for <see cref="QueryAction.Query"/>.
-        /// </summary>
-        public QueryType? Type { get; protected set; }
-
         /// <summary>
         /// Linked list of general parameters.
         /// </summary>
@@ -58,8 +31,6 @@ namespace LinqToWiki.Parameters
         /// </summary>
         protected void CopyTo(QueryParameters target)
         {
-            target.Action = Action;
-            target.Type = Type;
             target.Values = Values;
             target.Sort = Sort;
             target.Ascending = Ascending;
@@ -68,9 +39,9 @@ namespace LinqToWiki.Parameters
         /// <summary>
         /// Creates new query parameters.
         /// </summary>
-        public static QueryParameters<TSource, TSource> Create<TSource>(QueryAction action, QueryType? type)
+        public static QueryParameters<TSource, TSource> Create<TSource>()
         {
-            return new QueryParametersWithoutSelect<TSource>(action, type);
+            return new QueryParametersWithoutSelect<TSource>();
         }
     }
 
@@ -152,16 +123,9 @@ namespace LinqToWiki.Parameters
     /// </summary>
     class QueryParametersWithoutSelect<TSource> : QueryParameters<TSource, TSource>
     {
-        private QueryParametersWithoutSelect()
+        public QueryParametersWithoutSelect()
         {
             Selector = x => x;
-        }
-
-        public QueryParametersWithoutSelect(QueryAction action, QueryType? type)
-            :this()
-        {
-            Action = action;
-            Type = type;
         }
 
         /// <summary>

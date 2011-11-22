@@ -107,7 +107,7 @@ namespace LinqToWiki.Expressions
 
             gatherer.Gather(expression.Body, parameter);
 
-            var usedProperties = gatherer.UsedDirectly ? null : gatherer.UsedProperties;
+            var usedProperties = gatherer.UsedDirectly ? null : gatherer.UsedProperties.Select(p => p.ToLowerInvariant());
 
             return previousParameters.WithSelect(usedProperties, expression.Compile());
         }

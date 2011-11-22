@@ -5,30 +5,33 @@ using LinqToWiki.Parameters;
 
 namespace LinqToWiki
 {
+    /// <summary>
+    /// Represents a query.
+    /// </summary>
     public class WikiQuery<TWhere, TOrderBy, TSelect> : WikiQueryResult<TSelect, TSelect>
     {
-        public WikiQuery(Wiki wiki, QueryParameters<TSelect, TSelect> parameters)
-            : base(wiki, parameters)
+        public WikiQuery(QueryProcessor<TSelect> queryProcessor, QueryParameters<TSelect, TSelect> parameters)
+            : base(queryProcessor, parameters)
         {}
 
         public WikiQuery<TWhere, TOrderBy, TSelect> Where(Expression<Func<TWhere, bool>> predicate)
         {
-            return new WikiQuery<TWhere, TOrderBy, TSelect>(Wiki, ExpressionParser.ParseWhere(predicate, Parameters));
+            return new WikiQuery<TWhere, TOrderBy, TSelect>(QueryProcessor, ExpressionParser.ParseWhere(predicate, Parameters));
         }
 
         public WikiQuery<TWhere, TOrderBy, TSelect> OrderBy<TKey>(Expression<Func<TOrderBy, TKey>> keySelector)
         {
-            return new WikiQuery<TWhere, TOrderBy, TSelect>(Wiki, ExpressionParser.ParseOrderBy(keySelector, Parameters, true));
+            return new WikiQuery<TWhere, TOrderBy, TSelect>(QueryProcessor, ExpressionParser.ParseOrderBy(keySelector, Parameters, true));
         }
 
         public WikiQuery<TWhere, TOrderBy, TSelect> OrderByDescending<TKey>(Expression<Func<TOrderBy, TKey>> keySelector)
         {
-            return new WikiQuery<TWhere, TOrderBy, TSelect>(Wiki, ExpressionParser.ParseOrderBy(keySelector, Parameters, false));
+            return new WikiQuery<TWhere, TOrderBy, TSelect>(QueryProcessor, ExpressionParser.ParseOrderBy(keySelector, Parameters, false));
         }
 
         public WikiQueryResult<TSelect, TResult> Select<TResult>(Expression<Func<TSelect, TResult>> selector)
         {
-            return new WikiQueryResult<TSelect, TResult>(Wiki, ExpressionParser.ParseSelect(selector, Parameters));
+            return new WikiQueryResult<TSelect, TResult>(QueryProcessor, ExpressionParser.ParseSelect(selector, Parameters));
         }
     }
 }

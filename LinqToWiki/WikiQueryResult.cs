@@ -1,18 +1,20 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using LinqToWiki.Parameters;
 
 namespace LinqToWiki
 {
+    /// <summary>
+    /// Represents a result of a query.
+    /// </summary>
     public class WikiQueryResult<TSource, TResult>
     {
-        protected Wiki Wiki { get; private set; }
+        protected QueryProcessor<TSource> QueryProcessor { get; private set; }
         protected QueryParameters<TSource, TResult> Parameters { get; private set; }
 
-        public WikiQueryResult(Wiki wiki, QueryParameters<TSource, TResult> parameters)
+        public WikiQueryResult(QueryProcessor<TSource> queryProcessor, QueryParameters<TSource, TResult> parameters)
         {
-            Wiki = wiki;
+            QueryProcessor = queryProcessor;
             Parameters = parameters;
         }
 
@@ -23,7 +25,7 @@ namespace LinqToWiki
 
         public IEnumerable<TResult> ToEnumerable()
         {
-            throw new NotImplementedException();
+            return QueryProcessor.Execute(Parameters);
         }
     }
 }

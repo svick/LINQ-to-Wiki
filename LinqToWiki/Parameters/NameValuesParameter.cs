@@ -1,11 +1,13 @@
+using System.Collections;
 using System.Collections.Generic;
 
 namespace LinqToWiki.Parameters
 {
     /// <summary>
     /// Node of a linked list of name-values pairs, that represent general query parameters.
+    /// Also acts as a collection of parameters from the linked list ending with the current one.
     /// </summary>
-    public sealed class NameValuesParameter
+    public sealed class NameValuesParameter : IEnumerable<NameValuesParameter>
     {
         /// <summary>
         /// Previous node in the list, or <c>null</c>, if this is the last one.
@@ -34,6 +36,26 @@ namespace LinqToWiki.Parameters
             Previous = previous;
             Name = name;
             Values = values;
+        }
+
+        public IEnumerator<NameValuesParameter> GetEnumerator()
+        {
+            var stack = new Stack<NameValuesParameter>();
+
+            for (NameValuesParameter current = this; current != null; current = current.Previous)
+                stack.Push(current);
+
+            return stack.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0}={1}", Name, string.Join("|", Values));
         }
     }
 }
