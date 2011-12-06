@@ -3,4 +3,3 @@
 - F# query
 - basic F# type provider
 - F# type provider for categories etc.
-- C# dynamic
