@@ -2,9 +2,11 @@
 {
     public sealed class Wiki
     {
-        public Wiki()
+        public Wiki(string baseUri = null, string apiPath = null)
         {
-            Query = new QueryAction(this);
+            var info = new WikiInfo(baseUri, apiPath);
+
+            Query = new QueryAction(info);
         }
 
         public QueryAction Query { get; private set; }

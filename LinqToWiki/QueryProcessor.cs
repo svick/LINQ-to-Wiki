@@ -12,11 +12,11 @@ namespace LinqToWiki
         private readonly QueryTypeProperties<T> m_queryTypeProperties;
         private readonly Downloader m_downloader;
 
-        public QueryProcessor(Wiki wiki, QueryTypeProperties<T> queryTypeProperties)
+        public QueryProcessor(WikiInfo wiki, QueryTypeProperties<T> queryTypeProperties)
         {
             m_queryTypeProperties = queryTypeProperties;
 
-            m_downloader = new Downloader(wiki);
+            m_downloader = wiki.Downloader;
         }
 
         /// <summary>
@@ -59,9 +59,13 @@ namespace LinqToWiki
 
             parsedParameters.Add(prefix + "prop", Join(propList));
 
-            // TODO: add paging
+            parsedParameters.Add(prefix + "limit", "max");
+
+            // TODO: add paging, maxlag
 
             var downloaded = m_downloader.Download(parsedParameters);
+
+            // TODO: handle errors
 
             return downloaded.Descendants(prefix).Select(x => parameters.Selector(m_queryTypeProperties.Parse(x)));
         }

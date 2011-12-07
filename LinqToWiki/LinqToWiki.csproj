@@ -65,6 +65,7 @@
     <Compile Include="QueryTypeProperties.cs" />
     <Compile Include="TupleList.cs" />
     <Compile Include="Wiki.cs" />
+    <Compile Include="WikiInfo.cs" />
     <Compile Include="WikiQuery.cs" />
     <Compile Include="WikiQueryResult.cs" />
   </ItemGroup>

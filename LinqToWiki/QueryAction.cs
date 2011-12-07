@@ -5,9 +5,9 @@ namespace LinqToWiki
 {
     public class QueryAction
     {
-        private readonly Wiki m_wiki;
+        private readonly WikiInfo m_wiki;
 
-        internal QueryAction(Wiki wiki)
+        internal QueryAction(WikiInfo wiki)
         {
             m_wiki = wiki;
         }
