@@ -6,10 +6,10 @@ namespace LinqToWiki.Test
     {
         static void Main()
         {
-            var wiki = new Wiki();
+            var wiki = new Wiki("localhost/wiki/", "api.php");
             var results =
-                (from cm in wiki.Query.CategoryMembers("Category:Mathematics")
-                 where cm.Namespace == Namespace.Article
+                (from cm in wiki.Query.CategoryMembers("Category:Hlavní")
+                 //where cm.Namespace == Namespace.Article
                  orderby cm.Timestamp descending
                  select new { cm.PageId, cm.Title, cm.SortKey }).ToList();
 

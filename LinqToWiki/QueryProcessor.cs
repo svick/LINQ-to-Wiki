@@ -67,7 +67,9 @@ namespace LinqToWiki
 
             // TODO: handle errors
 
-            return downloaded.Descendants(prefix).Select(x => parameters.Selector(m_queryTypeProperties.Parse(x)));
+            return downloaded
+                .Descendants(m_queryTypeProperties.ElementName)
+                .Select(x => parameters.Selector(m_queryTypeProperties.Parse(x)));
         }
 
         /// <summary>

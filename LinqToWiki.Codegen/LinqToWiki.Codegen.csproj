@@ -2,20 +2,18 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{98C63DD2-A2D0-4982-8C8B-ED5AF8AA1EDF}</ProjectGuid>
+    <ProjectGuid>{F6F46A9F-5C64-4C8B-9ABD-284AA3E6DFED}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LinqToWiki</RootNamespace>
-    <AssemblyName>LinqToWiki</AssemblyName>
+    <RootNamespace>LinqToWiki.Codegen</RootNamespace>
+    <AssemblyName>LinqToWiki.Codegen</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,8 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -33,13 +30,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="IQToolkit">
-      <HintPath>..\Lib\IQToolkit.dll</HintPath>
-    </Reference>
+    <Reference Include="Roslyn.Compilers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="Roslyn.Compilers.CSharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -49,20 +42,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Downloader.cs" />
-    <Compile Include="Expressions\ExpressionParser.cs" />
-    <Compile Include="Expressions\UsedPropertiesGatherer.cs" />
-    <Compile Include="IQueryRepresentation.cs" />
-    <Compile Include="Namespace.cs" />
-    <Compile Include="Parameters\NameValuesParameter.cs" />
-    <Compile Include="Parameters\QueryParameters.cs" />
+    <Compile Include="ModuleInfo\EnumParameterType.cs" />
+    <Compile Include="ModuleInfo\Parameter.cs" />
+    <Compile Include="ModuleInfo\ParameterType.cs" />
+    <Compile Include="ModuleInfo\ParamInfo.cs" />
+    <Compile Include="ModuleInfo\Property.cs" />
+    <Compile Include="ModuleInfo\PropertyGroup.cs" />
+    <Compile Include="ModuleInfo\QueryType.cs" />
+    <Compile Include="ModuleInfo\SimpleParameterType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QueryProcessor.cs" />
-    <Compile Include="QueryTypeProperties.cs" />
-    <Compile Include="TupleList.cs" />
-    <Compile Include="WikiInfo.cs" />
-    <Compile Include="WikiQuery.cs" />
-    <Compile Include="WikiQueryResult.cs" />
+    <Compile Include="RoslynExtensions.cs" />
+    <Compile Include="Wiki.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LinqToWiki\LinqToWiki.csproj">
+      <Project>{98C63DD2-A2D0-4982-8C8B-ED5AF8AA1EDF}</Project>
+      <Name>LinqToWiki</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

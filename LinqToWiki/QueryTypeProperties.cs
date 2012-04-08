@@ -16,6 +16,11 @@ namespace LinqToWiki
         public string Prefix { get; private set; }
 
         /// <summary>
+        /// Name of the XML element in the response.
+        /// </summary>
+        public string ElementName { get; set; }
+
+        /// <summary>
         /// Parameters, that are included in all queries of this type.
         /// </summary>
         public IEnumerable<Tuple<string, string>> BaseParameters { get; private set; }
@@ -24,12 +29,13 @@ namespace LinqToWiki
         private readonly Func<XElement, T> m_parser;
 
         public QueryTypeProperties(
-            string prefix, IEnumerable<Tuple<string, string>> baseParameters, IDictionary<string, string> props,
-            Func<XElement, T> parser)
+            string prefix, string elementName, IEnumerable<Tuple<string, string>> baseParameters,
+            IDictionary<string, string> props, Func<XElement, T> parser)
         {
             Prefix = prefix;
+            ElementName = elementName;
             BaseParameters = baseParameters;
-            m_props = props;
+            m_props = props ?? new Dictionary<string, string>();
             m_parser = parser;
         }
 
