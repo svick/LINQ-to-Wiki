@@ -216,15 +216,9 @@ namespace LinqToWiki.Codegen
 
         private static ObjectCreationExpressionSyntax CreateTupleListExpression(IEnumerable<Tuple<string, string>> tupleList)
         {
-            var arguments = tupleList.Select(
-                tuple =>
-                SyntaxEx.Invocation(
-                    SyntaxEx.MemberAccess("Tuple", "Create"),
-                    SyntaxEx.Literal(tuple.Item1),
-                    SyntaxEx.Literal(tuple.Item2)));
-
             return SyntaxEx.ObjectCreation(
-                "TupleList<string, string>", SyntaxEx.ArrayCreation("Tuple<string, string>", arguments));
+                "SingleTypeTupleList<string>",
+                tupleList.SelectMany(t => new[] { t.Item1, t.Item2 }).Select(SyntaxEx.Literal));
         }
 
         private static string GetTypeNameBase(ParamInfo paramInfo)
