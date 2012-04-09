@@ -140,6 +140,16 @@ namespace LinqToWiki.Codegen
             return compilation.Emit(File.OpenWrite(fileName));
         }
 
+        public void WriteToFiles(string directoryPath)
+        {
+            Directory.CreateDirectory(directoryPath);
+            foreach (var file in Files)
+            {
+                var path = Path.Combine(directoryPath, file.Item1 + Extension);
+                File.WriteAllText(path, file.Item2.Format().ToString());
+            }
+        }
+
         public override string ToString()
         {
             var builder = new StringBuilder();

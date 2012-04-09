@@ -17,6 +17,8 @@ namespace LinqToWiki.Codegen.Test
             {
                 Console.WriteLine(diagnostic);
             }
+
+            wiki.WriteToFiles(@"C:\Temp\generated");
         }
     }
 }
