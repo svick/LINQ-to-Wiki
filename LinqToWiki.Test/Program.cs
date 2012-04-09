@@ -6,15 +6,17 @@ namespace LinqToWiki.Test
     {
         static void Main()
         {
-            var wiki = new Wiki("localhost/wiki/", "api.php");
+            var wiki = new Wiki();
             var results =
-                (from cm in wiki.Query.CategoryMembers("Category:Hlavní")
-                 //where cm.Namespace == Namespace.Article
+                (from cm in wiki.Query.CategoryMembers("Category:Biography_articles_needing_attention")
+                 where cm.type == type.subcat
                  //orderby cm.Timestamp descending
-                 select new { cm.pageid, cm.title, cm.sortkey }).ToList();
+                 select new { cm.pageid, cm.title }).ToList();
 
             foreach (var result in results)
                 Console.WriteLine(result);
+
+            Console.WriteLine("Total: {0}", results.Count);
         }
     }
 }

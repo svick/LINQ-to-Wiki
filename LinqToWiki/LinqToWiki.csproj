@@ -52,6 +52,7 @@
     <Compile Include="Collections\SingleTypeDictionary.cs" />
     <Compile Include="Collections\TupleList.cs" />
     <Compile Include="Downloader.cs" />
+    <Compile Include="Expressions\EnumFixer.cs" />
     <Compile Include="Expressions\ExpressionParser.cs" />
     <Compile Include="Expressions\UsedPropertiesGatherer.cs" />
     <Compile Include="IQueryRepresentation.cs" />

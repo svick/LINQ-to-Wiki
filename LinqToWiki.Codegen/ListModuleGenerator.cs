@@ -144,20 +144,21 @@ namespace LinqToWiki.Codegen
 
         private ClassDeclarationSyntax GenerateWhere(IEnumerable<Parameter> parameters)
         {
-            var whereClass = SyntaxEx.ClassDeclaration(m_whereClassName);
+            var properties = parameters.Select(
+                p =>
+                SyntaxEx.AutoPropertyDeclaration(
+                    new[] { SyntaxKind.PublicKeyword }, m_wiki.TypeManager.GetTypeName(p), p.Name));
 
-            // TODO
-
-            return whereClass;
+            return SyntaxEx.ClassDeclaration(m_whereClassName, properties);
         }
 
         private ClassDeclarationSyntax GenerateOrderBy(IEnumerable<Parameter> parameters)
         {
-            var whereClass = SyntaxEx.ClassDeclaration(m_orderByClassName);
+            var orderByClass = SyntaxEx.ClassDeclaration(m_orderByClassName);
 
             // TODO
 
-            return whereClass;
+            return orderByClass;
         }
 
         private void GenerateMethod(ParamInfo paramInfo, IEnumerable<Parameter> methodParameters)

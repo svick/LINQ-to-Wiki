@@ -21,7 +21,7 @@ namespace LinqToWiki.Expressions
         {
             // TODO: parse more complicated expressions, like Contains()
 
-            var body = PartialEvaluator.Eval(expression.Body);
+            var body = EnumFixer.Fix(PartialEvaluator.Eval(expression.Body));
 
             var binaryExpression = body as BinaryExpression;
 
