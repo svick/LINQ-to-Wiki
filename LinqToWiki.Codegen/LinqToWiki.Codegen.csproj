@@ -42,6 +42,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ListExtensions.cs" />
+    <Compile Include="ListModuleGenerator.cs" />
     <Compile Include="ModuleInfo\EnumParameterType.cs" />
     <Compile Include="ModuleInfo\Parameter.cs" />
     <Compile Include="ModuleInfo\ParameterType.cs" />
@@ -52,6 +54,7 @@
     <Compile Include="ModuleInfo\SimpleParameterType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RoslynExtensions.cs" />
+    <Compile Include="TypeManager.cs" />
     <Compile Include="Wiki.cs" />
   </ItemGroup>
   <ItemGroup>

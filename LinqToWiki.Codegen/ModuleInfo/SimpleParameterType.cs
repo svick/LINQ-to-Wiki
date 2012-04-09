@@ -19,6 +19,18 @@ namespace LinqToWiki.Codegen.ModuleInfo
             return this.Name == otherSimple.Name;
         }
 
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(this, obj))
+                return true;
+            return Equals(obj as ParameterType);
+        }
+
+        public override int GetHashCode()
+        {
+            return Name.GetHashCode();
+        }
+
         public override string ToString()
         {
             return Name;

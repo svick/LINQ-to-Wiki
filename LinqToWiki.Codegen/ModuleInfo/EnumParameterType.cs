@@ -23,6 +23,24 @@ namespace LinqToWiki.Codegen.ModuleInfo
             return this.Values.SequenceEqual(otherEnum.Values);
         }
 
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(this, obj))
+                return true;
+            return Equals(obj as ParameterType);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 17;
+                foreach (var value in Values)
+                    hash = hash * 23 + value.GetHashCode();
+                return hash;
+            }
+        }
+
         public override string ToString()
         {
             return string.Format("[{0}]", string.Join(", ", Values));

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace LinqToWiki.Codegen.Test
 {
@@ -10,9 +7,16 @@ namespace LinqToWiki.Codegen.Test
         static void Main()
         {
             var wiki = new Wiki("localhost/wiki/", "api.php");
+            wiki.AddQueryModule("categorymembers");
             Console.WriteLine(wiki);
-            //wiki.AddQueryModule("categorymembers");
-            wiki.Compile();
+            var result = wiki.Compile("generated.dll");
+
+            Console.WriteLine("Success: {0}", result.Success);
+
+            foreach (var diagnostic in result.Diagnostics)
+            {
+                Console.WriteLine(diagnostic);
+            }
         }
     }
 }

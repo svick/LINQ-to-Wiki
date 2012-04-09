@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using LinqToWiki.Codegen.ModuleInfo;
+using LinqToWiki.Collections;
 using LinqToWiki.Parameters;
 using Roslyn.Compilers;
 using Roslyn.Compilers.CSharp;
@@ -11,24 +13,33 @@ namespace LinqToWiki.Codegen
 {
     public class Wiki
     {
-        private static class ClassNames
+        internal static class Names
         {
             public const string Wiki = "Wiki";
             public const string WikiInfo = "WikiInfo";
             public const string QueryAction = "QueryAction";
+            public const string Enums = "Enums";
         }
-
-        private readonly string m_ns;
 
         private readonly QueryProcessor<ParamInfo> m_processor;
 
-        private readonly TupleList<string, CompilationUnitSyntax> m_files = new TupleList<string, CompilationUnitSyntax>();
-
         private const string Extension = ".cs";
+
+        internal string Namespace { get; private set; }
+
+        internal TupleList<string, CompilationUnitSyntax> Files { get; private set; }
+
+        internal TypeManager TypeManager { get; private set; }
+
+        internal static TupleList<string, string> QueryBaseParameters =
+            new TupleList<string, string> { { "action", "query" } };
 
         public Wiki(string baseUri, string apiPath, string ns = null)
         {
-            m_ns = ns ?? "LinqToWiki";
+            Files = new TupleList<string, CompilationUnitSyntax>();
+            TypeManager = new TypeManager(this);
+
+            Namespace = ns ?? "LinqToWiki";
 
             m_processor = new QueryProcessor<ParamInfo>(
                 new WikiInfo(baseUri, apiPath),
@@ -38,14 +49,35 @@ namespace LinqToWiki.Codegen
                     null, 
                     ParamInfo.Parse));
 
-            CreateQueryActionClass();
             CreateWikiClass();
+            CreateQueryActionClass();
+            CreateEnumsFile();
+        }
+
+        private void CreateQueryActionClass()
+        {
+            var wikiField = SyntaxEx.FieldDeclaration(
+                new[] { SyntaxKind.PrivateKeyword, SyntaxKind.ReadOnlyKeyword }, Names.WikiInfo, "m_wiki");
+
+            var wikiParameter = SyntaxEx.Parameter(Names.WikiInfo, "wiki");
+
+            var ctor = SyntaxEx.ConstructorDeclaration(
+                new[] { SyntaxKind.InternalKeyword }, Names.QueryAction,
+                new[] { wikiParameter },
+                new StatementSyntax[] { SyntaxEx.Assignment(wikiField, wikiParameter) });
+
+            var queryActionClass = SyntaxEx.ClassDeclaration(Names.QueryAction, wikiField, ctor);
+
+            Files.Add(
+                Names.QueryAction, SyntaxEx.CompilationUnit(
+                    SyntaxEx.NamespaceDeclaration(Namespace, queryActionClass),
+                    "System", "System.Collections.Generic", "LinqToWiki.Collections", "LinqToWiki.Parameters"));
         }
 
         private void CreateWikiClass()
         {
             var queryProperty = SyntaxEx.AutoPropertyDeclaration(
-                new[] { SyntaxKind.PublicKeyword }, ClassNames.QueryAction, "Query", SyntaxKind.PrivateKeyword);
+                new[] { SyntaxKind.PublicKeyword }, Names.QueryAction, "Query", SyntaxKind.PrivateKeyword);
 
             var baseUriParameter = SyntaxEx.Parameter("string", "baseUri");
             var apiPathParameter = SyntaxEx.Parameter("string", "apiPath");
@@ -53,53 +85,28 @@ namespace LinqToWiki.Codegen
             var queryAssignment = SyntaxEx.Assignment(
                 queryProperty,
                 SyntaxEx.ObjectCreation(
-                    ClassNames.QueryAction,
+                    Names.QueryAction,
                     SyntaxEx.ObjectCreation(
-                        ClassNames.WikiInfo, (NamedNode)baseUriParameter, (NamedNode)apiPathParameter)));
+                        Names.WikiInfo, (NamedNode)baseUriParameter, (NamedNode)apiPathParameter)));
 
             var ctorWithParameters = SyntaxEx.ConstructorDeclaration(
-                new[] { SyntaxKind.PublicKeyword }, ClassNames.Wiki,
+                new[] { SyntaxKind.PublicKeyword }, Names.Wiki,
                 new[] { baseUriParameter, apiPathParameter },
                 new StatementSyntax[] { queryAssignment });
 
             var ctorWithoutParameters = SyntaxEx.ConstructorDeclaration(
-                new[] { SyntaxKind.PublicKeyword }, ClassNames.Wiki, new ParameterSyntax[0], new StatementSyntax[0],
+                new[] { SyntaxKind.PublicKeyword }, Names.Wiki, new ParameterSyntax[0], new StatementSyntax[0],
                 SyntaxEx.ThisConstructorInitializer(SyntaxEx.NullLiteral(), SyntaxEx.NullLiteral()));
 
             var wikiClass = SyntaxEx.ClassDeclaration(
-                ClassNames.Wiki, queryProperty, ctorWithParameters, ctorWithoutParameters);
+                Names.Wiki, queryProperty, ctorWithParameters, ctorWithoutParameters);
 
-            m_files.Add(ClassNames.Wiki, SyntaxEx.CompilationUnit(SyntaxEx.NamespaceDeclaration(m_ns, wikiClass)));
+            Files.Add(Names.Wiki, SyntaxEx.CompilationUnit(SyntaxEx.NamespaceDeclaration(Namespace, wikiClass)));
         }
 
-        private void CreateQueryActionClass()
+        private void CreateEnumsFile()
         {
-            var wikiField = SyntaxEx.FieldDeclaration(
-                new[] { SyntaxKind.PrivateKeyword, SyntaxKind.ReadOnlyKeyword }, ClassNames.WikiInfo, "m_wiki");
-
-            var wikiParameter = SyntaxEx.Parameter(ClassNames.WikiInfo, "wiki");
-
-            var ctor = SyntaxEx.ConstructorDeclaration(
-                new[] { SyntaxKind.InternalKeyword }, ClassNames.QueryAction,
-                new[] { wikiParameter },
-                new StatementSyntax[] { SyntaxEx.Assignment(wikiField, wikiParameter) });
-
-            var tupleListStringString = "TupleList<string, string>";
-
-            // Roslyn doesn't support collection initializers yet
-            var queryBaseParametersInitializer =
-                Syntax.ParseExpression(@"new TupleList<string, string>(new Tuple<string, string>[] { Tuple.Create(""action"", ""query"") })");
-
-            var queryBaseParametersField =
-                SyntaxEx.FieldDeclaration(
-                    new[] { SyntaxKind.PrivateKeyword, SyntaxKind.StaticKeyword, SyntaxKind.ReadOnlyKeyword },
-                    tupleListStringString, "QueryBaseParameters", queryBaseParametersInitializer);
-
-            var queryActionClass = SyntaxEx.ClassDeclaration(ClassNames.QueryAction, wikiField, ctor, queryBaseParametersField);
-
-            m_files.Add(
-                ClassNames.QueryAction,
-                SyntaxEx.CompilationUnit(SyntaxEx.NamespaceDeclaration(m_ns, queryActionClass), "System"));
+            Files.Add(Names.Enums, SyntaxEx.CompilationUnit(SyntaxEx.NamespaceDeclaration(Namespace)));
         }
 
         public void AddQueryModule(string moduleName)
@@ -108,29 +115,29 @@ namespace LinqToWiki.Codegen
                 .Execute(QueryParameters.Create<ParamInfo>().AddSingleValue("querymodules", moduleName))
                 .Single();
 
-            AddModule(paramInfo);
+            if (paramInfo.QueryType == QueryType.List)
+                AddListModule(paramInfo);
+            else
+                throw new NotImplementedException();
         }
 
-        private void AddModule(ParamInfo paramInfo)
+        private void AddListModule(ParamInfo paramInfo)
         {
-            
+            new ListModuleGenerator(this).Generate(paramInfo);
         }
 
-        public void Compile()
+        public EmitResult Compile(string fileName)
         {
             var compilation = Compilation.Create(
-                "foo.dll", new CompilationOptions(assemblyKind: AssemblyKind.DynamicallyLinkedLibrary))
-                .AddSyntaxTrees(m_files.Select(f => SyntaxTree.Create(f.Item1 + Extension, f.Item2)))
+                fileName, new CompilationOptions(assemblyKind: AssemblyKind.DynamicallyLinkedLibrary))
+                .AddSyntaxTrees(Files.Select(f => SyntaxTree.Create(f.Item1 + Extension, f.Item2.Format())))
                 .AddReferences(
                     new AssemblyFileReference(typeof(object).Assembly.Location),
+                    new AssemblyFileReference(typeof(System.Xml.Linq.XElement).Assembly.Location),
+                    new AssemblyFileReference(typeof(System.Xml.IXmlLineInfo).Assembly.Location),
                     new AssemblyFileReference(typeof(WikiInfo).Assembly.Location));
 
-            var result = compilation.Emit(File.OpenWrite(@"C:\Temp\foo.dll"));
-
-            foreach (var diagnostic in result.Diagnostics)
-            {
-                Console.WriteLine(diagnostic);
-            }
+            return compilation.Emit(File.OpenWrite(fileName));
         }
 
         public override string ToString()
@@ -139,7 +146,7 @@ namespace LinqToWiki.Codegen
 
             bool first = true;
 
-            foreach (var file in m_files)
+            foreach (var file in Files)
             {
                 if (first)
                     first = false;

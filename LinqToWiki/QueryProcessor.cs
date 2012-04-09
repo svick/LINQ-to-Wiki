@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using LinqToWiki.Collections;
 using LinqToWiki.Parameters;
 
 namespace LinqToWiki
@@ -9,14 +10,13 @@ namespace LinqToWiki
     /// </summary>
     public class QueryProcessor<T>
     {
+        private readonly WikiInfo m_wiki;
         private readonly QueryTypeProperties<T> m_queryTypeProperties;
-        private readonly Downloader m_downloader;
 
         public QueryProcessor(WikiInfo wiki, QueryTypeProperties<T> queryTypeProperties)
         {
+            m_wiki = wiki;
             m_queryTypeProperties = queryTypeProperties;
-
-            m_downloader = wiki.Downloader;
         }
 
         /// <summary>
@@ -30,8 +30,9 @@ namespace LinqToWiki
 
             string prefix = m_queryTypeProperties.Prefix;
 
-            foreach (var value in parameters.Values)
-                parsedParameters.Add(prefix + value.Name, Join(value.Values));
+            if (parameters.Values != null)
+                foreach (var value in parameters.Values)
+                    parsedParameters.Add(prefix + value.Name, Join(value.Values));
 
             if (parameters.Sort != null)
             {
@@ -63,13 +64,13 @@ namespace LinqToWiki
 
             // TODO: add paging, maxlag
 
-            var downloaded = m_downloader.Download(parsedParameters);
+            var downloaded = m_wiki.Downloader.Download(parsedParameters);
 
             // TODO: handle errors
 
             return downloaded
                 .Descendants(m_queryTypeProperties.ElementName)
-                .Select(x => parameters.Selector(m_queryTypeProperties.Parse(x)));
+                .Select(x => parameters.Selector(m_queryTypeProperties.Parse(x, m_wiki)));
         }
 
         /// <summary>

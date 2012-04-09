@@ -26,7 +26,18 @@ namespace LinqToWiki
         public IEnumerable<Tuple<string, string>> BaseParameters { get; private set; }
 
         private readonly IDictionary<string, string> m_props;
-        private readonly Func<XElement, T> m_parser;
+        private readonly Func<XElement, WikiInfo, T> m_parser;
+
+        public QueryTypeProperties(
+            string prefix, string elementName, IEnumerable<Tuple<string, string>> baseParameters,
+            IDictionary<string, string> props, Func<XElement, WikiInfo, T> parser)
+        {
+            Prefix = prefix;
+            ElementName = elementName;
+            BaseParameters = baseParameters;
+            m_props = props ?? new Dictionary<string, string>();
+            m_parser = parser;
+        }
 
         public QueryTypeProperties(
             string prefix, string elementName, IEnumerable<Tuple<string, string>> baseParameters,
@@ -36,7 +47,7 @@ namespace LinqToWiki
             ElementName = elementName;
             BaseParameters = baseParameters;
             m_props = props ?? new Dictionary<string, string>();
-            m_parser = parser;
+            m_parser = (elem, _) => parser(elem);
         }
 
         /// <summary>
@@ -60,9 +71,9 @@ namespace LinqToWiki
         /// Returns the parsed object, possibly filled only partially,
         /// if some attributes of the XML element are missing.
         /// </summary>
-        public T Parse(XElement element)
+        public T Parse(XElement element, WikiInfo wiki)
         {
-            return m_parser(element);
+            return m_parser(element, wiki);
         }
     }
 }

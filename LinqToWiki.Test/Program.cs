@@ -10,8 +10,8 @@ namespace LinqToWiki.Test
             var results =
                 (from cm in wiki.Query.CategoryMembers("Category:Hlavní")
                  //where cm.Namespace == Namespace.Article
-                 orderby cm.Timestamp descending
-                 select new { cm.PageId, cm.Title, cm.SortKey }).ToList();
+                 //orderby cm.Timestamp descending
+                 select new { cm.pageid, cm.title, cm.sortkey }).ToList();
 
             foreach (var result in results)
                 Console.WriteLine(result);

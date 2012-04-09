@@ -34,6 +34,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="generated">
+      <HintPath>..\LinqToWiki.Codegen.Test\bin\Debug\generated.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -47,10 +50,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LinqToWiki.ManuallyGenerated\LinqToWiki.ManuallyGenerated.csproj">
-      <Project>{38EBE92B-FEFA-4722-80EB-8A4C3B55C085}</Project>
-      <Name>LinqToWiki.ManuallyGenerated</Name>
-    </ProjectReference>
     <ProjectReference Include="..\LinqToWiki\LinqToWiki.csproj">
       <Project>{98C63DD2-A2D0-4982-8C8B-ED5AF8AA1EDF}</Project>
       <Name>LinqToWiki</Name>

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using LinqToWiki.Collections;
 using LinqToWiki.Parameters;
 
 namespace LinqToWiki
@@ -15,10 +16,13 @@ namespace LinqToWiki
         private static readonly TupleList<string, string> QueryBaseParameters =
             new TupleList<string, string> { { "action", "query" } };
 
+        private static readonly IDictionary<string, string> CategoryMembersProps =
+            new Dictionary<string, string> { { "pageid", "ids" }, { "title", "title" }, { "sortkey", "sortkey" } };
+
         private static readonly QueryTypeProperties<CategoryMembersSelect> CategoryMembersProperties =
             new QueryTypeProperties<CategoryMembersSelect>(
                 "cm", "cm", new TupleList<string, string>(QueryBaseParameters) { { "list", "categorymembers" } },
-                new Dictionary<string, string> { { "pageid", "ids" }, { "title", "title" }, { "sortkey", "sortkey" } },
+                CategoryMembersProps,
                 CategoryMembersSelect.Parse);
 
         public WikiQuery<CategoryMembersWhere, CategoryMembersOrderBy, CategoryMembersSelect> CategoryMembers(

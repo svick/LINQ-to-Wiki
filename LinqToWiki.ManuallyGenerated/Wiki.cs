@@ -2,13 +2,20 @@
 {
     public sealed class Wiki
     {
+        private readonly WikiInfo m_info;
+
         public Wiki(string baseUri = null, string apiPath = null)
         {
-            var info = new WikiInfo(baseUri, apiPath);
+            m_info = new WikiInfo(baseUri, apiPath);
 
-            Query = new QueryAction(info);
+            Query = new QueryAction(m_info);
         }
 
         public QueryAction Query { get; private set; }
+
+        public NamespaceInfo Namespaces
+        {
+            get { return m_info.Namespaces; }
+        }
     }
 }

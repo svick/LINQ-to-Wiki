@@ -7,6 +7,8 @@ namespace LinqToWiki.Codegen.ModuleInfo
 {
     class ParamInfo
     {
+        public string ClassName { get; private set; }
+
         public string Description { get; private set; }
 
         public string Prefix { get; private set; }
@@ -26,6 +28,7 @@ namespace LinqToWiki.Codegen.ModuleInfo
             return
                 new ParamInfo
                 {
+                    ClassName = (string)element.Attribute("classname"),
                     Description = (string)element.Attribute("description"),
                     Prefix = (string)element.Attribute("prefix"),
                     Generator = element.Attribute("generator") != null,

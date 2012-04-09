@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace LinqToWiki
+namespace LinqToWiki.Collections
 {
     /// <summary>
     /// List of pairs of items.
