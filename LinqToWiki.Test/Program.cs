@@ -10,7 +10,7 @@ namespace LinqToWiki.Test
             var results =
                 (from cm in wiki.Query.CategoryMembers("Category:Biography_articles_needing_attention")
                  where cm.type == type.subcat
-                 //orderby cm.Timestamp descending
+                 orderby cm.timestamp descending
                  select new { cm.pageid, cm.title }).ToList();
 
             foreach (var result in results)

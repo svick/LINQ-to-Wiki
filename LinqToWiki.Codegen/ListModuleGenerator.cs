@@ -43,7 +43,7 @@ namespace LinqToWiki.Codegen
 
             var selectClass = GenerateSelect(paramInfo.PropertyGroups);
             var whereClass = GenerateWhere(whereParameters);
-            var orderByClass = GenerateOrderBy(sortParameters);
+            var orderByClass = GenerateOrderBy(sortParameters, paramInfo.PropertyGroups.SelectMany(g => g.Properties));
 
             var codeUnit = SyntaxEx.CompilationUnit(
                 SyntaxEx.NamespaceDeclaration(m_wiki.Namespace, selectClass, whereClass, orderByClass),
@@ -85,7 +85,7 @@ namespace LinqToWiki.Codegen
             var properties = propertyGroups.SelectMany(g => g.Properties).ToArray();
 
             var selectClass = SyntaxEx.ClassDeclaration(
-                m_selectClassName, properties.Select(GenerateProperty));
+                m_selectClassName, properties.Select(p => GenerateProperty(p.Name, p.Type)));
 
             selectClass =
                 selectClass.WithAdditionalMembers(
@@ -135,30 +135,30 @@ namespace LinqToWiki.Codegen
                 new[] { elementParameter, wikiParameter }, statements);
         }
 
-        private PropertyDeclarationSyntax GenerateProperty(Property property)
+        private PropertyDeclarationSyntax GenerateProperty(string name, ParameterType type)
         {
             return SyntaxEx.AutoPropertyDeclaration(
-                new[] { SyntaxKind.PublicKeyword }, m_wiki.TypeManager.GetTypeName(property), property.Name,
+                new[] { SyntaxKind.PublicKeyword }, m_wiki.TypeManager.GetTypeName(type, name), name,
                 SyntaxKind.PrivateKeyword);
         }
 
         private ClassDeclarationSyntax GenerateWhere(IEnumerable<Parameter> parameters)
         {
-            var properties = parameters.Select(
-                p =>
-                SyntaxEx.AutoPropertyDeclaration(
-                    new[] { SyntaxKind.PublicKeyword }, m_wiki.TypeManager.GetTypeName(p), p.Name));
+            var propertyDeclarations = parameters.Select(p => GenerateProperty(p.Name, p.Type));
 
-            return SyntaxEx.ClassDeclaration(m_whereClassName, properties);
+            return SyntaxEx.ClassDeclaration(m_whereClassName, propertyDeclarations);
         }
 
-        private ClassDeclarationSyntax GenerateOrderBy(IEnumerable<Parameter> parameters)
+        private ClassDeclarationSyntax GenerateOrderBy(IEnumerable<Parameter> parameters, IEnumerable<Property> properties)
         {
-            var orderByClass = SyntaxEx.ClassDeclaration(m_orderByClassName);
+            var propertyTypes = properties.ToDictionary(p => p.Name, p => p.Type);
 
-            // TODO
+            var sortParameter = parameters.Single(p => p.Name == "sort");
 
-            return orderByClass;
+            var propertyDeclarations =
+                ((EnumParameterType)sortParameter.Type).Values.Select(v => GenerateProperty(v, propertyTypes[v]));
+
+            return SyntaxEx.ClassDeclaration(m_orderByClassName, propertyDeclarations);
         }
 
         private void GenerateMethod(ParamInfo paramInfo, IEnumerable<Parameter> methodParameters)
