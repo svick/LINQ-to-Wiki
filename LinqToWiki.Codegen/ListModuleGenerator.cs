@@ -88,14 +88,19 @@ namespace LinqToWiki.Codegen
                 m_selectClassName, properties.Select(p => GenerateProperty(p.Name, p.Type)));
 
             selectClass =
-                selectClass.WithAdditionalMembers(
-                    SyntaxEx.ConstructorDeclaration(
-                        new[] { SyntaxKind.PrivateKeyword }, m_selectClassName, new ParameterSyntax[0],
-                        new StatementSyntax[0]));
+                WithPrivateConstructor(selectClass, m_selectClassName);
 
             selectClass = selectClass.WithAdditionalMembers(GenerateParseMethod(properties));
 
             return selectClass;
+        }
+
+        private static ClassDeclarationSyntax WithPrivateConstructor(ClassDeclarationSyntax selectClass, string className)
+        {
+            return selectClass.WithAdditionalMembers(
+                SyntaxEx.ConstructorDeclaration(
+                    new[] { SyntaxKind.PrivateKeyword }, className, new ParameterSyntax[0],
+                    new StatementSyntax[0]));
         }
 
         private MethodDeclarationSyntax GenerateParseMethod(IEnumerable<Property> properties)
@@ -146,7 +151,8 @@ namespace LinqToWiki.Codegen
         {
             var propertyDeclarations = parameters.Select(p => GenerateProperty(p.Name, p.Type));
 
-            return SyntaxEx.ClassDeclaration(m_whereClassName, propertyDeclarations);
+            return WithPrivateConstructor(
+                SyntaxEx.ClassDeclaration(m_whereClassName, propertyDeclarations), m_whereClassName);
         }
 
         private ClassDeclarationSyntax GenerateOrderBy(IEnumerable<Parameter> parameters, IEnumerable<Property> properties)
@@ -158,7 +164,8 @@ namespace LinqToWiki.Codegen
             var propertyDeclarations =
                 ((EnumParameterType)sortParameter.Type).Values.Select(v => GenerateProperty(v, propertyTypes[v]));
 
-            return SyntaxEx.ClassDeclaration(m_orderByClassName, propertyDeclarations);
+            return WithPrivateConstructor(
+                SyntaxEx.ClassDeclaration(m_orderByClassName, propertyDeclarations), m_orderByClassName);
         }
 
         private void GenerateMethod(ParamInfo paramInfo, IEnumerable<Parameter> methodParameters)
@@ -205,8 +212,8 @@ namespace LinqToWiki.Codegen
                     queryParameters);
 
                 var method = SyntaxEx.MethodDeclaration(
-                    new[] { SyntaxKind.PublicKeyword }, queryType, m_typeNameBase, new[] { parameter },
-                    SyntaxEx.Return(queryCreation));
+                    new[] { SyntaxKind.PublicKeyword }, queryType, m_typeNameBase,
+                    new[] { parameter }, SyntaxEx.Return(queryCreation));
 
                 methods.Add(method);
             }

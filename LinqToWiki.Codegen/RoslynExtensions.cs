@@ -123,7 +123,7 @@ namespace LinqToWiki.Codegen
         public static ClassDeclarationSyntax ClassDeclaration(string className, IEnumerable<MemberDeclarationSyntax> members)
         {
             return Syntax.ClassDeclaration(
-                modifiers: TokenList(SyntaxKind.PublicKeyword),
+                modifiers: TokenList(new[] {SyntaxKind.PublicKeyword, SyntaxKind.SealedKeyword }),
                 identifier: Syntax.Identifier(className),
                 members: Syntax.List(members));
         }
