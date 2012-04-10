@@ -40,18 +40,4 @@ namespace LinqToWiki.Collections
             }
         }
     }
-
-    public class SingleTypeTupleList<T> : TupleList<T, T>
-    {
-        public SingleTypeTupleList(params T[] items)
-        {
-            if (items.Length % 2 == 1)
-                throw new ArgumentException("items");
-
-            for (int i = 0; i < items.Length; i += 2)
-            {
-                Add(items[i], items[i + 1]);
-            }
-        }
-    }
 }

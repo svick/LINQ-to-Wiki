@@ -160,9 +160,12 @@ namespace LinqToWiki.Codegen
                         .AsSeparatedList(SyntaxKind.CommaToken)));
         }
 
-        public static ParameterSyntax Parameter(string type, string name)
+        public static ParameterSyntax Parameter(string type, string name, ExpressionSyntax defaultValue = null)
         {
-            return Syntax.Parameter(typeOpt: Syntax.ParseTypeName(type), identifier: Syntax.Identifier(name));
+            return Syntax.Parameter(
+                typeOpt: Syntax.ParseTypeName(type),
+                identifier: Syntax.Identifier(name),
+                defaultOpt: defaultValue == null ? null : Syntax.EqualsValueClause(value: defaultValue));
         }
 
         public static ExpressionStatementSyntax Assignment(NamedNode left, NamedNode right)
@@ -260,27 +263,62 @@ namespace LinqToWiki.Codegen
                 bodyOpt: Syntax.Block(statements: Syntax.List(statements)));
         }
 
-        public static ObjectCreationExpressionSyntax ObjectCreation(string typeName, IEnumerable<ExpressionSyntax> arguments)
+        public static ObjectCreationExpressionSyntax ObjectCreation(
+            string typeName, IEnumerable<ExpressionSyntax> arguments,
+            IEnumerable<IEnumerable<ExpressionSyntax>> initializers = null)
         {
-            return ObjectCreation(typeName, arguments.ToArray());
+            return ObjectCreation(Syntax.ParseTypeName(typeName), arguments, initializers);
         }
 
         public static ObjectCreationExpressionSyntax ObjectCreation(string typeName, params ExpressionSyntax[] arguments)
         {
-            return ObjectCreation(Syntax.ParseTypeName(typeName), arguments);
+            return ObjectCreation(typeName, (IEnumerable<ExpressionSyntax>)arguments);
         }
 
         public static ObjectCreationExpressionSyntax ObjectCreation(TypeSyntax type, params ExpressionSyntax[] arguments)
         {
+            return ObjectCreation(type, (IEnumerable<ExpressionSyntax>)arguments);
+        }
+
+        public static ObjectCreationExpressionSyntax ObjectCreation(
+            TypeSyntax type, IEnumerable<ExpressionSyntax> arguments, IEnumerable<ExpressionSyntax> initializers)
+        {
+            return ObjectCreation(type, arguments, initializers.Select(i => new[] { i }));
+        }
+
+        public static ObjectCreationExpressionSyntax ObjectCreation(
+            TypeSyntax type, IEnumerable<ExpressionSyntax> arguments, IEnumerable<IEnumerable<ExpressionSyntax>> initializers = null)
+        {
+            var argumentsArray = arguments.ToArray();
             var argumentList =
-                arguments.Length == 0
+                argumentsArray.Length == 0
                     ? Syntax.ArgumentList()
                     : Syntax.ArgumentList(
                         arguments: Syntax.List(
-                            arguments.Select(a => Syntax.Argument(expression: a)))
+                            argumentsArray.Select(a => Syntax.Argument(expression: a)))
                             .AsSeparatedList(SyntaxKind.CommaToken));
 
-            return Syntax.ObjectCreationExpression(type: type, argumentListOpt: argumentList);
+            InitializerExpressionSyntax initializer =
+                initializers == null
+                    ? null
+                    : Syntax.InitializerExpression(
+                        expressions:
+                            Syntax.List(initializers.Select(ToInitializer)).AsSeparatedList(SyntaxKind.CommaToken));
+
+            return Syntax.ObjectCreationExpression(
+                type: type, argumentListOpt: argumentList, initializerOpt: initializer);
+        }
+
+        private static ExpressionSyntax ToInitializer(IEnumerable<ExpressionSyntax> expressions)
+        {
+            var expressionsArray = expressions.ToArray();
+
+            if (expressionsArray.Length == 1)
+                return expressionsArray[0];
+
+            return
+                Syntax.InitializerExpression(
+                    expressions: Syntax.List(expressionsArray).AsSeparatedList(SyntaxKind.CommaToken));
         }
 
         public static ArrayCreationExpressionSyntax ArrayCreation(string typeName, IEnumerable<ExpressionSyntax> expressions)
@@ -332,6 +370,15 @@ namespace LinqToWiki.Codegen
                 Syntax.ArgumentList(
                     arguments: Syntax.List(arguments.Select(a => Syntax.Argument(expression: a)))
                         .AsSeparatedList(SyntaxKind.CommaToken)));
+        }
+
+        public static ElementAccessExpressionSyntax ElementAccess(ExpressionSyntax expression, params ExpressionSyntax[] arguments)
+        {
+            return Syntax.ElementAccessExpression(
+                expression,
+                Syntax.BracketedArgumentList(
+                    arguments: Syntax.List(arguments.Select(a => Syntax.Argument(expression: a))).
+                        AsSeparatedList(SyntaxKind.CommaToken)));
         }
 
         public static MemberAccessExpressionSyntax MemberAccess(string name, string memberName)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 
 namespace LinqToWiki.Codegen.Test
 {
@@ -11,12 +12,8 @@ namespace LinqToWiki.Codegen.Test
             Console.WriteLine(wiki);
             var result = wiki.Compile("generated.dll");
 
-            Console.WriteLine("Success: {0}", result.Success);
-
-            foreach (var diagnostic in result.Diagnostics)
-            {
-                Console.WriteLine(diagnostic);
-            }
+            foreach (CompilerError error in result.Errors)
+                Console.WriteLine(error);
 
             wiki.WriteToFiles(@"C:\Temp\generated");
         }

@@ -20,11 +20,6 @@ namespace LinqToWiki
 
         public NamespaceInfo Namespaces { get; private set; }
 
-        // so that I can call this constructor from Roslyn, which doesn't support optional parameters yet
-        public WikiInfo(string baseUrl = null, string apiPath = null)
-            : this(baseUrl, apiPath, null)
-        {}
-
         public WikiInfo(string baseUrl = null, string apiPath = null, IEnumerable<Namespace> namespaces = null)
         {
             if (baseUrl == null)
@@ -78,12 +73,6 @@ namespace LinqToWiki
         public Namespace this[int id]
         {
             get { return m_namespaces[id]; }
-        }
-
-        // another feature Roslyn doesn't support
-        public Namespace Get(int id)
-        {
-            return this[id];
         }
 
         public IEnumerator<Namespace> GetEnumerator()

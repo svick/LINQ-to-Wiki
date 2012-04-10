@@ -64,13 +64,12 @@ namespace LinqToWiki.Codegen
             var queryActionFile = m_wiki.Files[Wiki.Names.QueryAction];
             var queryActionClass = queryActionFile.SingleDescendant<ClassDeclarationSyntax>();
 
-            var initializerParameters = from g in propertyGroups
-                                        from p in g.Properties
-                                        select new[] { p.Name, g.Name } into names
-                                        from name in names
-                                        select SyntaxEx.Literal(name);
+            var initializers = from g in propertyGroups
+                               from p in g.Properties
+                               select new[] { p.Name, g.Name }.Select(SyntaxEx.Literal);
 
-            var propsInitializer = SyntaxEx.ObjectCreation("SingleTypeDictionary<string>", initializerParameters);
+            var propsInitializer = SyntaxEx.ObjectCreation(
+                "Dictionary<string, string>", new ExpressionSyntax[0], initializers);
 
             var propsField =
                 SyntaxEx.FieldDeclaration(
@@ -168,6 +167,8 @@ namespace LinqToWiki.Codegen
         {
             if (name == "*")
                 return "value";
+            if (name == "namespace")
+                return "ns";
 
             return name;
         }
@@ -267,8 +268,8 @@ namespace LinqToWiki.Codegen
         private static ObjectCreationExpressionSyntax CreateTupleListExpression(IEnumerable<Tuple<string, string>> tupleList)
         {
             return SyntaxEx.ObjectCreation(
-                "SingleTypeTupleList<string>",
-                tupleList.SelectMany(t => new[] { t.Item1, t.Item2 }).Select(SyntaxEx.Literal));
+                "TupleList<string, string>", new ExpressionSyntax[0],
+                tupleList.Select(t => new[] { t.Item1, t.Item2 }.Select(SyntaxEx.Literal)));
         }
 
         private static string GetTypeNameBase(ParamInfo paramInfo)

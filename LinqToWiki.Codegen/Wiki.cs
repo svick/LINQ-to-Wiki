@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using LinqToWiki.Codegen.ModuleInfo;
 using LinqToWiki.Collections;
 using LinqToWiki.Parameters;
-using Roslyn.Compilers;
+using Microsoft.CSharp;
 using Roslyn.Compilers.CSharp;
 
 namespace LinqToWiki.Codegen
@@ -81,8 +82,8 @@ namespace LinqToWiki.Codegen
             var queryProperty = SyntaxEx.AutoPropertyDeclaration(
                 new[] { SyntaxKind.PublicKeyword }, Names.QueryAction, "Query", SyntaxKind.PrivateKeyword);
 
-            var baseUriParameter = SyntaxEx.Parameter("string", "baseUri");
-            var apiPathParameter = SyntaxEx.Parameter("string", "apiPath");
+            var baseUriParameter = SyntaxEx.Parameter("string", "baseUri", SyntaxEx.NullLiteral());
+            var apiPathParameter = SyntaxEx.Parameter("string", "apiPath", SyntaxEx.NullLiteral());
 
             var queryAssignment = SyntaxEx.Assignment(
                 queryProperty,
@@ -91,17 +92,12 @@ namespace LinqToWiki.Codegen
                     SyntaxEx.ObjectCreation(
                         Names.WikiInfo, (NamedNode)baseUriParameter, (NamedNode)apiPathParameter)));
 
-            var ctorWithParameters = SyntaxEx.ConstructorDeclaration(
+            var ctor = SyntaxEx.ConstructorDeclaration(
                 new[] { SyntaxKind.PublicKeyword }, Names.Wiki,
                 new[] { baseUriParameter, apiPathParameter },
                 new StatementSyntax[] { queryAssignment });
 
-            var ctorWithoutParameters = SyntaxEx.ConstructorDeclaration(
-                new[] { SyntaxKind.PublicKeyword }, Names.Wiki, new ParameterSyntax[0], new StatementSyntax[0],
-                SyntaxEx.ThisConstructorInitializer(SyntaxEx.NullLiteral(), SyntaxEx.NullLiteral()));
-
-            var wikiClass = SyntaxEx.ClassDeclaration(
-                Names.Wiki, queryProperty, ctorWithParameters, ctorWithoutParameters);
+            var wikiClass = SyntaxEx.ClassDeclaration(Names.Wiki, queryProperty, ctor);
 
             Files.Add(Names.Wiki, SyntaxEx.CompilationUnit(SyntaxEx.NamespaceDeclaration(Namespace, wikiClass)));
         }
@@ -177,18 +173,19 @@ namespace LinqToWiki.Codegen
             new ListModuleGenerator(this).Generate(paramInfo);
         }
 
-        public EmitResult Compile(string fileName)
+        public CompilerResults Compile(string fileName)
         {
-            var compilation = Compilation.Create(
-                fileName, new CompilationOptions(assemblyKind: AssemblyKind.DynamicallyLinkedLibrary))
-                .AddSyntaxTrees(Files.Select(f => SyntaxTree.Create(f.Item1 + Extension, f.Item2.Format())))
-                .AddReferences(
-                    new AssemblyFileReference(typeof(object).Assembly.Location),
-                    new AssemblyFileReference(typeof(System.Xml.Linq.XElement).Assembly.Location),
-                    new AssemblyFileReference(typeof(System.Xml.IXmlLineInfo).Assembly.Location),
-                    new AssemblyFileReference(typeof(WikiInfo).Assembly.Location));
+            var compiler = new CSharpCodeProvider();
 
-            return compilation.Emit(File.OpenWrite(fileName));
+            return compiler.CompileAssemblyFromSource(
+                new CompilerParameters(
+                    new[]
+                    {
+                        typeof(System.Xml.Linq.XElement).Assembly.Location,
+                        typeof(System.Xml.IXmlLineInfo).Assembly.Location,
+                        typeof(WikiInfo).Assembly.Location
+                    }, fileName) { TreatWarningsAsErrors = true },
+                Files.Select(f => f.Item2.Format().ToString()).ToArray());
         }
 
         public void WriteToFiles(string directoryPath)

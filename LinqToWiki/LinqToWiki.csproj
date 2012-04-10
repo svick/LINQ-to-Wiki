@@ -49,7 +49,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Collections\SingleTypeDictionary.cs" />
     <Compile Include="Collections\TupleList.cs" />
     <Compile Include="Downloader.cs" />
     <Compile Include="Expressions\EnumFixer.cs" />
