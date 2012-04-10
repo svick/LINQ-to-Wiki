@@ -3,7 +3,7 @@ using System.Xml.Linq;
 
 namespace LinqToWiki.Codegen.ModuleInfo
 {
-    abstract class ParameterType : IEquatable<ParameterType>
+    public abstract class ParameterType : IEquatable<ParameterType>
     {
         public static ParameterType Parse(XElement element)
         {

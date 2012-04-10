@@ -4,7 +4,7 @@ using System.Xml.Linq;
 
 namespace LinqToWiki.Codegen.ModuleInfo
 {
-    class PropertyGroup
+    public class PropertyGroup
     {
         public string Name { get; private set; }
 

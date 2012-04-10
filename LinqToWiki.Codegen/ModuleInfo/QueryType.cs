@@ -2,6 +2,8 @@ namespace LinqToWiki.Codegen.ModuleInfo
 {
     public enum QueryType
     {
-        List
+        List,
+        Prop,
+        Meta
     }
 }

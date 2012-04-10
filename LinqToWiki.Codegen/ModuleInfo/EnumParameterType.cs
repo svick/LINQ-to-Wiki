@@ -20,6 +20,8 @@ namespace LinqToWiki.Codegen.ModuleInfo
             if (otherEnum == null)
                 return false;
 
+            // TODO: ignore order
+
             return this.Values.SequenceEqual(otherEnum.Values);
         }
 

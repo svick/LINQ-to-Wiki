@@ -2,7 +2,7 @@ using System.Xml.Linq;
 
 namespace LinqToWiki.Codegen.ModuleInfo
 {
-    class Property
+    public class Property
     {
         public string Name { get; private set; }
 

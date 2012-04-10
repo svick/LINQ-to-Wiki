@@ -167,7 +167,7 @@ namespace LinqToWiki.Codegen
         private static string GetPropertyName(string name)
         {
             if (name == "*")
-                return "content";
+                return "value";
 
             return name;
         }

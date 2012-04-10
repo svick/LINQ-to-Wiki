@@ -60,7 +60,7 @@ namespace LinqToWiki
 
         private static string ReversePropertyName(string name)
         {
-            if (name == "content")
+            if (name == "value")
                 return "*";
             return name;
         }

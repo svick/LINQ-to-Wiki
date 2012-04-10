@@ -5,7 +5,7 @@ using System.Xml.Linq;
 
 namespace LinqToWiki.Codegen.ModuleInfo
 {
-    class ParamInfo
+    public class ParamInfo
     {
         public string ClassName { get; private set; }
 

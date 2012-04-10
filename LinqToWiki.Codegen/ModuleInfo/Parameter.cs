@@ -2,7 +2,7 @@ using System.Xml.Linq;
 
 namespace LinqToWiki.Codegen.ModuleInfo
 {
-    class Parameter
+    public class Parameter
     {
         private Parameter()
         {}
