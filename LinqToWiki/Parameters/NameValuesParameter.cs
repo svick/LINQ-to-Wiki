@@ -55,7 +55,13 @@ namespace LinqToWiki.Parameters
 
         public override string ToString()
         {
-            return string.Format("{0}={1}", Name, string.Join("|", Values));
+            return string.Format("{0}={1}", Name, JoinValues(Values));
+        }
+
+        public static string JoinValues(IEnumerable<string> values)
+        {
+            //TODO: escaping
+            return string.Join("|", values);
         }
     }
 }

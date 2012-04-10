@@ -25,13 +25,16 @@ namespace LinqToWiki.Codegen
 
         private const string Extension = ".cs";
 
+        private string[] m_moduleNames;
+        private string[] m_queryModuleNames;
+
         internal string Namespace { get; private set; }
 
         internal TupleList<string, CompilationUnitSyntax> Files { get; private set; }
 
         internal TypeManager TypeManager { get; private set; }
 
-        internal static TupleList<string, string> QueryBaseParameters =
+        internal static readonly TupleList<string, string> QueryBaseParameters =
             new TupleList<string, string> { { "action", "query" } };
 
         public Wiki(string baseUri, string apiPath, string ns = null)
@@ -109,16 +112,54 @@ namespace LinqToWiki.Codegen
             Files.Add(Names.Enums, SyntaxEx.CompilationUnit(SyntaxEx.NamespaceDeclaration(Namespace)));
         }
 
-        public void AddQueryModule(string moduleName)
+        private void RetrieveModules()
         {
             var paramInfo = m_processor
-                .Execute(QueryParameters.Create<ParamInfo>().AddSingleValue("querymodules", moduleName))
+                .Execute(QueryParameters.Create<ParamInfo>().AddSingleValue("modules", "paraminfo"))
                 .Single();
 
-            if (paramInfo.QueryType == QueryType.List)
-                AddListModule(paramInfo);
-            else
-                throw new NotImplementedException();
+            m_moduleNames = ((EnumParameterType)paramInfo.Parameters.Single(p => p.Name == "modules").Type).Values.ToArray();
+            m_queryModuleNames = ((EnumParameterType)paramInfo.Parameters.Single(p => p.Name == "querymodules").Type).Values.ToArray();
+        }
+
+        public IEnumerable<string> GetAllQueryModules()
+        {
+            if (m_queryModuleNames == null)
+                RetrieveModules();
+
+            return m_queryModuleNames;
+        }
+
+        public IEnumerable<string> GetAllModules()
+        {
+            if (m_moduleNames == null)
+                RetrieveModules();
+
+            return m_moduleNames;
+        }
+
+        public void AddQueryModule(string moduleName)
+        {
+            AddQueryModules(new[] { moduleName });
+        }
+
+        public void AddQueryModules(IEnumerable<string> moduleNames)
+        {
+            var paramInfos = m_processor
+                .Execute(QueryParameters.Create<ParamInfo>().AddMultipleValues("querymodules", moduleNames));
+
+            foreach (var paramInfo in paramInfos.Take(1))
+            {
+                if (paramInfo.QueryType == QueryType.List)
+                    AddListModule(paramInfo);
+
+                // TODO: other types of modules
+            }
+        }
+
+        public void AddAllQueryModules()
+        {
+            AddQueryModules(GetAllQueryModules());
         }
 
         private void AddListModule(ParamInfo paramInfo)

@@ -188,6 +188,12 @@ namespace LinqToWiki.Codegen
             return Syntax.LiteralExpression(SyntaxKind.StringLiteralExpression, Syntax.Literal('"' + value + '"', value));
         }
 
+        public static LiteralExpressionSyntax Literal(bool value)
+        {
+            return Syntax.LiteralExpression(
+                value ? SyntaxKind.TrueLiteralExpression : SyntaxKind.FalseLiteralExpression);
+        }
+
         public static LiteralExpressionSyntax NullLiteral()
         {
             return Syntax.LiteralExpression(SyntaxKind.NullLiteralExpression);

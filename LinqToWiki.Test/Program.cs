@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace LinqToWiki.Test
 {
@@ -7,11 +8,9 @@ namespace LinqToWiki.Test
         static void Main()
         {
             var wiki = new Wiki();
-            var results =
-                (from cm in wiki.Query.CategoryMembers("Category:Biography_articles_needing_attention")
-                 where cm.type == type.subcat
-                 orderby cm.timestamp descending
-                 select new { cm.pageid, cm.title }).ToList();
+            var results = (from cat in wiki.Query.AllCategories()
+                           where cat.min == 1
+                           select new { cat.content, cat.size }).ToEnumerable().Take(10).ToList();
 
             foreach (var result in results)
                 Console.WriteLine(result);

@@ -46,6 +46,8 @@ namespace LinqToWiki.Codegen
                 return "DateTime";
             case "namespace":
                 return "Namespace";
+            case "boolean":
+                return "bool";
             case "integer":
                 return propertyName.EndsWith("id") ? "long" : "int";
             default:
@@ -110,6 +112,8 @@ namespace LinqToWiki.Codegen
                 return SyntaxEx.Invocation(
                     SyntaxEx.MemberAccess(SyntaxEx.MemberAccess(wiki, "Namespaces"), "Get"),
                     InvokeParseExpression("int", value));
+            case "boolean":
+                return SyntaxEx.Literal(true);
             case "integer":
                 if (propertyName.EndsWith("id"))
                     return InvokeParseExpression("long", value);

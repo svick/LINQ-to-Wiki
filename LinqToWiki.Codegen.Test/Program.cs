@@ -7,7 +7,7 @@ namespace LinqToWiki.Codegen.Test
         static void Main()
         {
             var wiki = new Wiki("localhost/wiki/", "api.php");
-            wiki.AddQueryModule("categorymembers");
+            wiki.AddAllQueryModules();
             Console.WriteLine(wiki);
             var result = wiki.Compile("generated.dll");
 

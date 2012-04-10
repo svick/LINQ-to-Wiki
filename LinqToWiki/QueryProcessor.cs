@@ -32,7 +32,7 @@ namespace LinqToWiki
 
             if (parameters.Values != null)
                 foreach (var value in parameters.Values)
-                    parsedParameters.Add(prefix + value.Name, Join(value.Values));
+                    parsedParameters.Add(prefix + value.Name, NameValuesParameter.JoinValues(value.Values));
 
             if (parameters.Sort != null)
             {
@@ -58,7 +58,7 @@ namespace LinqToWiki
                 }
             }
 
-            parsedParameters.Add(prefix + "prop", Join(propList));
+            parsedParameters.Add(prefix + "prop", NameValuesParameter.JoinValues(propList));
 
             parsedParameters.Add(prefix + "limit", "max");
 
@@ -68,19 +68,10 @@ namespace LinqToWiki
 
             // TODO: handle errors
 
+            // TODO: better way to access the elements
             return downloaded
                 .Descendants(m_queryTypeProperties.ElementName)
                 .Select(x => parameters.Selector(m_queryTypeProperties.Parse(x, m_wiki)));
-        }
-
-        /// <summary>
-        /// Formats a list of values into a form the API accepts.
-        /// </summary>
-        private static string Join(IEnumerable<string> values)
-        {
-            // TODO: escaping?
-
-            return string.Join("|", values);
         }
     }
 }

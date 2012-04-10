@@ -116,21 +116,38 @@ namespace LinqToWiki.Codegen
 
             foreach (var property in properties)
             {
-                var propertyAttributeLocal = SyntaxEx.LocalDeclaration(
-                    "var", property.Name + "Attribute",
-                    SyntaxEx.Invocation(
-                        SyntaxEx.MemberAccess(elementParameter, "Attribute"),
-                        SyntaxEx.Invocation(SyntaxEx.MemberAccess("XName", "Get"), SyntaxEx.Literal(property.Name))));
+                ExpressionSyntax propertyValueAccess;
+                bool checkForNull;
 
-                statements.Add(propertyAttributeLocal);
+                if (property.Name == "*")
+                {
+                    propertyValueAccess = (NamedNode)elementParameter;
+                    checkForNull = false;
+                }
+                else
+                {
+                    propertyValueAccess = SyntaxEx.Invocation(
+                        SyntaxEx.MemberAccess(elementParameter, "Attribute"),
+                        SyntaxEx.Invocation(SyntaxEx.MemberAccess("XName", "Get"), SyntaxEx.Literal(property.Name)));
+                    checkForNull = true;
+                }
+                var propertyValueLocal = SyntaxEx.LocalDeclaration("var", GetPropertyName(property.Name) + "Value", propertyValueAccess);
+
+                statements.Add(propertyValueLocal);
 
                 var assignment = SyntaxEx.Assignment(
-                    SyntaxEx.MemberAccess(resultLocal, property.Name),
+                    SyntaxEx.MemberAccess(resultLocal, GetPropertyName(property.Name)),
                     m_wiki.TypeManager.CreateConverter(
-                        property, SyntaxEx.MemberAccess(propertyAttributeLocal, "Value"), (NamedNode)wikiParameter));
+                        property, SyntaxEx.MemberAccess(propertyValueLocal, "Value"), (NamedNode)wikiParameter));
 
-                var ifStatement = SyntaxEx.If(SyntaxEx.NotEquals((NamedNode)propertyAttributeLocal, SyntaxEx.NullLiteral()), assignment);
-                statements.Add(ifStatement);
+                if (checkForNull)
+                {
+                    var ifStatement = SyntaxEx.If(
+                        SyntaxEx.NotEquals((NamedNode)propertyValueLocal, SyntaxEx.NullLiteral()), assignment);
+                    statements.Add(ifStatement);
+                }
+                else
+                    statements.Add(assignment);
             }
 
             statements.Add(SyntaxEx.Return(resultLocal));
@@ -143,8 +160,16 @@ namespace LinqToWiki.Codegen
         private PropertyDeclarationSyntax GenerateProperty(string name, ParameterType type)
         {
             return SyntaxEx.AutoPropertyDeclaration(
-                new[] { SyntaxKind.PublicKeyword }, m_wiki.TypeManager.GetTypeName(type, name), name,
+                new[] { SyntaxKind.PublicKeyword }, m_wiki.TypeManager.GetTypeName(type, name), GetPropertyName(name),
                 SyntaxKind.PrivateKeyword);
+        }
+
+        private static string GetPropertyName(string name)
+        {
+            if (name == "*")
+                return "content";
+
+            return name;
         }
 
         private ClassDeclarationSyntax GenerateWhere(IEnumerable<Parameter> parameters)
@@ -159,10 +184,16 @@ namespace LinqToWiki.Codegen
         {
             var propertyTypes = properties.ToDictionary(p => p.Name, p => p.Type);
 
-            var sortParameter = parameters.Single(p => p.Name == "sort");
+            var sortParameter = parameters.SingleOrDefault(p => p.Name == "sort");
 
-            var propertyDeclarations =
-                ((EnumParameterType)sortParameter.Type).Values.Select(v => GenerateProperty(v, propertyTypes[v]));
+            if (!parameters.Any(p => p.Name == "dir"))
+                throw new NotImplementedException();
+
+            IEnumerable<PropertyDeclarationSyntax> propertyDeclarations = null;
+
+            if (sortParameter != null)
+                propertyDeclarations =
+                    ((EnumParameterType)sortParameter.Type).Values.Select(v => GenerateProperty(v, propertyTypes[v]));
 
             return WithPrivateConstructor(
                 SyntaxEx.ClassDeclaration(m_orderByClassName, propertyDeclarations), m_orderByClassName);
@@ -175,8 +206,13 @@ namespace LinqToWiki.Codegen
 
             var queryTypePropertiesType = SyntaxEx.GenericName("QueryTypeProperties", m_selectClassName);
 
+            // TODO: this is hack, try to remove
+            string elementName = paramInfo.Prefix;
+            if (paramInfo.Name.StartsWith("all") && elementName[0] == 'a')
+                elementName = elementName.Substring(1);
+
             var propertiesInitializer = SyntaxEx.ObjectCreation(
-                queryTypePropertiesType, SyntaxEx.Literal(paramInfo.Prefix), SyntaxEx.Literal(paramInfo.Prefix),
+                queryTypePropertiesType, SyntaxEx.Literal(paramInfo.Prefix), SyntaxEx.Literal(elementName),
                 CreateTupleListExpression(
                     Wiki.QueryBaseParameters.Concat(new TupleList<string, string> { { "list", paramInfo.Name } })),
                 (NamedNode)m_selectProps, SyntaxEx.MemberAccess(m_selectClassName, "Parse"));
@@ -190,18 +226,24 @@ namespace LinqToWiki.Codegen
 
             var methods = new List<MethodDeclarationSyntax>();
 
+            if (!methodParameters.Any())
+                methodParameters = new Parameter[] { null };
+
             foreach (var methodParameter in methodParameters)
             {
-                var parameter = SyntaxEx.Parameter(
-                    m_wiki.TypeManager.GetTypeName(methodParameter), methodParameter.Name);
+                var parameter =
+                    methodParameter == null
+                        ? null
+                        : SyntaxEx.Parameter(m_wiki.TypeManager.GetTypeName(methodParameter), methodParameter.Name);
 
                 ExpressionSyntax queryParameters = SyntaxEx.Invocation(
                     SyntaxEx.MemberAccess("QueryParameters", SyntaxEx.GenericName("Create", m_selectClassName)));
 
-                queryParameters = SyntaxEx.Invocation(
-                    SyntaxEx.MemberAccess(queryParameters, "AddSingleValue"),
-                    SyntaxEx.Literal(methodParameter.Name),
-                    SyntaxEx.Invocation(SyntaxEx.MemberAccess(parameter, "ToString"))); // ToString won't work for Namespace
+                if (methodParameter != null)
+                    queryParameters = SyntaxEx.Invocation(
+                        SyntaxEx.MemberAccess(queryParameters, "AddSingleValue"),
+                        SyntaxEx.Literal(methodParameter.Name),
+                        SyntaxEx.Invocation(SyntaxEx.MemberAccess(parameter, "ToString"))); // ToString won't work for Namespace
 
                 var queryCreation = SyntaxEx.ObjectCreation(
                     queryType,
@@ -213,7 +255,7 @@ namespace LinqToWiki.Codegen
 
                 var method = SyntaxEx.MethodDeclaration(
                     new[] { SyntaxKind.PublicKeyword }, queryType, m_typeNameBase,
-                    new[] { parameter }, SyntaxEx.Return(queryCreation));
+                    methodParameter == null ? null : new[] { parameter }, SyntaxEx.Return(queryCreation));
 
                 methods.Add(method);
             }

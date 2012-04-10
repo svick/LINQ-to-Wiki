@@ -91,6 +91,16 @@ namespace LinqToWiki.Parameters
         }
 
         /// <summary>
+        /// Adds a name-values pair to the current query and returns the result.
+        /// </summary>
+        public QueryParameters<TSource, TResult> AddMultipleValues(string name, IEnumerable<string> values)
+        {
+            var result = Clone();
+            result.Values = new NameValuesParameter(Values, name, values);
+            return result;
+        }
+
+        /// <summary>
         /// Adds sorting to the current query and returns the result.
         /// </summary>
         public QueryParameters<TSource, TResult> WithSort(string name, bool ascending)
