@@ -10,6 +10,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki();
             var results = (from cat in wiki.Query.AllCategories()
                            where cat.min == 1
+                           orderby cat
                            select new { cat.content, cat.size }).ToEnumerable().Take(10).ToList();
 
             foreach (var result in results)

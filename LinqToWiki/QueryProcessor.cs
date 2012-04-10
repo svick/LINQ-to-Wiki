@@ -34,12 +34,13 @@ namespace LinqToWiki
                 foreach (var value in parameters.Values)
                     parsedParameters.Add(prefix + value.Name, NameValuesParameter.JoinValues(value.Values));
 
-            if (parameters.Sort != null)
+            if (parameters.Ascending != null)
             {
-                parsedParameters.Add(prefix + "sort", parameters.Sort);
+                if (parameters.Sort != null)
+                    parsedParameters.Add(prefix + "sort", parameters.Sort);
 
-                if (parameters.Ascending != null)
-                    parsedParameters.Add(prefix + "dir", parameters.Ascending.Value ? "asc" : "desc");
+                // temporary! deal with asc/ascending in a systematic way
+                parsedParameters.Add(prefix + "dir", parameters.Ascending.Value ? "ascending" : "descending");
             }
 
             var propList = new List<string>();

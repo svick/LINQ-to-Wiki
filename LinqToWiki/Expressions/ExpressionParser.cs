@@ -80,15 +80,21 @@ namespace LinqToWiki.Expressions
             QueryParameters<TSource, TResult> previousParameters,
             bool ascending)
         {
+            var parameter = expression.Body as ParameterExpression;
             var memberAccess = expression.Body as MemberExpression;
 
-            if (memberAccess == null)
-                throw new ArgumentException();
+            string memberName;
+            if (parameter != null)
+                memberName = null;
+            else if (memberAccess != null)
+            {
+                if (!(memberAccess.Expression is ParameterExpression))
+                    throw new ArgumentException();
 
-            if (!(memberAccess.Expression is ParameterExpression))
+                memberName = memberAccess.Member.Name.ToLowerInvariant();
+            }
+            else
                 throw new ArgumentException();
-
-            string memberName = memberAccess.Member.Name.ToLowerInvariant();
 
             return previousParameters.WithSort(memberName, ascending);
         }

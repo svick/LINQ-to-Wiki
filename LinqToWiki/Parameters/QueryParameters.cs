@@ -15,13 +15,12 @@ namespace LinqToWiki.Parameters
 
         /// <summary>
         /// Property to sort by. Is represented by <c>sort</c> in the query.
-        /// If <c>null</c>, no sorting is done.
         /// </summary>
         public string Sort { get; protected set; }
 
         /// <summary>
         /// Sort in ascending direction? Is represented by <c>dir</c> in the query.
-        /// Is <c>null</c> iff <see cref="Sort"/> is <c>null</c>.
+        /// If <c>null</c>, no sorting is done.
         /// </summary>
         public bool? Ascending { get; protected set; }
 
