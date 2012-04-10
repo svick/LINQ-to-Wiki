@@ -27,10 +27,18 @@ namespace LinqToWiki.Codegen
             return localDeclarationStatement.Declaration.Variables.Single().Identifier.ValueText;
         }
 
-        public static SeparatedSyntaxList<T> AsSeparatedList<T>(this SyntaxList<T> list, SyntaxKind separator)
+        public static SyntaxList<T> ToSyntaxList<T>(this IEnumerable<T> nodes) where T : SyntaxNode
+        {
+            return Syntax.List(nodes);
+        }
+
+        public static SeparatedSyntaxList<T> ToSeparatedList<T>(
+            this IEnumerable<T> nodes, SyntaxKind separator = SyntaxKind.CommaToken)
             where T : SyntaxNode
         {
-            return Syntax.SeparatedList(list, Enumerable.Repeat(Syntax.Token(separator), Math.Max(list.Count - 1, 0)));
+            var nodesArray = nodes.ToArray();
+            return Syntax.SeparatedList(
+                nodesArray, Enumerable.Repeat(Syntax.Token(separator), Math.Max(nodesArray.Length - 1, 0)));
         }
 
         public static ClassDeclarationSyntax Update(
@@ -52,7 +60,7 @@ namespace LinqToWiki.Codegen
         public static ClassDeclarationSyntax WithAdditionalMembers(
             this ClassDeclarationSyntax classDeclaration, IEnumerable<MemberDeclarationSyntax> members)
         {
-            return classDeclaration.Update(Syntax.List(classDeclaration.Members.Concat(members)));
+            return classDeclaration.Update(classDeclaration.Members.Concat(members).ToSyntaxList());
         }
 
         public static NamespaceDeclarationSyntax Update(
@@ -67,7 +75,7 @@ namespace LinqToWiki.Codegen
         public static NamespaceDeclarationSyntax WithAdditionalMembers(
             this NamespaceDeclarationSyntax namespaceDeclaration, params MemberDeclarationSyntax[] members)
         {
-            return namespaceDeclaration.Update(Syntax.List(namespaceDeclaration.Members.Concat(members)));
+            return namespaceDeclaration.Update(namespaceDeclaration.Members.Concat(members).ToSyntaxList());
         }
 
         public static T SingleDescendant<T>(this SyntaxNode node) where T : SyntaxNode
@@ -125,7 +133,7 @@ namespace LinqToWiki.Codegen
             return Syntax.ClassDeclaration(
                 modifiers: TokenList(new[] {SyntaxKind.PublicKeyword, SyntaxKind.SealedKeyword }),
                 identifier: Syntax.Identifier(className),
-                members: Syntax.List(members));
+                members: members.ToSyntaxList());
         }
 
         public static EnumDeclarationSyntax EnumDeclaration(string enumName, IEnumerable<string> members)
@@ -134,8 +142,8 @@ namespace LinqToWiki.Codegen
                 modifiers: TokenList(SyntaxKind.PublicKeyword),
                 identifier: Syntax.Identifier(enumName),
                 members:
-                    Syntax.List(members.Select(m => Syntax.EnumMemberDeclaration(identifier: Syntax.Identifier(m))))
-                    .AsSeparatedList(SyntaxKind.CommaToken));
+                    members.Select(m => Syntax.EnumMemberDeclaration(identifier: Syntax.Identifier(m)))
+                    .ToSeparatedList());
         }
 
         public static ConstructorDeclarationSyntax ConstructorDeclaration(
@@ -145,9 +153,8 @@ namespace LinqToWiki.Codegen
             return Syntax.ConstructorDeclaration(
                 modifiers: TokenList(modifiers),
                 identifier: Syntax.Identifier(className),
-                parameterList:
-                    Syntax.ParameterList(parameters: Syntax.List(parameters).AsSeparatedList(SyntaxKind.CommaToken)),
-                bodyOpt: Syntax.Block(statements: Syntax.List(statements)),
+                parameterList: Syntax.ParameterList(parameters: parameters.ToSeparatedList()),
+                bodyOpt: Syntax.Block(statements: statements.ToSyntaxList()),
                 initializerOpt: constructorInitializer);
         }
 
@@ -156,8 +163,7 @@ namespace LinqToWiki.Codegen
             return Syntax.ConstructorInitializer(
                 SyntaxKind.ThisConstructorInitializer,
                 argumentList: Syntax.ArgumentList(
-                    arguments: Syntax.List(arguments.Select(a => Syntax.Argument(expression: a)))
-                        .AsSeparatedList(SyntaxKind.CommaToken)));
+                    arguments: arguments.Select(a => Syntax.Argument(expression: a)).ToSeparatedList()));
         }
 
         public static ParameterSyntax Parameter(string type, string name, ExpressionSyntax defaultValue = null)
@@ -211,7 +217,7 @@ namespace LinqToWiki.Codegen
         {
             return
                 Syntax.CompilationUnit(
-                    usings: Syntax.List(usings.Select(u => Syntax.UsingDirective(name: Syntax.ParseName(u)))),
+                    usings: usings.Select(u => Syntax.UsingDirective(name: Syntax.ParseName(u))).ToSyntaxList(),
                     members: Syntax.List<MemberDeclarationSyntax>(member));
         }
 
@@ -258,9 +264,8 @@ namespace LinqToWiki.Codegen
                 modifiers: TokenList(modifiers),
                 returnType: returnType,
                 identifier: Syntax.Identifier(methodName),
-                parameterList:
-                    Syntax.ParameterList(parameters: Syntax.List(parameters).AsSeparatedList(SyntaxKind.CommaToken)),
-                bodyOpt: Syntax.Block(statements: Syntax.List(statements)));
+                parameterList: Syntax.ParameterList(parameters: parameters.ToSeparatedList()),
+                bodyOpt: Syntax.Block(statements: statements.ToSyntaxList()));
         }
 
         public static ObjectCreationExpressionSyntax ObjectCreation(
@@ -294,16 +299,12 @@ namespace LinqToWiki.Codegen
                 argumentsArray.Length == 0
                     ? Syntax.ArgumentList()
                     : Syntax.ArgumentList(
-                        arguments: Syntax.List(
-                            argumentsArray.Select(a => Syntax.Argument(expression: a)))
-                            .AsSeparatedList(SyntaxKind.CommaToken));
+                        arguments: argumentsArray.Select(a => Syntax.Argument(expression: a)).ToSeparatedList());
 
             InitializerExpressionSyntax initializer =
                 initializers == null
                     ? null
-                    : Syntax.InitializerExpression(
-                        expressions:
-                            Syntax.List(initializers.Select(ToInitializer)).AsSeparatedList(SyntaxKind.CommaToken));
+                    : Syntax.InitializerExpression(expressions: initializers.Select(ToInitializer).ToSeparatedList());
 
             return Syntax.ObjectCreationExpression(
                 type: type, argumentListOpt: argumentList, initializerOpt: initializer);
@@ -316,17 +317,14 @@ namespace LinqToWiki.Codegen
             if (expressionsArray.Length == 1)
                 return expressionsArray[0];
 
-            return
-                Syntax.InitializerExpression(
-                    expressions: Syntax.List(expressionsArray).AsSeparatedList(SyntaxKind.CommaToken));
+            return Syntax.InitializerExpression(expressions: expressionsArray.ToSeparatedList());
         }
 
         public static ArrayCreationExpressionSyntax ArrayCreation(string typeName, IEnumerable<ExpressionSyntax> expressions)
         {
             return Syntax.ArrayCreationExpression(
                 type: Syntax.ArrayType(Syntax.ParseTypeName(typeName), Syntax.List(Syntax.ArrayRankSpecifier())),
-                initializerOpt: Syntax.InitializerExpression(
-                    expressions: Syntax.List(expressions).AsSeparatedList(SyntaxKind.CommaToken)));
+                initializerOpt: Syntax.InitializerExpression(expressions: expressions.ToSeparatedList()));
         }
 
         public static LocalDeclarationStatementSyntax LocalDeclaration(string type, string localName, ExpressionSyntax value)
@@ -367,9 +365,7 @@ namespace LinqToWiki.Codegen
         {
             return Syntax.InvocationExpression(
                 expression,
-                Syntax.ArgumentList(
-                    arguments: Syntax.List(arguments.Select(a => Syntax.Argument(expression: a)))
-                        .AsSeparatedList(SyntaxKind.CommaToken)));
+                Syntax.ArgumentList(arguments: arguments.Select(a => Syntax.Argument(expression: a)).ToSeparatedList()));
         }
 
         public static ElementAccessExpressionSyntax ElementAccess(ExpressionSyntax expression, params ExpressionSyntax[] arguments)
@@ -377,8 +373,7 @@ namespace LinqToWiki.Codegen
             return Syntax.ElementAccessExpression(
                 expression,
                 Syntax.BracketedArgumentList(
-                    arguments: Syntax.List(arguments.Select(a => Syntax.Argument(expression: a))).
-                        AsSeparatedList(SyntaxKind.CommaToken)));
+                    arguments: arguments.Select(a => Syntax.Argument(expression: a)).ToSeparatedList()));
         }
 
         public static MemberAccessExpressionSyntax MemberAccess(string name, string memberName)
@@ -433,8 +428,7 @@ namespace LinqToWiki.Codegen
             return Syntax.GenericName(
                 Syntax.Identifier(name),
                 Syntax.TypeArgumentList(
-                    arguments: Syntax.List<TypeSyntax>(typeArgumentNames.Select(Syntax.IdentifierName))
-                        .AsSeparatedList(SyntaxKind.CommaToken)));
+                    arguments: typeArgumentNames.Select(Syntax.IdentifierName).ToSeparatedList<TypeSyntax>()));
         }
     }
 
