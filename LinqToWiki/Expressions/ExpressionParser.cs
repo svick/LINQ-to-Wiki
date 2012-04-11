@@ -66,7 +66,15 @@ namespace LinqToWiki.Expressions
                                      ? valueQueryRepresentation.GetQueryRepresentation()
                                      : value.ToString();
 
-            return previousParameters.AddSingleValue(propertyName, valueString);
+            return previousParameters.AddSingleValue(GetRealPropertyName(propertyName), valueString);
+        }
+
+        private static string GetRealPropertyName(string propertyName)
+        {
+            if (propertyName == "ns")
+                return "namespace";
+
+            return propertyName;
         }
 
         /// <summary>
