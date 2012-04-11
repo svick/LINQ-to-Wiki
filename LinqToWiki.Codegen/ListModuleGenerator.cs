@@ -68,8 +68,7 @@ namespace LinqToWiki.Codegen
                                from p in g.Properties
                                select new[] { p.Name, g.Name }.Select(SyntaxEx.Literal);
 
-            var propsInitializer = SyntaxEx.ObjectCreation(
-                "Dictionary<string, string>", new ExpressionSyntax[0], initializers);
+            var propsInitializer = SyntaxEx.ObjectCreation("Dictionary<string, string>", null, initializers);
 
             var propsField =
                 SyntaxEx.FieldDeclaration(
@@ -97,9 +96,7 @@ namespace LinqToWiki.Codegen
         private static ClassDeclarationSyntax WithPrivateConstructor(ClassDeclarationSyntax selectClass, string className)
         {
             return selectClass.WithAdditionalMembers(
-                SyntaxEx.ConstructorDeclaration(
-                    new[] { SyntaxKind.PrivateKeyword }, className, new ParameterSyntax[0],
-                    new StatementSyntax[0]));
+                SyntaxEx.ConstructorDeclaration(new[] { SyntaxKind.PrivateKeyword }, className));
         }
 
         private MethodDeclarationSyntax GenerateParseMethod(IEnumerable<Property> properties)
@@ -268,7 +265,7 @@ namespace LinqToWiki.Codegen
         private static ObjectCreationExpressionSyntax CreateTupleListExpression(IEnumerable<Tuple<string, string>> tupleList)
         {
             return SyntaxEx.ObjectCreation(
-                "TupleList<string, string>", new ExpressionSyntax[0],
+                "TupleList<string, string>", null,
                 tupleList.Select(t => new[] { t.Item1, t.Item2 }.Select(SyntaxEx.Literal)));
         }
 

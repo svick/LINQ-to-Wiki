@@ -36,7 +36,7 @@ namespace LinqToWiki.Codegen
             this IEnumerable<T> nodes, SyntaxKind separator = SyntaxKind.CommaToken)
             where T : SyntaxNode
         {
-            var nodesArray = nodes.ToArray();
+            var nodesArray = nodes == null ? new T[0] : nodes.ToArray();
             return Syntax.SeparatedList(
                 nodesArray, Enumerable.Repeat(Syntax.Token(separator), Math.Max(nodesArray.Length - 1, 0)));
         }
@@ -147,8 +147,8 @@ namespace LinqToWiki.Codegen
         }
 
         public static ConstructorDeclarationSyntax ConstructorDeclaration(
-            IEnumerable<SyntaxKind> modifiers, string className, IEnumerable<ParameterSyntax> parameters,
-            IEnumerable<StatementSyntax> statements, ConstructorInitializerSyntax constructorInitializer = null)
+            IEnumerable<SyntaxKind> modifiers, string className, IEnumerable<ParameterSyntax> parameters = null,
+            IEnumerable<StatementSyntax> statements = null, ConstructorInitializerSyntax constructorInitializer = null)
         {
             return Syntax.ConstructorDeclaration(
                 modifiers: TokenList(modifiers),
@@ -294,7 +294,7 @@ namespace LinqToWiki.Codegen
         public static ObjectCreationExpressionSyntax ObjectCreation(
             TypeSyntax type, IEnumerable<ExpressionSyntax> arguments, IEnumerable<IEnumerable<ExpressionSyntax>> initializers = null)
         {
-            var argumentsArray = arguments.ToArray();
+            var argumentsArray = arguments == null ? new ExpressionSyntax[0] : arguments.ToArray();
             var argumentList =
                 argumentsArray.Length == 0
                     ? Syntax.ArgumentList()
