@@ -6,27 +6,47 @@ using LinqToWiki.Parameters;
 namespace LinqToWiki
 {
     /// <summary>
-    /// Represents a query.
+    /// Represents a sortable query.
     /// </summary>
-    public class WikiQuery<TWhere, TOrderBy, TSelect> : WikiQueryResult<TSelect, TSelect>
+    public class WikiQuerySortable<TWhere, TOrderBy, TSelect> : WikiQueryResult<TSelect, TSelect>
+    {
+        public WikiQuerySortable(QueryProcessor<TSelect> queryProcessor, QueryParameters<TSelect, TSelect> parameters)
+            : base(queryProcessor, parameters)
+        {}
+
+        public WikiQuerySortable<TWhere, TOrderBy, TSelect> Where(Expression<Func<TWhere, bool>> predicate)
+        {
+            return new WikiQuerySortable<TWhere, TOrderBy, TSelect>(QueryProcessor, ExpressionParser.ParseWhere(predicate, Parameters));
+        }
+
+        public WikiQuery<TWhere, TSelect> OrderBy<TKey>(Expression<Func<TOrderBy, TKey>> keySelector)
+        {
+            return new WikiQuery<TWhere, TSelect>(QueryProcessor, ExpressionParser.ParseOrderBy(keySelector, Parameters, true));
+        }
+
+        public WikiQuery<TWhere, TSelect> OrderByDescending<TKey>(Expression<Func<TOrderBy, TKey>> keySelector)
+        {
+            return new WikiQuery<TWhere, TSelect>(QueryProcessor, ExpressionParser.ParseOrderBy(keySelector, Parameters, false));
+        }
+
+        public WikiQueryResult<TSelect, TResult> Select<TResult>(Expression<Func<TSelect, TResult>> selector)
+        {
+            return new WikiQueryResult<TSelect, TResult>(QueryProcessor, ExpressionParser.ParseSelect(selector, Parameters));
+        }
+    }
+
+    /// <summary>
+    /// Represents a nonsortable query.
+    /// </summary>
+    public class WikiQuery<TWhere, TSelect> : WikiQueryResult<TSelect, TSelect>
     {
         public WikiQuery(QueryProcessor<TSelect> queryProcessor, QueryParameters<TSelect, TSelect> parameters)
             : base(queryProcessor, parameters)
         {}
 
-        public WikiQuery<TWhere, TOrderBy, TSelect> Where(Expression<Func<TWhere, bool>> predicate)
+        public WikiQuery<TWhere, TSelect> Where(Expression<Func<TWhere, bool>> predicate)
         {
-            return new WikiQuery<TWhere, TOrderBy, TSelect>(QueryProcessor, ExpressionParser.ParseWhere(predicate, Parameters));
-        }
-
-        public WikiQuery<TWhere, TOrderBy, TSelect> OrderBy<TKey>(Expression<Func<TOrderBy, TKey>> keySelector)
-        {
-            return new WikiQuery<TWhere, TOrderBy, TSelect>(QueryProcessor, ExpressionParser.ParseOrderBy(keySelector, Parameters, true));
-        }
-
-        public WikiQuery<TWhere, TOrderBy, TSelect> OrderByDescending<TKey>(Expression<Func<TOrderBy, TKey>> keySelector)
-        {
-            return new WikiQuery<TWhere, TOrderBy, TSelect>(QueryProcessor, ExpressionParser.ParseOrderBy(keySelector, Parameters, false));
+            return new WikiQuery<TWhere, TSelect>(QueryProcessor, ExpressionParser.ParseWhere(predicate, Parameters));
         }
 
         public WikiQueryResult<TSelect, TResult> Select<TResult>(Expression<Func<TSelect, TResult>> selector)

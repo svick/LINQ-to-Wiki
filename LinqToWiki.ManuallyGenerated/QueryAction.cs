@@ -27,12 +27,12 @@ namespace LinqToWiki
                 CategoryMembersProps,
                 CategoryMembersSelect.Parse);
 
-        public WikiQuery<CategoryMembersWhere, CategoryMembersOrderBy, CategoryMembersSelect> CategoryMembers(
+        public WikiQuerySortable<CategoryMembersWhere, CategoryMembersOrderBy, CategoryMembersSelect> CategoryMembers(
             string title)
         {
             var parameters = QueryParameters.Create<CategoryMembersSelect>()
                 .AddSingleValue("title", title);
-            return new WikiQuery<CategoryMembersWhere, CategoryMembersOrderBy, CategoryMembersSelect>(
+            return new WikiQuerySortable<CategoryMembersWhere, CategoryMembersOrderBy, CategoryMembersSelect>(
                 new QueryProcessor<CategoryMembersSelect>(m_wiki, CategoryMembersProperties),
                 parameters);
         }

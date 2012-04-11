@@ -11,7 +11,7 @@ namespace LinqToWiki.Test
             Downloader.LogDownloading = true;
 
             var wiki = new Wiki();
-            AllImages(wiki);
+            AllLinks(wiki);
         }
 
         private static void AllCategories(Wiki wiki)
@@ -30,6 +30,16 @@ namespace LinqToWiki.Test
             var results = (from image in wiki.Query.AllImages()
                            orderby image
                            select new { image.name, image.pagecount, comment = image.comment.Substring(0, Math.Min(20, image.comment.Length)) })
+                .ToEnumerable().Take(10).ToList();
+
+            Write(results);
+        }
+
+        private static void AllLinks(Wiki wiki)
+        {
+            var results = (from link in wiki.Query.AllLinks()
+                           where link.ns == Namespace.Talk
+                           select new { link.fromid, link.title })
                 .ToEnumerable().Take(10).ToList();
 
             Write(results);

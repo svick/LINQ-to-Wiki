@@ -210,7 +210,8 @@ namespace LinqToWiki.Codegen
 
         public static NamespaceDeclarationSyntax NamespaceDeclaration(string name, params MemberDeclarationSyntax[] members)
         {
-            return Syntax.NamespaceDeclaration(name: Syntax.ParseName(name), members: Syntax.List(members));
+            return Syntax.NamespaceDeclaration(
+                name: Syntax.ParseName(name), members: members.Where(m => m != null).ToSyntaxList());
         }
 
         public static CompilationUnitSyntax CompilationUnit(NamespaceDeclarationSyntax member, params string[] usings)

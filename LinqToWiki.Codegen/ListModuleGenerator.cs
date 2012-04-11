@@ -51,7 +51,7 @@ namespace LinqToWiki.Codegen
 
             m_wiki.Files.Add(m_typeNameBase, codeUnit);
 
-            GenerateMethod(module, methodParameters);
+            GenerateMethod(module, methodParameters, orderByClass != null);
         }
 
         private static IList<Parameter> RemoveAndReturnByNames(List<Parameter> parameters, params string[] names)
@@ -177,7 +177,7 @@ namespace LinqToWiki.Codegen
             var sortParameter = parameters.SingleOrDefault(p => p.Name == "sort");
 
             if (!parameters.Any(p => p.Name == "dir"))
-                throw new NotImplementedException();
+                return null;
 
             IEnumerable<PropertyDeclarationSyntax> propertyDeclarations = null;
 
@@ -189,7 +189,7 @@ namespace LinqToWiki.Codegen
                 .WithPrivateConstructor();
         }
 
-        private void GenerateMethod(Module module, IEnumerable<Parameter> methodParameters)
+        private void GenerateMethod(Module module, IEnumerable<Parameter> methodParameters, bool sortable)
         {
             var queryActionFile = m_wiki.Files[Wiki.Names.QueryAction];
             var queryActionClass = queryActionFile.SingleDescendant<ClassDeclarationSyntax>();
@@ -210,7 +210,10 @@ namespace LinqToWiki.Codegen
                     new[] { SyntaxKind.PrivateKeyword, SyntaxKind.StaticKeyword, SyntaxKind.ReadOnlyKeyword },
                     queryTypePropertiesType, m_typeNameBase + "Properties", propertiesInitializer);
 
-            var queryType = SyntaxEx.GenericName("WikiQuery", m_whereClassName, m_orderByClassName, m_selectClassName);
+            var queryType =
+                sortable
+                    ? SyntaxEx.GenericName("WikiQuerySortable", m_whereClassName, m_orderByClassName, m_selectClassName)
+                    : SyntaxEx.GenericName("WikiQuery", m_whereClassName, m_selectClassName);
 
             var methods = new List<MethodDeclarationSyntax>();
 
