@@ -92,12 +92,20 @@ namespace LinqToWiki.Codegen
 
             var namespaceDeclaration = enumsFile.SingleDescendant<NamespaceDeclarationSyntax>();
 
-            var enumDeclaration = SyntaxEx.EnumDeclaration(typeName, enumType.Values);
+            var enumDeclaration = SyntaxEx.EnumDeclaration(typeName, enumType.Values.Select(FixEnumMemberName));
 
             m_wiki.Files[Wiki.Names.Enums] = enumsFile.ReplaceNode(
                 namespaceDeclaration, namespaceDeclaration.WithAdditionalMembers(enumDeclaration));
 
             m_enumTypes.Add(enumType, typeName);
+        }
+
+        private static string FixEnumMemberName(string value)
+        {
+            if (value == string.Empty)
+                return "none";
+
+            return value;
         }
 
         // value is expected to be a string
