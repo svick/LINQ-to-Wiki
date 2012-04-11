@@ -25,7 +25,7 @@ namespace LinqToWiki
 
         public IEnumerable<TResult> ToEnumerable()
         {
-            return QueryProcessor.Execute(Parameters);
+            return QueryProcessor.ExecuteList(Parameters);
         }
     }
 }

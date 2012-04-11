@@ -1,4 +1,4 @@
-namespace LinqToWiki.Codegen.ModuleInfo
+namespace LinqToWiki
 {
     public enum QueryType
     {

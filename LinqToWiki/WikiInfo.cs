@@ -59,15 +59,15 @@ namespace LinqToWiki
 
         private static IEnumerable<Namespace> GetNamespaces(WikiInfo wiki)
         {
-            var queryProcessor = new QueryProcessor<Namespace>(
+            var queryProcessor = new QueryProcessor<IEnumerable<Namespace>>(
                 wiki,
-                new QueryTypeProperties<Namespace>(
-                    "", "ns",
+                new QueryTypeProperties<IEnumerable<Namespace>>(
+                    "siteinfo", "", QueryType.Meta,
                     new TupleList<string, string>
                     { { "action", "query" }, { "meta", "siteinfo" }, { "siprop", "namespaces" } },
                     null, Namespace.Parse));
 
-            return queryProcessor.Execute(QueryParameters.Create<Namespace>());
+            return queryProcessor.ExecuteSingle(QueryParameters.Create<IEnumerable<Namespace>>());
         }
 
         public Namespace this[int id]

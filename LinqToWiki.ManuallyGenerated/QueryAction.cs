@@ -16,12 +16,14 @@ namespace LinqToWiki
         private static readonly TupleList<string, string> QueryBaseParameters =
             new TupleList<string, string> { { "action", "query" } };
 
-        private static readonly IDictionary<string, string> CategoryMembersProps =
-            new Dictionary<string, string> { { "pageid", "ids" }, { "title", "title" }, { "sortkey", "sortkey" } };
+        private static readonly IDictionary<string, string[]> CategoryMembersProps =
+            new Dictionary<string, string[]>
+            { { "pageid", new[] { "ids" } }, { "title", new[] { "title" } }, { "sortkey", new[] { "sortkey" } } };
 
         private static readonly QueryTypeProperties<CategoryMembersSelect> CategoryMembersProperties =
             new QueryTypeProperties<CategoryMembersSelect>(
-                "cm", "cm", new TupleList<string, string>(QueryBaseParameters) { { "list", "categorymembers" } },
+                "categorymembers", "cm", QueryType.List,
+                new TupleList<string, string>(QueryBaseParameters) { { "list", "categorymembers" } },
                 CategoryMembersProps,
                 CategoryMembersSelect.Parse);
 

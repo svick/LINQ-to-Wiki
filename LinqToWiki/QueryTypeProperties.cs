@@ -11,49 +11,50 @@ namespace LinqToWiki
     public class QueryTypeProperties<T>
     {
         /// <summary>
+        /// Name of the module.
+        /// </summary>
+        public string ModuleName { get; private set; }
+
+        /// <summary>
         /// Prefix that is used by this type of query.
         /// </summary>
         public string Prefix { get; private set; }
 
         /// <summary>
-        /// Name of the XML element in the response.
+        /// Type of the query module, or <c>null</c>, if it's not a query module.
         /// </summary>
-        public string ElementName { get; set; }
+        public QueryType? QueryType { get; private set; }
 
         /// <summary>
         /// Parameters, that are included in all queries of this type.
         /// </summary>
         public IEnumerable<Tuple<string, string>> BaseParameters { get; private set; }
 
-        private readonly IDictionary<string, string> m_props;
+        private readonly IDictionary<string, string[]> m_props;
         private readonly Func<XElement, WikiInfo, T> m_parser;
 
         public QueryTypeProperties(
-            string prefix, string elementName, IEnumerable<Tuple<string, string>> baseParameters,
-            IDictionary<string, string> props, Func<XElement, WikiInfo, T> parser)
+            string moduleName, string prefix, QueryType? queryType, IEnumerable<Tuple<string, string>> baseParameters,
+            IDictionary<string, string[]> props, Func<XElement, WikiInfo, T> parser)
         {
+            ModuleName = moduleName;
             Prefix = prefix;
-            ElementName = elementName;
+            QueryType = queryType;
             BaseParameters = baseParameters;
-            m_props = props ?? new Dictionary<string, string>();
+            m_props = props ?? new Dictionary<string, string[]>();
             m_parser = parser;
         }
 
         public QueryTypeProperties(
-            string prefix, string elementName, IEnumerable<Tuple<string, string>> baseParameters,
-            IDictionary<string, string> props, Func<XElement, T> parser)
-        {
-            Prefix = prefix;
-            ElementName = elementName;
-            BaseParameters = baseParameters;
-            m_props = props ?? new Dictionary<string, string>();
-            m_parser = (elem, _) => parser(elem);
-        }
+            string moduleName, string prefix, QueryType? queryType, IEnumerable<Tuple<string, string>> baseParameters,
+            IDictionary<string, string[]> props, Func<XElement, T> parser)
+            : this(moduleName, prefix, queryType, baseParameters, props, (elem, _) => parser(elem))
+        {}
 
         /// <summary>
         /// Returns the value of <c>prop</c> for given property.
         /// </summary>
-        public string GetProp(string property)
+        public string[] GetProps(string property)
         {
             return m_props[ReversePropertyName(property)];
         }
@@ -70,7 +71,7 @@ namespace LinqToWiki
         /// </summary>
         public IEnumerable<string> GetAllProps()
         {
-            return m_props.Values.Distinct();
+            return m_props.Values.SelectMany(p => p).Distinct();
         }
 
         /// <summary>

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Xml.Linq;
 
 namespace LinqToWiki
@@ -41,9 +42,10 @@ namespace LinqToWiki
             return result;
         }
 
-        public static Namespace Parse(XElement element)
+        public static IEnumerable<Namespace> Parse(XElement element)
         {
-            return new Namespace((int)element.Attribute("id"), (string)element);
+            return element.Element("namespaces").Elements()
+                .Select(e => new Namespace((int)e.Attribute("id"), (string)e));
         }
 
         public static Namespace Article { get; private set; }

@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 using LinqToWiki.Collections;
 using LinqToWiki.Parameters;
 
@@ -20,9 +22,58 @@ namespace LinqToWiki
         }
 
         /// <summary>
-        /// Executes a query based on the <see cref="parameters"/>.
+        /// Executes a query based on the <see cref="parameters"/> and returns a collection of results.
         /// </summary>
-        public IEnumerable<TResult> Execute<TResult>(QueryParameters<T, TResult> parameters)
+        public IEnumerable<TResult> ExecuteList<TResult>(QueryParameters<T, TResult> parameters)
+        {
+            var downloaded = Download(parameters);
+
+            switch (m_queryTypeProperties.QueryType)
+            {
+            case QueryType.List:
+                return downloaded
+                    .Element("query")
+                    .Element(m_queryTypeProperties.ModuleName)
+                    .Elements()
+                    .Select(x => parameters.Selector(m_queryTypeProperties.Parse(x, m_wiki)));
+            case QueryType.Prop:
+            case QueryType.Meta:
+            case null:
+                throw new NotImplementedException();
+            }
+
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Executes a query based on the <see cref="parameters"/> and returns a single result.
+        /// </summary>
+        public TResult ExecuteSingle<TResult>(QueryParameters<T, TResult> parameters)
+        {
+            var downloaded = Download(parameters);
+
+            switch (m_queryTypeProperties.QueryType)
+            {
+            case QueryType.List:
+                throw new InvalidOperationException();
+            case QueryType.Prop:
+                throw new NotImplementedException();
+            case QueryType.Meta:
+                return parameters.Selector(
+                    m_queryTypeProperties.Parse(downloaded.Element("query"), m_wiki));
+            case null:
+                return
+                    parameters.Selector(
+                        m_queryTypeProperties.Parse(
+                            downloaded.Element(m_queryTypeProperties.ModuleName),
+                            m_wiki));
+            }
+
+            throw new NotSupportedException();
+        }
+
+
+        private XElement Download<TResult>(QueryParameters<T, TResult> parameters)
         {
             // TODO: too long, split
 
@@ -43,23 +94,25 @@ namespace LinqToWiki
                 parsedParameters.Add(prefix + "dir", parameters.Ascending.Value ? "ascending" : "descending");
             }
 
-            var propList = new List<string>();
+            var selectedProps = new List<string>();
 
             if (parameters.Properties == null)
-            {
-                propList.AddRange(m_queryTypeProperties.GetAllProps());
-            }
+                selectedProps.AddRange(m_queryTypeProperties.GetAllProps());
             else
             {
-                foreach (var property in parameters.Properties)
+                var requiredPropsCollection =
+                    parameters.Properties
+                        .Select(m_queryTypeProperties.GetProps)
+                        .Where(ps => !ps.SequenceEqual(new[] { "" }))
+                        .OrderBy(ps => ps.Length);
+                foreach (var props in requiredPropsCollection)
                 {
-                    var prop = m_queryTypeProperties.GetProp(property);
-                    if (prop != null && !propList.Contains(prop))
-                        propList.Add(prop);
+                    if (!props.Intersect(selectedProps).Any())
+                        selectedProps.Add(props.First());
                 }
             }
 
-            parsedParameters.Add(prefix + "prop", NameValuesParameter.JoinValues(propList));
+            parsedParameters.Add(prefix + "prop", NameValuesParameter.JoinValues(selectedProps));
 
             parsedParameters.Add(prefix + "limit", "max");
 
@@ -69,10 +122,7 @@ namespace LinqToWiki
 
             // TODO: handle errors
 
-            // TODO: better way to access the elements
-            return downloaded
-                .Descendants(m_queryTypeProperties.ElementName)
-                .Select(x => parameters.Selector(m_queryTypeProperties.Parse(x, m_wiki)));
+            return downloaded.Root;
         }
     }
 }

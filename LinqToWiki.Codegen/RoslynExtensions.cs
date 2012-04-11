@@ -320,11 +320,16 @@ namespace LinqToWiki.Codegen
             return Syntax.InitializerExpression(expressions: expressionsArray.ToSeparatedList());
         }
 
-        public static ArrayCreationExpressionSyntax ArrayCreation(string typeName, IEnumerable<ExpressionSyntax> expressions)
+        public static ExpressionSyntax ArrayCreation(string typeName, IEnumerable<ExpressionSyntax> expressions)
         {
+            var initializer = Syntax.InitializerExpression(expressions: expressions.ToSeparatedList());
+
+            if (string.IsNullOrEmpty(typeName))
+                return Syntax.ImplicitArrayCreationExpression(initializer: initializer);
+
             return Syntax.ArrayCreationExpression(
                 type: Syntax.ArrayType(Syntax.ParseTypeName(typeName), Syntax.List(Syntax.ArrayRankSpecifier())),
-                initializerOpt: Syntax.InitializerExpression(expressions: expressions.ToSeparatedList()));
+                initializerOpt: initializer);
         }
 
         public static LocalDeclarationStatementSyntax LocalDeclaration(string type, string localName, ExpressionSyntax value)

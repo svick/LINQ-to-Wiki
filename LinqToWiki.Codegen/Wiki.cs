@@ -47,9 +47,9 @@ namespace LinqToWiki.Codegen
             m_processor = new QueryProcessor<ParamInfo>(
                 new WikiInfo(baseUri, apiPath),
                 new QueryTypeProperties<ParamInfo>(
-                    "", "module",
+                    "paraminfo", "", null,
                     new TupleList<string, string> { { "action", "paraminfo" } },
-                    null, 
+                    null,
                     ParamInfo.Parse));
 
             CreateWikiClass();
@@ -109,12 +109,12 @@ namespace LinqToWiki.Codegen
 
         private void RetrieveModuleNames()
         {
-            var paramInfo = m_processor
-                .Execute(QueryParameters.Create<ParamInfo>().AddSingleValue("modules", "paraminfo"))
-                .Single();
+            var module = m_processor
+                .ExecuteSingle(QueryParameters.Create<ParamInfo>().AddSingleValue("modules", "paraminfo"))
+                .Modules.Single();
 
-            m_moduleNames = ((EnumParameterType)paramInfo.Parameters.Single(p => p.Name == "modules").Type).Values.ToArray();
-            m_queryModuleNames = ((EnumParameterType)paramInfo.Parameters.Single(p => p.Name == "querymodules").Type).Values.ToArray();
+            m_moduleNames = ((EnumParameterType)module.Parameters.Single(p => p.Name == "modules").Type).Values.ToArray();
+            m_queryModuleNames = ((EnumParameterType)module.Parameters.Single(p => p.Name == "querymodules").Type).Values.ToArray();
         }
 
         public IEnumerable<string> GetAllQueryModuleNames()
@@ -133,16 +133,18 @@ namespace LinqToWiki.Codegen
             return m_moduleNames;
         }
 
-        public IEnumerable<ParamInfo> GetQueryModules(IEnumerable<string> moduleNames)
+        public IEnumerable<Module> GetQueryModules(IEnumerable<string> moduleNames)
         {
             return m_processor
-                .Execute(QueryParameters.Create<ParamInfo>().AddMultipleValues("querymodules", moduleNames));
+                .ExecuteSingle(QueryParameters.Create<ParamInfo>().AddMultipleValues("querymodules", moduleNames))
+                .QueryModules;
         }
 
-        public IEnumerable<ParamInfo> GetModules(IEnumerable<string> moduleNames)
+        public IEnumerable<Module> GetModules(IEnumerable<string> moduleNames)
         {
             return m_processor
-                .Execute(QueryParameters.Create<ParamInfo>().AddMultipleValues("modules", moduleNames));
+                .ExecuteSingle(QueryParameters.Create<ParamInfo>().AddMultipleValues("modules", moduleNames))
+                .Modules;
         }
 
         public void AddQueryModule(string moduleName)
@@ -154,7 +156,7 @@ namespace LinqToWiki.Codegen
         {
             var paramInfos = GetQueryModules(moduleNames);
 
-            foreach (var paramInfo in paramInfos.Take(1))
+            foreach (var paramInfo in paramInfos.Take(2))
             {
                 if (paramInfo.QueryType == QueryType.List)
                     AddListModule(paramInfo);
@@ -168,9 +170,9 @@ namespace LinqToWiki.Codegen
             AddQueryModules(GetAllQueryModuleNames());
         }
 
-        private void AddListModule(ParamInfo paramInfo)
+        private void AddListModule(Module module)
         {
-            new ListModuleGenerator(this).Generate(paramInfo);
+            new ListModuleGenerator(this).Generate(module);
         }
 
         public CompilerResults Compile(string fileName)

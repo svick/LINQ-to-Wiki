@@ -23,14 +23,14 @@ namespace LinqToWiki.Codegen
             m_wiki = wiki;
         }
 
-        public void Generate(ParamInfo paramInfo)
+        public void Generate(Module module)
         {
-            m_typeNameBase = GetTypeNameBase(paramInfo);
+            m_typeNameBase = GetTypeNameBase(module);
             m_selectClassName = m_typeNameBase + "Select";
             m_whereClassName = m_typeNameBase + "Where";
             m_orderByClassName = m_typeNameBase + "OrderBy";
 
-            var parameters = paramInfo.Parameters.ToList();
+            var parameters = module.Parameters.ToList();
 
             var methodParameters = RemoveAndReturnByNames(parameters, "title", "pageid");
 
@@ -41,9 +41,9 @@ namespace LinqToWiki.Codegen
 
             var whereParameters = parameters;
 
-            var selectClass = GenerateSelect(paramInfo.PropertyGroups);
+            var selectClass = GenerateSelect(module.PropertyGroups);
             var whereClass = GenerateWhere(whereParameters);
-            var orderByClass = GenerateOrderBy(sortParameters, paramInfo.PropertyGroups.SelectMany(g => g.Properties));
+            var orderByClass = GenerateOrderBy(sortParameters, module.PropertyGroups.SelectMany(g => g.Properties));
 
             var codeUnit = SyntaxEx.CompilationUnit(
                 SyntaxEx.NamespaceDeclaration(m_wiki.Namespace, selectClass, whereClass, orderByClass),
@@ -51,7 +51,7 @@ namespace LinqToWiki.Codegen
 
             m_wiki.Files.Add(m_typeNameBase, codeUnit);
 
-            GenerateMethod(paramInfo, methodParameters);
+            GenerateMethod(module, methodParameters);
         }
 
         private static IList<Parameter> RemoveAndReturnByNames(List<Parameter> parameters, params string[] names)
@@ -64,23 +64,26 @@ namespace LinqToWiki.Codegen
             var queryActionFile = m_wiki.Files[Wiki.Names.QueryAction];
             var queryActionClass = queryActionFile.SingleDescendant<ClassDeclarationSyntax>();
 
-            var initializers = from g in propertyGroups
-                               from p in g.Properties
-                               select new[] { p.Name, g.Name }.Select(SyntaxEx.Literal);
+            var initializers =
+                from pg in propertyGroups
+                from p in pg.Properties
+                group pg.Name by p.Name
+                into g
+                select new[] { SyntaxEx.Literal(g.Key), SyntaxEx.ArrayCreation(null, g.Select(SyntaxEx.Literal)) };
 
-            var propsInitializer = SyntaxEx.ObjectCreation("Dictionary<string, string>", null, initializers);
+            var propsInitializer = SyntaxEx.ObjectCreation("Dictionary<string, string[]>", null, initializers);
 
             var propsField =
                 SyntaxEx.FieldDeclaration(
                     new[] { SyntaxKind.PrivateKeyword, SyntaxKind.StaticKeyword, SyntaxKind.ReadOnlyKeyword },
-                    "IDictionary<string, string>", m_typeNameBase + "Props", propsInitializer);
+                    "IDictionary<string, string[]>", m_typeNameBase + "Props", propsInitializer);
 
             m_selectProps = propsField;
 
             m_wiki.Files[Wiki.Names.QueryAction] = queryActionFile.ReplaceNode(
                 queryActionClass, queryActionClass.WithAdditionalMembers(propsField));
 
-            var properties = propertyGroups.SelectMany(g => g.Properties).ToArray();
+            var properties = propertyGroups.SelectMany(g => g.Properties).Distinct().ToArray();
 
             return SyntaxEx.ClassDeclaration(
                 m_selectClassName, properties.Select(p => GenerateProperty(p.Name, p.Type)))
@@ -169,7 +172,7 @@ namespace LinqToWiki.Codegen
 
         private ClassDeclarationSyntax GenerateOrderBy(IEnumerable<Parameter> parameters, IEnumerable<Property> properties)
         {
-            var propertyTypes = properties.ToDictionary(p => p.Name, p => p.Type);
+            var propertyTypes = properties.Distinct().ToDictionary(p => p.Name, p => p.Type);
 
             var sortParameter = parameters.SingleOrDefault(p => p.Name == "sort");
 
@@ -186,22 +189,20 @@ namespace LinqToWiki.Codegen
                 .WithPrivateConstructor();
         }
 
-        private void GenerateMethod(ParamInfo paramInfo, IEnumerable<Parameter> methodParameters)
+        private void GenerateMethod(Module module, IEnumerable<Parameter> methodParameters)
         {
             var queryActionFile = m_wiki.Files[Wiki.Names.QueryAction];
             var queryActionClass = queryActionFile.SingleDescendant<ClassDeclarationSyntax>();
 
             var queryTypePropertiesType = SyntaxEx.GenericName("QueryTypeProperties", m_selectClassName);
 
-            // TODO: this is hack, try to remove
-            string elementName = paramInfo.Prefix;
-            if (paramInfo.Name.StartsWith("all") && elementName[0] == 'a')
-                elementName = elementName.Substring(1);
-
             var propertiesInitializer = SyntaxEx.ObjectCreation(
-                queryTypePropertiesType, SyntaxEx.Literal(paramInfo.Prefix), SyntaxEx.Literal(elementName),
+                queryTypePropertiesType,
+                SyntaxEx.Literal(module.Name),
+                SyntaxEx.Literal(module.Prefix),
+                SyntaxEx.MemberAccess("QueryType", "List"),
                 CreateTupleListExpression(
-                    Wiki.QueryBaseParameters.Concat(new TupleList<string, string> { { "list", paramInfo.Name } })),
+                    Wiki.QueryBaseParameters.Concat(new TupleList<string, string> { { "list", module.Name } })),
                 (NamedNode)m_selectProps, SyntaxEx.MemberAccess(m_selectClassName, "Parse"));
 
             var propertiesField =
@@ -258,11 +259,11 @@ namespace LinqToWiki.Codegen
                 tupleList.Select(t => new[] { t.Item1, t.Item2 }.Select(SyntaxEx.Literal)));
         }
 
-        private static string GetTypeNameBase(ParamInfo paramInfo)
+        private static string GetTypeNameBase(Module module)
         {
             var prefixes = new[] { "Api", "Query" };
 
-            string name = paramInfo.ClassName;
+            string name = module.ClassName;
             foreach (var prefix in prefixes)
             {
                 if (name.StartsWith(prefix))
