@@ -156,9 +156,9 @@ namespace LinqToWiki.Codegen
         {
             var paramInfos = GetQueryModules(moduleNames);
 
-            foreach (var paramInfo in paramInfos.Take(3))
+            foreach (var paramInfo in paramInfos.Take(4))
             {
-                if (paramInfo.QueryType == QueryType.List)
+                if (paramInfo.QueryType == QueryType.List || paramInfo.QueryType == QueryType.Meta)
                     AddListModule(paramInfo);
 
                 // TODO: other types of modules

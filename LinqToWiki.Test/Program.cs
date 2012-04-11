@@ -11,7 +11,7 @@ namespace LinqToWiki.Test
             Downloader.LogDownloading = true;
 
             var wiki = new Wiki();
-            AllLinks(wiki);
+            AllMessages(wiki);
         }
 
         private static void AllCategories(Wiki wiki)
@@ -43,6 +43,17 @@ namespace LinqToWiki.Test
                 .ToEnumerable().Take(10).ToList();
 
             Write(results);
+        }
+
+        private static void AllMessages(Wiki wiki)
+        {
+            var result = (from m in wiki.Query.AllMessages()
+                          //where m.messages == "about"
+                          where m.customised == customised.modified
+                          select m)
+                .ToEnumerable().Take(10).ToList();
+
+            Write(result);
         }
 
         private static void Write<T>(ICollection<T> results)

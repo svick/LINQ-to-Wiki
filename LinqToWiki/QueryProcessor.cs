@@ -31,13 +31,13 @@ namespace LinqToWiki
             switch (m_queryTypeProperties.QueryType)
             {
             case QueryType.List:
+            case QueryType.Meta:
                 return downloaded
                     .Element("query")
                     .Element(m_queryTypeProperties.ModuleName)
                     .Elements()
                     .Select(x => parameters.Selector(m_queryTypeProperties.Parse(x, m_wiki)));
             case QueryType.Prop:
-            case QueryType.Meta:
             case null:
                 throw new NotImplementedException();
             }
@@ -97,7 +97,7 @@ namespace LinqToWiki
             var selectedProps = new List<string>();
 
             if (parameters.Properties == null)
-                selectedProps.AddRange(m_queryTypeProperties.GetAllProps());
+                selectedProps.AddRange(m_queryTypeProperties.GetAllProps().Except(new[] { "" }));
             else
             {
                 var requiredPropsCollection =

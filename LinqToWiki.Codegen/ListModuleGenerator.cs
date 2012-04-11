@@ -217,9 +217,11 @@ namespace LinqToWiki.Codegen
                 queryTypePropertiesType,
                 SyntaxEx.Literal(module.Name),
                 SyntaxEx.Literal(module.Prefix),
-                SyntaxEx.MemberAccess("QueryType", "List"),
+                SyntaxEx.MemberAccess("QueryType", module.QueryType.ToString()),
                 CreateTupleListExpression(
-                    Wiki.QueryBaseParameters.Concat(new TupleList<string, string> { { "list", module.Name } })),
+                    Wiki.QueryBaseParameters.Concat(
+                        new TupleList<string, string>
+                        { { module.QueryType.ToString().ToLowerInvariant(), module.Name } })),
                 (NamedNode)m_selectProps, SyntaxEx.MemberAccess(m_selectClassName, "Parse"));
 
             var propertiesField =
