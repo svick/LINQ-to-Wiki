@@ -115,8 +115,7 @@ namespace LinqToWiki.Codegen
                 else
                 {
                     propertyValueAccess = SyntaxEx.Invocation(
-                        SyntaxEx.MemberAccess(elementParameter, "Attribute"),
-                        SyntaxEx.Invocation(SyntaxEx.MemberAccess("XName", "Get"), SyntaxEx.Literal(property.Name)));
+                        SyntaxEx.MemberAccess(elementParameter, "Attribute"), SyntaxEx.Literal(property.Name));
                     checkForNull = true;
                 }
                 var propertyValueLocal = SyntaxEx.LocalDeclaration("var", GetPropertyName(property.Name) + "Value", propertyValueAccess);
