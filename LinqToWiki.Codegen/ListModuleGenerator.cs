@@ -32,8 +32,6 @@ namespace LinqToWiki.Codegen
 
             var parameters = module.Parameters.ToList();
 
-            var methodParameters = RemoveAndReturnByNames(parameters, "title", "pageid");
-
             var sortParameters = RemoveAndReturnByNames(parameters, "sort", "dir");
 
             // don't belong anywhere, are used in a special way
@@ -51,7 +49,7 @@ namespace LinqToWiki.Codegen
 
             m_wiki.Files.Add(m_typeNameBase, codeUnit);
 
-            GenerateMethod(module, methodParameters, orderByClass != null);
+            GenerateMethod(module, orderByClass != null);
         }
 
         private static IList<Parameter> RemoveAndReturnByNames(List<Parameter> parameters, params string[] names)
@@ -206,7 +204,7 @@ namespace LinqToWiki.Codegen
                 .WithPrivateConstructor();
         }
 
-        private void GenerateMethod(Module module, IEnumerable<Parameter> methodParameters, bool sortable)
+        private void GenerateMethod(Module module, bool sortable)
         {
             var queryActionFile = m_wiki.Files[Wiki.Names.QueryAction];
             var queryActionClass = queryActionFile.SingleDescendant<ClassDeclarationSyntax>();
@@ -236,39 +234,21 @@ namespace LinqToWiki.Codegen
 
             var methods = new List<MethodDeclarationSyntax>();
 
-            if (!methodParameters.Any())
-                methodParameters = new Parameter[] { null };
+            ExpressionSyntax queryParameters = SyntaxEx.Invocation(
+                SyntaxEx.MemberAccess("QueryParameters", SyntaxEx.GenericName("Create", m_selectClassName)));
 
-            foreach (var methodParameter in methodParameters)
-            {
-                var parameter =
-                    methodParameter == null
-                        ? null
-                        : SyntaxEx.Parameter(m_wiki.TypeManager.GetTypeName(methodParameter), methodParameter.Name);
+            var queryCreation = SyntaxEx.ObjectCreation(
+                queryType,
+                SyntaxEx.ObjectCreation(
+                    SyntaxEx.GenericName("QueryProcessor", m_selectClassName),
+                    Syntax.IdentifierName("m_wiki"),
+                    (NamedNode)propertiesField),
+                queryParameters);
 
-                ExpressionSyntax queryParameters = SyntaxEx.Invocation(
-                    SyntaxEx.MemberAccess("QueryParameters", SyntaxEx.GenericName("Create", m_selectClassName)));
+            var method = SyntaxEx.MethodDeclaration(
+                new[] { SyntaxKind.PublicKeyword }, queryType, m_typeNameBase, null, SyntaxEx.Return(queryCreation));
 
-                if (methodParameter != null)
-                    queryParameters = SyntaxEx.Invocation(
-                        SyntaxEx.MemberAccess(queryParameters, "AddSingleValue"),
-                        SyntaxEx.Literal(methodParameter.Name),
-                        SyntaxEx.Invocation(SyntaxEx.MemberAccess(parameter, "ToString"))); // ToString won't work for Namespace
-
-                var queryCreation = SyntaxEx.ObjectCreation(
-                    queryType,
-                    SyntaxEx.ObjectCreation(
-                        SyntaxEx.GenericName("QueryProcessor", m_selectClassName),
-                        Syntax.IdentifierName("m_wiki"),
-                        (NamedNode)propertiesField),
-                    queryParameters);
-
-                var method = SyntaxEx.MethodDeclaration(
-                    new[] { SyntaxKind.PublicKeyword }, queryType, m_typeNameBase,
-                    methodParameter == null ? null : new[] { parameter }, SyntaxEx.Return(queryCreation));
-
-                methods.Add(method);
-            }
+            methods.Add(method);
 
             m_wiki.Files[Wiki.Names.QueryAction] = queryActionFile.ReplaceNode(
                 queryActionClass, queryActionClass.WithAdditionalMembers(propertiesField).WithAdditionalMembers(methods));
