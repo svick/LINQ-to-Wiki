@@ -9,12 +9,15 @@ namespace LinqToWiki.Codegen.ModuleInfo
 
         public ParameterType Type { get; private set; }
 
+        public bool Nullable { get; private set; }
+
         public static Property Parse(XElement element)
         {
             return new Property
                    {
                        Name = (string)element.Attribute("name"),
-                       Type = ParameterType.Parse(element)
+                       Type = ParameterType.Parse(element),
+                       Nullable = element.Attribute("nullable") != null
                    };
         }
 

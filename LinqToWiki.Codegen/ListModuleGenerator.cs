@@ -86,7 +86,7 @@ namespace LinqToWiki.Codegen
             var properties = propertyGroups.SelectMany(g => g.Properties).Distinct().ToArray();
 
             return SyntaxEx.ClassDeclaration(
-                m_selectClassName, properties.Select(p => GenerateProperty(p.Name, p.Type)))
+                m_selectClassName, properties.Select(p => GenerateProperty(p.Name, p.Type, p.Nullable)))
                 .WithPrivateConstructor()
                 .WithAdditionalMembers(GenerateParseMethod(properties));
         }
@@ -145,10 +145,10 @@ namespace LinqToWiki.Codegen
                 new[] { elementParameter, wikiParameter }, statements);
         }
 
-        private PropertyDeclarationSyntax GenerateProperty(string name, ParameterType type)
+        private PropertyDeclarationSyntax GenerateProperty(string name, ParameterType type, bool nullable = false)
         {
             return SyntaxEx.AutoPropertyDeclaration(
-                new[] { SyntaxKind.PublicKeyword }, m_wiki.TypeManager.GetTypeName(type, name), GetPropertyName(name),
+                new[] { SyntaxKind.PublicKeyword }, m_wiki.TypeManager.GetTypeName(type, name, nullable), GetPropertyName(name),
                 SyntaxKind.PrivateKeyword);
         }
 

@@ -27,41 +27,58 @@ namespace LinqToWiki.Codegen
             return GetTypeName(parameter.Type, parameter.Name);
         }
 
-        public string GetTypeName(ParameterType parameterType, string propertyName)
+        public string GetTypeName(ParameterType parameterType, string propertyName, bool nullable = false)
         {
             var simpleType = parameterType as SimpleParameterType;
             if (simpleType != null)
-                return GetSimpleTypeName(simpleType, propertyName);
+                return GetSimpleTypeName(simpleType, propertyName, nullable);
 
-            return GetEnumTypeName((EnumParameterType)parameterType, propertyName);
+            return GetEnumTypeName((EnumParameterType)parameterType, propertyName, nullable);
         }
 
-        private static string GetSimpleTypeName(SimpleParameterType simpleType, string propertyName)
+        private static string GetSimpleTypeName(SimpleParameterType simpleType, string propertyName, bool nullable)
         {
+            string result;
+
             switch (simpleType.Name)
             {
             case "string":
-                return "string";
+                result = "string";
+                break;
             case "timestamp":
-                return "DateTime";
+                result = "DateTime";
+                break;
             case "namespace":
-                return "Namespace";
+                result = "Namespace";
+                break;
             case "boolean":
-                return "bool";
+                result = "bool";
+                break;
             case "integer":
-                return propertyName.EndsWith("id") ? "long" : "int";
+                result = propertyName.EndsWith("id") ? "long" : "int";
+                break;
             default:
                 throw new InvalidOperationException(string.Format("Unknown type {0}", simpleType.Name));
             }
+
+            if (nullable && simpleType.Name != "string" && simpleType.Name != "namespace")
+                result += '?';
+
+            return result;
         }
 
-        private string GetEnumTypeName(EnumParameterType enumType, string propertyName)
+        private string GetEnumTypeName(EnumParameterType enumType, string propertyName, bool nullable)
         {
             // TODO: better type naming (use module name)
             if (!m_enumTypes.ContainsKey(enumType))
                 GenerateType(enumType, propertyName);
 
-            return m_enumTypes[enumType];
+            string result = m_enumTypes[enumType];
+
+            if (nullable)
+                result += '?';
+
+            return result;
         }
 
         private void GenerateType(EnumParameterType enumType, string propertyName)
