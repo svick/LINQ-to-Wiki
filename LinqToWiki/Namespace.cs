@@ -57,6 +57,16 @@ namespace LinqToWiki
             return Id.ToString(CultureInfo.InvariantCulture);
         }
 
+        public static bool operator ==(Namespace first, Namespace second)
+        {
+            return Equals(first, second);
+        }
+
+        public static bool operator !=(Namespace first, Namespace second)
+        {
+            return !(first == second);
+        }
+
         public bool Equals(Namespace other)
         {
             if (ReferenceEquals(null, other))
