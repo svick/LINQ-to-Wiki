@@ -20,6 +20,8 @@ namespace LinqToWiki
 
         public static string UserAgent { get; set; }
 
+        public static bool LogDownloading { get; set; }
+
         private readonly WikiInfo m_wiki;
         private readonly CookieContainer m_cookies = new CookieContainer();
 
@@ -33,6 +35,9 @@ namespace LinqToWiki
         /// </summary>
         public XDocument Download(IEnumerable<Tuple<string, string>> parameters)
         {
+            if (LogDownloading)
+                LogRequest(parameters);
+
             parameters = new[] { Tuple.Create("format", "xml") }.Concat(parameters);
 
             var request = CreateRequest();
@@ -46,6 +51,13 @@ namespace LinqToWiki
             var response = request.GetResponse();
 
             return XDocument.Load(response.GetResponseStream());
+        }
+
+        private void LogRequest(IEnumerable<Tuple<string, string>> parameters)
+        {
+            Console.Write(m_wiki.ApiUrl);
+            Console.Write(": ");
+            Console.WriteLine(string.Join(" & ", parameters.Select(p => p.Item1 + '=' + p.Item2)));
         }
 
         private HttpWebRequest CreateRequest()

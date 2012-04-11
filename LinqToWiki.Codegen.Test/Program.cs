@@ -7,6 +7,8 @@ namespace LinqToWiki.Codegen.Test
     {
         static void Main()
         {
+            Downloader.LogDownloading = true;
+
             var wiki = new Wiki("localhost/wiki/", "api.php");
             wiki.AddAllQueryModules();
             Console.WriteLine(wiki);

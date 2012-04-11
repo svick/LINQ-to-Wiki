@@ -7,6 +7,8 @@ namespace LinqToWiki.Test
     {
         static void Main()
         {
+            Downloader.LogDownloading = true;
+
             var wiki = new Wiki();
             var results = (from cat in wiki.Query.AllCategories()
                            where cat.min == 1
