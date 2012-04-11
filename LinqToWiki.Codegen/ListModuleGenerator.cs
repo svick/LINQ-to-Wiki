@@ -173,6 +173,8 @@ namespace LinqToWiki.Codegen
                 return "value";
             if (name == "namespace")
                 return "ns";
+            if (name == "default")
+                return "defaultvalue";
 
             return name;
         }

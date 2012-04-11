@@ -56,14 +56,7 @@ namespace LinqToWiki
         /// </summary>
         public string[] GetProps(string property)
         {
-            return m_props[ReversePropertyName(property)];
-        }
-
-        private static string ReversePropertyName(string name)
-        {
-            if (name == "value")
-                return "*";
-            return name;
+            return m_props[Expressions.ExpressionParser.ReversePropertyName(property)];
         }
 
         /// <summary>
