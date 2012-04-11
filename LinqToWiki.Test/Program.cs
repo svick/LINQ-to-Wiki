@@ -39,7 +39,7 @@ namespace LinqToWiki.Test
         {
             var results = (from link in wiki.Query.AllLinks()
                            where link.ns == Namespace.Talk
-                           select new { link.fromid, link.title })
+                           select link)
                 .ToEnumerable().Take(10).ToList();
 
             Write(results);

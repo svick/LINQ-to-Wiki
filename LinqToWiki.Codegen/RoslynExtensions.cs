@@ -243,6 +243,14 @@ namespace LinqToWiki.Codegen
 
         public static MethodDeclarationSyntax MethodDeclaration(
             IEnumerable<SyntaxKind> modifiers, string returnTypeName, string methodName,
+            IEnumerable<ParameterSyntax> parameters, params StatementSyntax[] statements)
+        {
+            return MethodDeclaration(
+                modifiers, returnTypeName, methodName, parameters, (IEnumerable<StatementSyntax>)statements);
+        }
+
+        public static MethodDeclarationSyntax MethodDeclaration(
+            IEnumerable<SyntaxKind> modifiers, string returnTypeName, string methodName,
             IEnumerable<ParameterSyntax> parameters, IEnumerable<StatementSyntax> statements)
         {
             return MethodDeclaration(

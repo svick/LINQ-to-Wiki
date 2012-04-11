@@ -88,7 +88,7 @@ namespace LinqToWiki.Codegen
             return SyntaxEx.ClassDeclaration(
                 m_selectClassName, properties.Select(p => GenerateProperty(p.Name, p.Type, p.Nullable)))
                 .WithPrivateConstructor()
-                .WithAdditionalMembers(GenerateParseMethod(properties));
+                .WithAdditionalMembers(GenerateParseMethod(properties), GenerateToStringMethod(properties));
         }
 
         private MethodDeclarationSyntax GenerateParseMethod(IEnumerable<Property> properties)
@@ -142,6 +142,22 @@ namespace LinqToWiki.Codegen
             return SyntaxEx.MethodDeclaration(
                 new[] { SyntaxKind.PublicKeyword, SyntaxKind.StaticKeyword }, m_selectClassName, "Parse",
                 new[] { elementParameter, wikiParameter }, statements);
+        }
+
+        private static MethodDeclarationSyntax GenerateToStringMethod(IEnumerable<Property> properties)
+        {
+            var formatString = string.Join(
+                "; ", properties.Select((p, i) => string.Format("{0}: {{{1}}}", GetPropertyName(p.Name), i)));
+
+            var parameters = new List<ExpressionSyntax> { SyntaxEx.Literal(formatString) };
+
+            parameters.AddRange(properties.Select(p => Syntax.IdentifierName(GetPropertyName(p.Name))));
+
+            var returnStatement = SyntaxEx.Return(SyntaxEx.Invocation(SyntaxEx.MemberAccess("string", "Format"), parameters));
+
+            return SyntaxEx.MethodDeclaration(
+                new[] { SyntaxKind.PublicKeyword, SyntaxKind.OverrideKeyword }, "string", "ToString", null,
+                returnStatement);
         }
 
         private PropertyDeclarationSyntax GenerateProperty(string name, ParameterType type, bool nullable = false)
