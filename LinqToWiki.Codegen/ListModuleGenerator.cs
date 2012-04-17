@@ -25,6 +25,9 @@ namespace LinqToWiki.Codegen
 
         public void Generate(Module module)
         {
+            if (module.PropertyGroups == null)
+                return;
+
             m_typeNameBase = GetTypeNameBase(module);
             m_selectClassName = m_typeNameBase + "Select";
             m_whereClassName = m_typeNameBase + "Where";
@@ -52,6 +55,8 @@ namespace LinqToWiki.Codegen
             m_wiki.Files.Add(m_typeNameBase, codeUnit);
 
             GenerateMethod(module, methodParameters, orderByClass != null);
+
+            m_wiki.ModuleFinished();
         }
 
         private static IList<Parameter> RemoveAndReturnByNames(List<Parameter> parameters, params string[] names)

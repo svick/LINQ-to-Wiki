@@ -1,4 +1,5 @@
-﻿using System.CodeDom.Compiler;
+﻿using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -27,6 +28,8 @@ namespace LinqToWiki.Codegen
 
         private string[] m_moduleNames;
         private string[] m_queryModuleNames;
+
+        private int m_modulesFinished;
 
         internal string Namespace { get; private set; }
 
@@ -156,7 +159,7 @@ namespace LinqToWiki.Codegen
         {
             var paramInfos = GetQueryModules(moduleNames);
 
-            foreach (var paramInfo in paramInfos.Take(8))
+            foreach (var paramInfo in paramInfos.Take(9))
             {
                 if (paramInfo.QueryType == QueryType.List || paramInfo.QueryType == QueryType.Meta)
                     AddListModule(paramInfo);
@@ -177,6 +180,9 @@ namespace LinqToWiki.Codegen
 
         public CompilerResults Compile(string name)
         {
+            if (m_modulesFinished == 0)
+                throw new InvalidOperationException("No modules were successfully finished, nothing to compile.");
+
             var compiler = new CSharpCodeProvider();
 
             return compiler.CompileAssemblyFromSource(
@@ -193,6 +199,9 @@ namespace LinqToWiki.Codegen
 
         public void WriteToFiles(string directoryPath)
         {
+            if (m_modulesFinished == 0)
+                throw new InvalidOperationException("No modules were successfully finished, nothing to write out.");
+
             Directory.CreateDirectory(directoryPath);
             foreach (var file in Files)
             {
@@ -219,6 +228,11 @@ namespace LinqToWiki.Codegen
             }
 
             return builder.ToString();
+        }
+
+        public void ModuleFinished()
+        {
+            m_modulesFinished++;
         }
     }
 }
