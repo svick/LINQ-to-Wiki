@@ -12,6 +12,20 @@ namespace LinqToWiki
         {
             Article = Create(0, "");
             Talk = Create(1, "Talk");
+            User = Create(2, "User");
+            UserTalk = Create(3, "User talk");
+            Project = Create(4, "Project");
+            ProjectTalk = Create(5, "Project talk");
+            File = Create(6, "File");
+            FileTalk = Create(7, "File talk");
+            MediaWiki = Create(8, "MediaWiki");
+            MediaWikiTalk = Create(9, "MediaWikiTalk");
+            Template = Create(10, "Template");
+            TemplateTalk = Create(11, "Template talk");
+            Help = Create(12, "Help");
+            HelpTalk = Create(13, "Help talk");
+            Category = Create(14, "Category");
+            CategoryTalk = Create(15, "Category talk");
         }
 
         public int Id { get; private set; }
@@ -51,6 +65,34 @@ namespace LinqToWiki
         public static Namespace Article { get; private set; }
 
         public static Namespace Talk { get; private set; }
+
+        public static Namespace User { get; private set; }
+
+        public static Namespace UserTalk { get; private set; }
+
+        public static Namespace Project { get; private set; }
+
+        public static Namespace ProjectTalk { get; private set; }
+
+        public static Namespace File { get; private set; }
+
+        public static Namespace FileTalk { get; private set; }
+
+        public static Namespace MediaWiki { get; private set; }
+
+        public static Namespace MediaWikiTalk { get; private set; }
+
+        public static Namespace Template { get; private set; }
+
+        public static Namespace TemplateTalk { get; private set; }
+
+        public static Namespace Help { get; private set; }
+
+        public static Namespace HelpTalk { get; private set; }
+
+        public static Namespace Category { get; private set; }
+
+        public static Namespace CategoryTalk { get; private set; }
 
         public string GetQueryRepresentation()
         {
