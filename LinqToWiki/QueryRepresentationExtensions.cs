@@ -17,7 +17,7 @@ namespace LinqToWiki
 
         public static string ToQueryString(this DateTime dateTime)
         {
-            return dateTime.ToString("o");
+            return dateTime.ToUniversalTime().ToString("o");
         }
 
         public static string ToQueryString(this bool b)
