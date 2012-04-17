@@ -11,7 +11,7 @@ namespace LinqToWiki.Test
             Downloader.LogDownloading = true;
 
             var wiki = new Wiki();
-            AllUsers(wiki);
+            Backlinks(wiki);
         }
 
         private static void AllCategories(Wiki wiki)
@@ -74,6 +74,15 @@ namespace LinqToWiki.Test
                           orderby user descending
                           select new { user.name })
                 .ToEnumerable().Take(20).ToList();
+
+            Write(result);
+        }
+
+        private static void Backlinks(Wiki wiki)
+        {
+            var result = (from bl in wiki.Query.Backlinks()
+                          select bl)
+                .ToEnumerable().Take(10).ToList();
 
             Write(result);
         }

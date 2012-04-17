@@ -120,9 +120,18 @@ namespace LinqToWiki
 
             var downloaded = m_wiki.Downloader.Download(parsedParameters);
 
-            // TODO: handle errors
+            var root = downloaded.Root;
 
-            return downloaded.Root;
+            var error = root.Element("error");
+            if (error != null)
+                throw ParseError(error);
+
+            return root;
+        }
+
+        private static Exception ParseError(XElement error)
+        {
+            return new ApiErrorException((string)error.Attribute("code"), (string)error.Attribute("info"));
         }
     }
 }
