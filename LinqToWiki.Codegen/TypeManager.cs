@@ -105,6 +105,9 @@ namespace LinqToWiki.Codegen
             if (value == string.Empty)
                 return "none";
 
+            if (value[0] == '!')
+                value = "not-" + value.Substring(1);
+
             return value.Replace('-', '_');
         }
 

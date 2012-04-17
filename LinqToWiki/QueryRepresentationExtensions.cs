@@ -44,6 +44,9 @@ namespace LinqToWiki
             else
                 result = result.Replace('_', '-');
 
+            if (result.StartsWith("not-"))
+                result = '!' + result.Substring(4);
+
             return result;
         }
 
