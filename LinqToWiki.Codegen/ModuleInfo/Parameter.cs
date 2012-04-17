@@ -11,7 +11,11 @@ namespace LinqToWiki.Codegen.ModuleInfo
 
         public string Description { get; private set; }
 
-        public ParameterType Type { get; set; }
+        public ParameterType Type { get; private set; }
+
+        public bool Required { get; private set; }
+
+        public bool Multi { get; private set; }
 
         public static Parameter Parse(XElement element)
         {
@@ -19,7 +23,9 @@ namespace LinqToWiki.Codegen.ModuleInfo
                    {
                        Name = (string)element.Attribute("name"),
                        Description = (string)element.Attribute("description"),
-                       Type = ParameterType.Parse(element)
+                       Type = ParameterType.Parse(element),
+                       Required = element.Attribute("required") != null,
+                       Multi = element.Attribute("multi") != null
                    };
         }
 

@@ -34,6 +34,8 @@ namespace LinqToWiki.Codegen
 
             var sortParameters = RemoveAndReturnByNames(parameters, "sort", "dir");
 
+            var methodParameters = parameters.RemoveAndReturn(p => p.Required);
+
             // don't belong anywhere, are used in a special way
             RemoveAndReturnByNames(parameters, "continue", "limit", "prop");
 
@@ -49,7 +51,7 @@ namespace LinqToWiki.Codegen
 
             m_wiki.Files.Add(m_typeNameBase, codeUnit);
 
-            GenerateMethod(module, orderByClass != null);
+            GenerateMethod(module, methodParameters, orderByClass != null);
         }
 
         private static IList<Parameter> RemoveAndReturnByNames(List<Parameter> parameters, params string[] names)
@@ -204,7 +206,7 @@ namespace LinqToWiki.Codegen
                 .WithPrivateConstructor();
         }
 
-        private void GenerateMethod(Module module, bool sortable)
+        private void GenerateMethod(Module module, IEnumerable<Parameter> methodParameters, bool sortable)
         {
             var queryActionFile = m_wiki.Files[Wiki.Names.QueryAction];
             var queryActionClass = queryActionFile.SingleDescendant<ClassDeclarationSyntax>();
@@ -237,6 +239,21 @@ namespace LinqToWiki.Codegen
             ExpressionSyntax queryParameters = SyntaxEx.Invocation(
                 SyntaxEx.MemberAccess("QueryParameters", SyntaxEx.GenericName("Create", m_selectClassName)));
 
+            var parameters = new List<ParameterSyntax>();
+
+            foreach (var methodParameter in methodParameters)
+            {
+                var parameter = SyntaxEx.Parameter(
+                    m_wiki.TypeManager.GetTypeName(methodParameter), methodParameter.Name);
+
+                parameters.Add(parameter);
+
+                queryParameters = SyntaxEx.Invocation(
+                    SyntaxEx.MemberAccess(queryParameters, "AddSingleValue"),
+                    SyntaxEx.Literal(methodParameter.Name),
+                    SyntaxEx.Invocation(SyntaxEx.MemberAccess(parameter, "ToQueryString")));
+            }
+
             var queryCreation = SyntaxEx.ObjectCreation(
                 queryType,
                 SyntaxEx.ObjectCreation(
@@ -246,7 +263,8 @@ namespace LinqToWiki.Codegen
                 queryParameters);
 
             var method = SyntaxEx.MethodDeclaration(
-                new[] { SyntaxKind.PublicKeyword }, queryType, m_typeNameBase, null, SyntaxEx.Return(queryCreation));
+                new[] { SyntaxKind.PublicKeyword }, queryType, m_typeNameBase, parameters,
+                SyntaxEx.Return(queryCreation));
 
             methods.Add(method);
 

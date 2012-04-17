@@ -39,6 +39,7 @@ namespace LinqToWiki.Test
         {
             var results = (from link in wiki.Query.AllLinks()
                            where link.ns == Namespace.Talk
+                           where link.unique == false
                            select link)
                 .ToEnumerable().Take(10).ToList();
 
@@ -80,8 +81,9 @@ namespace LinqToWiki.Test
 
         private static void Backlinks(Wiki wiki)
         {
-            var result = (from bl in wiki.Query.Backlinks()
-                          select bl)
+            var result = (from bl in wiki.Query.Backlinks("User:Svick")
+                          where bl.ns == Namespace.Project
+                          select bl.title)
                 .ToEnumerable().Take(10).ToList();
 
             Write(result);
