@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Roslyn.Compilers.CSharp;
 using System.Linq;
+using LinqToWiki.Collections;
+using Roslyn.Compilers.CSharp;
 
 namespace LinqToWiki.Codegen
 {
@@ -78,9 +79,9 @@ namespace LinqToWiki.Codegen
             return namespaceDeclaration.Update(namespaceDeclaration.Members.Concat(members).ToSyntaxList());
         }
 
-        public static TNode WithDocumentationComment<TNode>(this TNode node, string summary) where TNode : SyntaxNode
+        public static TNode WithDocumentationSummary<TNode>(this TNode node, string summary) where TNode : SyntaxNode
         {
-            return node.WithLeadingTrivia(Syntax.Trivia(SyntaxEx.DocumentationSummary(summary)));
+            return node.WithLeadingTrivia(Syntax.Trivia(SyntaxEx.DocumentationComment(SyntaxEx.DocumentationSummary(summary))));
         }
 
         public static T SingleDescendant<T>(this SyntaxNode node) where T : SyntaxNode
@@ -450,9 +451,14 @@ namespace LinqToWiki.Codegen
                     arguments: typeArgumentNames.Select(Syntax.IdentifierName).ToSeparatedList<TypeSyntax>()));
         }
 
-        public static DocumentationCommentSyntax DocumentationSummary(string summary)
+        public static XmlElementSyntax DocumentationSummary(string summary)
         {
             return DocumentationElement("summary", summary);
+        }
+
+        public static XmlElementSyntax DocumentationParameter(string name, string text)
+        {
+            return DocumentationElement("param", text, new TupleList<string, string> { { "name", name } });
         }
 
         private static SyntaxToken XmlTextNewLine()
@@ -461,9 +467,21 @@ namespace LinqToWiki.Codegen
                 Syntax.TriviaList(), Environment.NewLine, Environment.NewLine, Syntax.TriviaList());
         }
 
-        private static DocumentationCommentSyntax DocumentationElement(string elementName, string text)
+        public static DocumentationCommentSyntax DocumentationComment(params XmlElementSyntax[] elements)
         {
-            var nameSyntax = Syntax.XmlName(localName: Syntax.Identifier(elementName));
+            return DocumentationComment((IEnumerable<XmlElementSyntax>)elements);
+        }
+
+        public static DocumentationCommentSyntax DocumentationComment(IEnumerable<XmlElementSyntax> elements)
+        {
+            return Syntax.DocumentationComment(
+                elements.Concat(new XmlNodeSyntax[] { Syntax.XmlText(Syntax.TokenList(XmlTextNewLine())) })
+                    .ToSyntaxList());
+        }
+
+        private static XmlElementSyntax DocumentationElement(string elementName, string text, IEnumerable<Tuple<string, string>> attributes = null)
+        {
+            var nameSyntax = XmlName(elementName);
             var exteriorTrivia = Syntax.DocumentationCommentExteriorTrivia("///");
 
             string[] lines = text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
@@ -474,27 +492,42 @@ namespace LinqToWiki.Codegen
 
             foreach (var line in lines)
             {
-                var lineToken = Syntax.XmlText(new SyntaxTriviaList(), line, line, new SyntaxTriviaList())
+                var lineToken = XmlText(line)
                     .WithLeadingTrivia(exteriorTrivia);
                 tokens.Add(lineToken);
 
                 tokens.Add(XmlTextNewLine());
             }
 
-            var element = Syntax.XmlElement(
-                Syntax.XmlElementStartTag(name: nameSyntax).WithLeadingTrivia(exteriorTrivia),
+            var attributeSyntaxes = new List<XmlAttributeSyntax>();
+
+            if (attributes != null)
+                foreach (var attribute in attributes)
+                    attributeSyntaxes.Add(
+                        Syntax.XmlAttribute(
+                            XmlName(attribute.Item1),
+                            startQuoteToken: Syntax.Token(SyntaxKind.DoubleQuoteToken),
+                            textTokens: Syntax.TokenList(XmlText(attribute.Item2)),
+                            endQuoteToken: Syntax.Token(SyntaxKind.DoubleQuoteToken)));
+
+            return Syntax.XmlElement(
+                Syntax.XmlElementStartTag(name: nameSyntax, attributes: attributeSyntaxes.ToSyntaxList())
+                    .WithLeadingTrivia(exteriorTrivia),
                 new XmlNodeSyntax[]
                 {
                     Syntax.XmlText(Syntax.TokenList(tokens))
                 }.ToSyntaxList(),
                 Syntax.XmlElementEndTag(name: nameSyntax).WithLeadingTrivia(exteriorTrivia));
+        }
 
-            return Syntax.DocumentationComment(
-                new XmlNodeSyntax[]
-                {
-                    element,
-                    Syntax.XmlText(Syntax.TokenList(XmlTextNewLine()))
-                }.ToSyntaxList());
+        private static SyntaxToken XmlText(string text)
+        {
+            return Syntax.XmlText(new SyntaxTriviaList(), text, text, new SyntaxTriviaList());
+        }
+
+        private static XmlNameSyntax XmlName(string name)
+        {
+            return Syntax.XmlName(localName: Syntax.Identifier(name));
         }
     }
 

@@ -167,7 +167,7 @@ namespace LinqToWiki.Codegen
                 GetPropertyName(name), SyntaxKind.PrivateKeyword);
 
             if (description != null)
-                result = result.WithDocumentationComment(description);
+                result = result.WithDocumentationSummary(description);
 
             return result;
         }
@@ -240,10 +240,13 @@ namespace LinqToWiki.Codegen
                     ? SyntaxEx.GenericName("WikiQuerySortable", m_whereClassName, m_orderByClassName, m_selectClassName)
                     : SyntaxEx.GenericName("WikiQuery", m_whereClassName, m_selectClassName);
 
-            var methods = new List<MethodDeclarationSyntax>();
-
             ExpressionSyntax queryParameters = SyntaxEx.Invocation(
                 SyntaxEx.MemberAccess("QueryParameters", SyntaxEx.GenericName("Create", m_selectClassName)));
+
+            var documentationElements = new List<XmlElementSyntax>();
+
+            var summary = SyntaxEx.DocumentationSummary(module.Description);
+            documentationElements.Add(summary);
 
             var parameters = new List<ParameterSyntax>();
 
@@ -258,6 +261,11 @@ namespace LinqToWiki.Codegen
                     SyntaxEx.MemberAccess(queryParameters, "AddSingleValue"),
                     SyntaxEx.Literal(methodParameter.Name),
                     SyntaxEx.Invocation(SyntaxEx.MemberAccess(parameter, "ToQueryString")));
+
+                var parameterDocumentation = SyntaxEx.DocumentationParameter(
+                    methodParameter.Name, methodParameter.Description);
+
+                documentationElements.Add(parameterDocumentation);
             }
 
             var queryCreation = SyntaxEx.ObjectCreation(
@@ -270,12 +278,11 @@ namespace LinqToWiki.Codegen
 
             var method = SyntaxEx.MethodDeclaration(
                 new[] { SyntaxKind.PublicKeyword }, queryType, m_typeNameBase, parameters,
-                SyntaxEx.Return(queryCreation));
-
-            methods.Add(method);
+                SyntaxEx.Return(queryCreation))
+                .WithLeadingTrivia(Syntax.Trivia(SyntaxEx.DocumentationComment(documentationElements)));
 
             m_wiki.Files[Wiki.Names.QueryAction] = queryActionFile.ReplaceNode(
-                queryActionClass, queryActionClass.WithAdditionalMembers(propertiesField).WithAdditionalMembers(methods));
+                queryActionClass, queryActionClass.WithAdditionalMembers(propertiesField).WithAdditionalMembers(method));
         }
 
         private static ObjectCreationExpressionSyntax CreateTupleListExpression(IEnumerable<Tuple<string, string>> tupleList)
