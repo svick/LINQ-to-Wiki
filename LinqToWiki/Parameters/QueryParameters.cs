@@ -84,6 +84,9 @@ namespace LinqToWiki.Parameters
         /// </summary>
         public QueryParameters<TSource, TResult> AddSingleValue(string name, string value)
         {
+            if (value == null)
+                return this;
+
             var result = Clone();
             result.Values = new NameValuesParameter(Values, name, value);
             return result;

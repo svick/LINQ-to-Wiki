@@ -19,7 +19,7 @@ namespace LinqToWiki.Expressions
         public static QueryParameters<TSource, TResult> ParseWhere<TSource, TResult, TWhere>(
             Expression<Func<TWhere, bool>> expression, QueryParameters<TSource, TResult> previousParameters)
         {
-            // TODO: parse more complicated expressions, like Contains()
+            // TODO: parse more complicated expressions, like Contains() or simple boolean expressions (without ==)
 
             var body = EnumFixer.Fix(PartialEvaluator.Eval(expression.Body));
 
@@ -60,21 +60,9 @@ namespace LinqToWiki.Expressions
                 throw new ArgumentException();
 
             object value = valueExpression.Value;
-            var valueQueryRepresentation = value as IQueryRepresentation;
 
-            string valueString = valueQueryRepresentation != null
-                                     ? valueQueryRepresentation.GetQueryRepresentation()
-                                     : value.ToString();
-
-            if (value is Enum)
-            {
-                if (valueString == "none")
-                    valueString = string.Empty;
-                else
-                    valueString = valueString.Replace('_', '-');
-            }
-
-            return previousParameters.AddSingleValue(ReversePropertyName(propertyName), valueString);
+            return previousParameters.AddSingleValue(
+                ReversePropertyName(propertyName), QueryRepresentationExtensions.ToQueryString(value));
         }
 
         public static string ReversePropertyName(string propertyName)
