@@ -92,8 +92,9 @@ namespace LinqToWiki.Test
         private static void Blocks(Wiki wiki)
         {
             var result = (from block in wiki.Query.Blocks()
+                          where block.show == show.not_ip
                           where block.show == show.not_temp
-                          select block)
+                          select new { block.user, block.timestamp, block.@by })
                 .ToEnumerable().Take(10).ToList();
 
             Write(result);

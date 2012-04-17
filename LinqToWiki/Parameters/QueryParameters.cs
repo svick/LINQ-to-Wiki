@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LinqToWiki.Parameters
 {
@@ -87,8 +88,37 @@ namespace LinqToWiki.Parameters
             if (value == null)
                 return this;
 
+            var values = Values;
+
+            var pastValue = RemoveValue(ref values, name);
+
+            var newValue = pastValue == null ? new[] { value } : pastValue.Concat(new[] { value });
+
             var result = Clone();
-            result.Values = new NameValuesParameter(Values, name, value);
+            result.Values = new NameValuesParameter(values, name, newValue);
+            return result;
+        }
+
+        private static IEnumerable<string> RemoveValue(ref NameValuesParameter head, string name)
+        {
+            if (head == null)
+                return null;
+
+            IEnumerable<string> result;
+            if (head.Name == name)
+            {
+                result = head.Values;
+                head = head.Previous;
+            }
+            else
+            {
+                var previous = head.Previous;
+                result = RemoveValue(ref previous, name);
+
+                if (result != null)
+                    head = new NameValuesParameter(previous, head.Name, head.Values);
+            }
+
             return result;
         }
 
