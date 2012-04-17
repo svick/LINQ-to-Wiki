@@ -78,6 +78,11 @@ namespace LinqToWiki.Codegen
             return namespaceDeclaration.Update(namespaceDeclaration.Members.Concat(members).ToSyntaxList());
         }
 
+        public static TNode WithDocumentationComment<TNode>(this TNode node, string summary) where TNode : SyntaxNode
+        {
+            return node.WithLeadingTrivia(Syntax.Trivia(SyntaxEx.DocumentationSummary(summary)));
+        }
+
         public static T SingleDescendant<T>(this SyntaxNode node) where T : SyntaxNode
         {
             return node.DescendentNodes().OfType<T>().Single();
@@ -345,7 +350,7 @@ namespace LinqToWiki.Codegen
         {
             return Syntax.LocalDeclarationStatement(
                 declaration: Syntax.VariableDeclaration(
-                    SyntaxEx.ParseTypeName(type),
+                    ParseTypeName(type),
                     Syntax.SeparatedList(
                         Syntax.VariableDeclarator(
                             Syntax.Identifier(localName), initializerOpt: Syntax.EqualsValueClause(value: value)))));
@@ -443,6 +448,53 @@ namespace LinqToWiki.Codegen
                 Syntax.Identifier(name),
                 Syntax.TypeArgumentList(
                     arguments: typeArgumentNames.Select(Syntax.IdentifierName).ToSeparatedList<TypeSyntax>()));
+        }
+
+        public static DocumentationCommentSyntax DocumentationSummary(string summary)
+        {
+            return DocumentationElement("summary", summary);
+        }
+
+        private static SyntaxToken XmlTextNewLine()
+        {
+            return Syntax.XmlTextNewLine(
+                Syntax.TriviaList(), Environment.NewLine, Environment.NewLine, Syntax.TriviaList());
+        }
+
+        private static DocumentationCommentSyntax DocumentationElement(string elementName, string text)
+        {
+            var nameSyntax = Syntax.XmlName(localName: Syntax.Identifier(elementName));
+            var exteriorTrivia = Syntax.DocumentationCommentExteriorTrivia("///");
+
+            string[] lines = text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            var tokens = new List<SyntaxToken>();
+
+            tokens.Add(XmlTextNewLine());
+
+            foreach (var line in lines)
+            {
+                var lineToken = Syntax.XmlText(new SyntaxTriviaList(), line, line, new SyntaxTriviaList())
+                    .WithLeadingTrivia(exteriorTrivia);
+                tokens.Add(lineToken);
+
+                tokens.Add(XmlTextNewLine());
+            }
+
+            var element = Syntax.XmlElement(
+                Syntax.XmlElementStartTag(name: nameSyntax).WithLeadingTrivia(exteriorTrivia),
+                new XmlNodeSyntax[]
+                {
+                    Syntax.XmlText(Syntax.TokenList(tokens))
+                }.ToSyntaxList(),
+                Syntax.XmlElementEndTag(name: nameSyntax).WithLeadingTrivia(exteriorTrivia));
+
+            return Syntax.DocumentationComment(
+                new XmlNodeSyntax[]
+                {
+                    element,
+                    Syntax.XmlText(Syntax.TokenList(XmlTextNewLine()))
+                }.ToSyntaxList());
         }
     }
 

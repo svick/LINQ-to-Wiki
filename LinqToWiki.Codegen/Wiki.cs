@@ -175,7 +175,7 @@ namespace LinqToWiki.Codegen
             new ListModuleGenerator(this).Generate(module);
         }
 
-        public CompilerResults Compile(string fileName)
+        public CompilerResults Compile(string name)
         {
             var compiler = new CSharpCodeProvider();
 
@@ -186,7 +186,8 @@ namespace LinqToWiki.Codegen
                         typeof(System.Xml.Linq.XElement).Assembly.Location,
                         typeof(System.Xml.IXmlLineInfo).Assembly.Location,
                         typeof(WikiInfo).Assembly.Location
-                    }, fileName) { TreatWarningsAsErrors = true },
+                    }, name + ".dll")
+                { TreatWarningsAsErrors = true, CompilerOptions = string.Format("/doc:{0}.xml /nowarn:1591", name) },
                 Files.Select(f => f.Item2.Format().ToString()).ToArray());
         }
 

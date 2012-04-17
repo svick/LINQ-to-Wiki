@@ -160,11 +160,16 @@ namespace LinqToWiki.Codegen
                 returnStatement);
         }
 
-        private PropertyDeclarationSyntax GenerateProperty(string name, ParameterType type, bool nullable = false)
+        private PropertyDeclarationSyntax GenerateProperty(string name, ParameterType type, bool nullable = false, string description = null)
         {
-            return SyntaxEx.AutoPropertyDeclaration(
-                new[] { SyntaxKind.PublicKeyword }, m_wiki.TypeManager.GetTypeName(type, name, nullable), GetPropertyName(name),
-                SyntaxKind.PrivateKeyword);
+            var result = SyntaxEx.AutoPropertyDeclaration(
+                new[] { SyntaxKind.PublicKeyword }, m_wiki.TypeManager.GetTypeName(type, name, nullable),
+                GetPropertyName(name), SyntaxKind.PrivateKeyword);
+
+            if (description != null)
+                result = result.WithDocumentationComment(description);
+
+            return result;
         }
 
         private static string GetPropertyName(string name)
@@ -181,7 +186,8 @@ namespace LinqToWiki.Codegen
 
         private ClassDeclarationSyntax GenerateWhere(IEnumerable<Parameter> parameters)
         {
-            var propertyDeclarations = parameters.Select(p => GenerateProperty(p.Name, p.Type));
+            var propertyDeclarations =
+                parameters.Select(p => GenerateProperty(p.Name, p.Type, description: p.Description));
 
             return SyntaxEx.ClassDeclaration(m_whereClassName, propertyDeclarations)
                 .WithPrivateConstructor();

@@ -12,7 +12,7 @@ namespace LinqToWiki.Codegen.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             wiki.AddAllQueryModules();
             Console.WriteLine(wiki);
-            var result = wiki.Compile("generated.dll");
+            var result = wiki.Compile("generated");
 
             foreach (CompilerError error in result.Errors)
                 Console.WriteLine(error);
