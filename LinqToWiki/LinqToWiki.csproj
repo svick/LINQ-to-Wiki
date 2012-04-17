@@ -64,6 +64,7 @@
     <Compile Include="QueryRepresentationExtensions.cs" />
     <Compile Include="QueryType.cs" />
     <Compile Include="QueryTypeProperties.cs" />
+    <Compile Include="ValueParser.cs" />
     <Compile Include="WikiInfo.cs" />
     <Compile Include="WikiQuery.cs" />
     <Compile Include="WikiQueryResult.cs" />

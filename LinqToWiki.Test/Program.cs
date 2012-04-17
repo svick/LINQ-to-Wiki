@@ -11,7 +11,7 @@ namespace LinqToWiki.Test
             Downloader.LogDownloading = true;
 
             var wiki = new Wiki();
-            Backlinks(wiki);
+            Blocks(wiki);
         }
 
         private static void AllCategories(Wiki wiki)
@@ -84,6 +84,15 @@ namespace LinqToWiki.Test
             var result = (from bl in wiki.Query.Backlinks("User:Svick")
                           where bl.ns == Namespace.Project
                           select bl.title)
+                .ToEnumerable().Take(10).ToList();
+
+            Write(result);
+        }
+
+        private static void Blocks(Wiki wiki)
+        {
+            var result = (from block in wiki.Query.Blocks()
+                          select block)
                 .ToEnumerable().Take(10).ToList();
 
             Write(result);

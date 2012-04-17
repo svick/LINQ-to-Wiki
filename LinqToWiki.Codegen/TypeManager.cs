@@ -118,33 +118,33 @@ namespace LinqToWiki.Codegen
             return CreateEnumConverter((EnumParameterType)property.Type, value);
         }
 
-        private static InvocationExpressionSyntax InvokeParseExpression(string type, ExpressionSyntax value)
-        {
-            var invariantCultureExpression = SyntaxEx.MemberAccess("CultureInfo", "InvariantCulture");
-            return SyntaxEx.Invocation(SyntaxEx.MemberAccess(type, "Parse"), value, invariantCultureExpression);
-        }
-
         private static ExpressionSyntax CreateSimpleConverter(
             SimpleParameterType simpleType, string propertyName, ExpressionSyntax value, ExpressionSyntax wiki)
         {
+            if (simpleType.Name == "namespace")
+                return SyntaxEx.Invocation(SyntaxEx.MemberAccess("ValueParser", "ParseNamespace"), value, wiki);
+
+            string typeName;
+
             switch (simpleType.Name)
             {
             case "string":
-                return value;
+                typeName = "String";
+                break;
             case "timestamp":
-                return InvokeParseExpression("DateTime", value);
-            case "namespace":
-                return SyntaxEx.ElementAccess(
-                    SyntaxEx.MemberAccess(wiki, "Namespaces"), InvokeParseExpression("int", value));
+                typeName = "DateTime";
+                break;
             case "boolean":
-                return SyntaxEx.Literal(true);
+                typeName = "Boolean";
+                break;
             case "integer":
-                if (propertyName.EndsWith("id"))
-                    return InvokeParseExpression("long", value);
-                return InvokeParseExpression("int", value);
+                typeName = propertyName.EndsWith("id") ? "Int64" : "Int32";
+                break;
             default:
                 throw new InvalidOperationException(string.Format("Unknown type {0}", simpleType.Name));
             }
+
+            return SyntaxEx.Invocation(SyntaxEx.MemberAccess("ValueParser", "Parse" + typeName), value);
         }
 
         private ExpressionSyntax CreateEnumConverter(EnumParameterType type, ExpressionSyntax value)
