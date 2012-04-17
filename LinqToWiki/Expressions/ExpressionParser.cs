@@ -66,8 +66,13 @@ namespace LinqToWiki.Expressions
                                      ? valueQueryRepresentation.GetQueryRepresentation()
                                      : value.ToString();
 
-            if (valueString == "none" && value is Enum)
-                valueString = string.Empty;
+            if (value is Enum)
+            {
+                if (valueString == "none")
+                    valueString = string.Empty;
+                else
+                    valueString = valueString.Replace('_', '-');
+            }
 
             return previousParameters.AddSingleValue(ReversePropertyName(propertyName), valueString);
         }

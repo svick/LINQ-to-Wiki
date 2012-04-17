@@ -11,7 +11,7 @@ namespace LinqToWiki.Test
             Downloader.LogDownloading = true;
 
             var wiki = new Wiki();
-            AllPages(wiki);
+            AllUsers(wiki);
         }
 
         private static void AllCategories(Wiki wiki)
@@ -63,6 +63,17 @@ namespace LinqToWiki.Test
                           where page.prlevel == prlevel.none
                           select page.title)
                 .ToEnumerable().Take(10).ToList();
+
+            Write(result);
+        }
+
+        private static void AllUsers(Wiki wiki)
+        {
+            var result = (from user in wiki.Query.AllUsers()
+                          where user.rights == rights.move_subpages
+                          orderby user descending
+                          select new { user.name })
+                .ToEnumerable().Take(20).ToList();
 
             Write(result);
         }

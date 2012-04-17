@@ -105,7 +105,7 @@ namespace LinqToWiki.Codegen
             if (value == string.Empty)
                 return "none";
 
-            return value;
+            return value.Replace('-', '_');
         }
 
         // value is expected to be a string
