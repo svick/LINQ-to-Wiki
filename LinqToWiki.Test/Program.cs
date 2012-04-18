@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            ExtUrlUsage(wiki);
+            ImageUsage(wiki);
         }
 
         private static void Login(Wiki wiki, string name, string password)
@@ -159,6 +159,14 @@ namespace LinqToWiki.Test
             var result = (from eu in wiki.Query.exturlusage()
                           where eu.query == "toolserver.org/~svick"
                           select new { eu.title, eu.url })
+                .ToEnumerable().Take(10);
+
+            Write(result);
+        }
+
+        private static void ImageUsage(Wiki wiki)
+        {
+            var result = wiki.Query.imageusage("File:Indiafilm.svg")
                 .ToEnumerable().Take(10);
 
             Write(result);
