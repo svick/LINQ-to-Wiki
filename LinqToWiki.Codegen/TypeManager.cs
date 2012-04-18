@@ -43,6 +43,7 @@ namespace LinqToWiki.Codegen
             switch (simpleType.Name)
             {
             case "string":
+            case "user":
                 result = "string";
                 break;
             case "timestamp":
@@ -132,6 +133,7 @@ namespace LinqToWiki.Codegen
             switch (simpleType.Name)
             {
             case "string":
+            case "user":
                 typeName = "String";
                 break;
             case "timestamp":

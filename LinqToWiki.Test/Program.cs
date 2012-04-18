@@ -10,9 +10,13 @@ namespace LinqToWiki.Test
         {
             Downloader.LogDownloading = true;
 
-            //var wiki = new Wiki();
+            /*/
+            var wiki = new Wiki();
+            /*/
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
+            /**/
+            DeletedRevs(wiki);
         }
 
         private static void Login(Wiki wiki, string name, string password)
@@ -91,7 +95,7 @@ namespace LinqToWiki.Test
             var result = (from user in wiki.Query.AllUsers()
                           where user.rights == rights.move_subpages
                           orderby user descending
-                          select new { user.name })
+                          select new { user.name, user.userid })
                 .ToEnumerable().Take(20).ToList();
 
             Write(result);
@@ -126,6 +130,16 @@ namespace LinqToWiki.Test
                           //orderby cm.sortkey
                           select new { cm.title, cm.sortkeyprefix, cm.type })
                 .ToEnumerable().Take(10);
+
+            Write(result);
+        }
+
+        private static void DeletedRevs(Wiki wiki)
+        {
+            var result = (from dr in wiki.Query.Deletedrevs()
+                          where dr.user == "Svick"
+                          select dr.title)
+                .ToEnumerable();
 
             Write(result);
         }
