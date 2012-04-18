@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            EmbeddedIn(wiki);
+            ExtUrlUsage(wiki);
         }
 
         private static void Login(Wiki wiki, string name, string password)
@@ -149,6 +149,16 @@ namespace LinqToWiki.Test
             var result = (from ei in wiki.Query.embeddedin("Template:WikiProject cleanup listing")
                           where ei.filterredir == filterredir.nonredirects
                           select new { ei.title, ei.redirect })
+                .ToEnumerable().Take(10);
+
+            Write(result);
+        }
+
+        private static void ExtUrlUsage(Wiki wiki)
+        {
+            var result = (from eu in wiki.Query.exturlusage()
+                          where eu.query == "toolserver.org/~svick"
+                          select new { eu.title, eu.url })
                 .ToEnumerable().Take(10);
 
             Write(result);
