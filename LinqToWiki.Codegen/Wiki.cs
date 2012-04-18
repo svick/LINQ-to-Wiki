@@ -82,27 +82,34 @@ namespace LinqToWiki.Codegen
 
         private void CreateWikiClass()
         {
+            var wikiField = SyntaxEx.FieldDeclaration(
+                new[] { SyntaxKind.PrivateKeyword, SyntaxKind.ReadOnlyKeyword }, Names.WikiInfo, "m_wiki");
+
             var queryProperty = SyntaxEx.AutoPropertyDeclaration(
                 new[] { SyntaxKind.PublicKeyword }, Names.QueryAction, "Query", SyntaxKind.PrivateKeyword);
 
             var baseUriParameter = SyntaxEx.Parameter("string", "baseUri", SyntaxEx.NullLiteral());
             var apiPathParameter = SyntaxEx.Parameter("string", "apiPath", SyntaxEx.NullLiteral());
 
+            var wikiAssignment = SyntaxEx.Assignment(
+                wikiField,
+                SyntaxEx.ObjectCreation(Names.WikiInfo, (NamedNode)baseUriParameter, (NamedNode)apiPathParameter));
+
             var queryAssignment = SyntaxEx.Assignment(
-                queryProperty,
-                SyntaxEx.ObjectCreation(
-                    Names.QueryAction,
-                    SyntaxEx.ObjectCreation(
-                        Names.WikiInfo, (NamedNode)baseUriParameter, (NamedNode)apiPathParameter)));
+                queryProperty, SyntaxEx.ObjectCreation(Names.QueryAction, (NamedNode)wikiField));
 
             var ctor = SyntaxEx.ConstructorDeclaration(
                 new[] { SyntaxKind.PublicKeyword }, Names.Wiki,
                 new[] { baseUriParameter, apiPathParameter },
-                new StatementSyntax[] { queryAssignment });
+                new StatementSyntax[] { wikiAssignment, queryAssignment });
 
-            var wikiClass = SyntaxEx.ClassDeclaration(Names.Wiki, queryProperty, ctor);
+            var wikiClass = SyntaxEx.ClassDeclaration(Names.Wiki, wikiField, queryProperty, ctor);
 
-            Files.Add(Names.Wiki, SyntaxEx.CompilationUnit(SyntaxEx.NamespaceDeclaration(Namespace, wikiClass)));
+            Files.Add(
+                Names.Wiki,
+                SyntaxEx.CompilationUnit(
+                    SyntaxEx.NamespaceDeclaration(Namespace, wikiClass),
+                    "LinqToWiki.Collections", "LinqToWiki.Parameters"));
         }
 
         private void CreateEnumsFile()
@@ -157,15 +164,23 @@ namespace LinqToWiki.Codegen
 
         public void AddQueryModules(IEnumerable<string> moduleNames)
         {
-            var paramInfos = GetQueryModules(moduleNames);
+            var modules = GetQueryModules(moduleNames);
 
-            foreach (var paramInfo in paramInfos.Take(11))
+            foreach (var module in modules.Take(11))
             {
-                if (paramInfo.QueryType == QueryType.List || paramInfo.QueryType == QueryType.Meta)
-                    AddListModule(paramInfo);
+                if (module.QueryType == QueryType.List || module.QueryType == QueryType.Meta)
+                    AddListModule(module);
 
                 // TODO: other types of modules
             }
+        }
+
+        public void AddModules(IEnumerable<string> moduleNames)
+        {
+            var modules = GetModules(moduleNames);
+
+            foreach (var module in modules.Where(p => p.Name == "login"))
+                AddModule(module);
         }
 
         public void AddAllQueryModules()
@@ -173,9 +188,19 @@ namespace LinqToWiki.Codegen
             AddQueryModules(GetAllQueryModuleNames());
         }
 
+        public void AddAllModules()
+        {
+            AddModules(GetAllModuleNames());
+        }
+
         private void AddListModule(Module module)
         {
             new ListModuleGenerator(this).Generate(module);
+        }
+
+        private void AddModule(Module module)
+        {
+            new ModuleGenerator(this).Generate(module);
         }
 
         public CompilerResults Compile(string name)

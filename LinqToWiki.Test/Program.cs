@@ -10,8 +10,20 @@ namespace LinqToWiki.Test
         {
             Downloader.LogDownloading = true;
 
-            var wiki = new Wiki();
-            CategoryMembers(wiki);
+            //var wiki = new Wiki();
+            var wiki = new Wiki("localhost/wiki/", "api.php");
+            Login(wiki, "Svick", "heslo");
+        }
+
+        private static void Login(Wiki wiki, string name, string password)
+        {
+            var result = wiki.Login(name, password);
+
+            if (result.result == LinqToWiki.result.NeedToken)
+                result = wiki.Login(name, password, token: result.token);
+
+            if (result.result != LinqToWiki.result.Success)
+                throw new Exception(result.result.ToString());
         }
 
         private static void AllCategories(Wiki wiki)

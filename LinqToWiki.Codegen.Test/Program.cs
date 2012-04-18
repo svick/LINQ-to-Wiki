@@ -10,6 +10,7 @@ namespace LinqToWiki.Codegen.Test
             Downloader.LogDownloading = true;
 
             var wiki = new Wiki("localhost/wiki/", "api.php");
+            wiki.AddAllModules();
             wiki.AddAllQueryModules();
             Console.WriteLine(wiki);
             var result = wiki.Compile("generated");

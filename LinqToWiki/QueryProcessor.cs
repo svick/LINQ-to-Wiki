@@ -26,7 +26,7 @@ namespace LinqToWiki
         /// </summary>
         public IEnumerable<TResult> ExecuteList<TResult>(QueryParameters<T, TResult> parameters)
         {
-            var downloaded = Download(parameters);
+            var downloaded = Download(parameters, true);
 
             switch (m_queryTypeProperties.QueryType)
             {
@@ -50,7 +50,7 @@ namespace LinqToWiki
         /// </summary>
         public TResult ExecuteSingle<TResult>(QueryParameters<T, TResult> parameters)
         {
-            var downloaded = Download(parameters);
+            var downloaded = Download(parameters, false);
 
             switch (m_queryTypeProperties.QueryType)
             {
@@ -73,7 +73,7 @@ namespace LinqToWiki
         }
 
 
-        private XElement Download<TResult>(QueryParameters<T, TResult> parameters)
+        private XElement Download<TResult>(QueryParameters<T, TResult> parameters, bool list)
         {
             // TODO: too long, split
 
@@ -112,9 +112,12 @@ namespace LinqToWiki
                 }
             }
 
-            parsedParameters.Add(prefix + "prop", NameValuesParameter.JoinValues(selectedProps));
+            if (list)
+            {
+                parsedParameters.Add(prefix + "prop", NameValuesParameter.JoinValues(selectedProps));
 
-            parsedParameters.Add(prefix + "limit", "max");
+                parsedParameters.Add(prefix + "limit", "max");
+            }
 
             // TODO: add paging, maxlag
 

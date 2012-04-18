@@ -43,6 +43,7 @@
     <Compile Include="CategoryMembersOrderBy.cs" />
     <Compile Include="CategoryMembersSelect.cs" />
     <Compile Include="CategoryMembersWhere.cs" />
+    <Compile Include="Login.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryAction.cs" />
     <Compile Include="Wiki.cs" />
