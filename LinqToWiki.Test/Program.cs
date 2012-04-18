@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            ImageUsage(wiki);
+            IwBacklinks(wiki);
         }
 
         private static void Login(Wiki wiki, string name, string password)
@@ -168,6 +168,16 @@ namespace LinqToWiki.Test
         {
             var result = wiki.Query.imageusage("File:Indiafilm.svg")
                 .ToEnumerable().Take(10);
+
+            Write(result);
+        }
+
+        private static void IwBacklinks(Wiki wiki)
+        {
+            var result = (from ib in wiki.Query.iwbacklinks()
+                          where ib.prefix == "wikia"
+                          select ib)
+                .ToEnumerable().Where(ib => ib.iwtitle != "").Take(10);
 
             Write(result);
         }
