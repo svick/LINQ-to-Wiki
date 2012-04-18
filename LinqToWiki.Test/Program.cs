@@ -10,21 +10,21 @@ namespace LinqToWiki.Test
         {
             Downloader.LogDownloading = true;
 
-            /*/
+            /**/
             var wiki = new Wiki();
             /*/
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            DeletedRevs(wiki);
+            EmbeddedIn(wiki);
         }
 
         private static void Login(Wiki wiki, string name, string password)
         {
-            var result = wiki.Login(name, password);
+            var result = wiki.login(name, password);
 
             if (result.result == LinqToWiki.result.NeedToken)
-                result = wiki.Login(name, password, token: result.token);
+                result = wiki.login(name, password, token: result.token);
 
             if (result.result != LinqToWiki.result.Success)
                 throw new Exception(result.result.ToString());
@@ -32,7 +32,7 @@ namespace LinqToWiki.Test
 
         private static void AllCategories(Wiki wiki)
         {
-            var results = (from cat in wiki.Query.AllCategories()
+            var results = (from cat in wiki.Query.allcategories()
                            where cat.min == 1
                            orderby cat
                            select new { cat.value, cat.size, cat.subcats })
@@ -43,7 +43,7 @@ namespace LinqToWiki.Test
 
         private static void AllImages(Wiki wiki)
         {
-            var results = (from image in wiki.Query.AllImages()
+            var results = (from image in wiki.Query.allimages()
                            orderby image
                            select
                                new
@@ -59,7 +59,7 @@ namespace LinqToWiki.Test
 
         private static void AllLinks(Wiki wiki)
         {
-            var results = (from link in wiki.Query.AllLinks()
+            var results = (from link in wiki.Query.alllinks()
                            where link.ns == Namespace.Talk
                            where link.unique == false
                            select link)
@@ -70,7 +70,7 @@ namespace LinqToWiki.Test
 
         private static void AllMessages(Wiki wiki)
         {
-            var result = (from m in wiki.Query.AllMessages()
+            var result = (from m in wiki.Query.allmessages()
                           //where m.messages == "about"
                           where m.customised == customised.modified
                           select m)
@@ -81,7 +81,7 @@ namespace LinqToWiki.Test
 
         private static void AllPages(Wiki wiki)
         {
-            var result = (from page in wiki.Query.AllPages()
+            var result = (from page in wiki.Query.allpages()
                           where page.prtype == prtype.edit
                           where page.prlevel == prlevel.none
                           select page.title)
@@ -92,7 +92,7 @@ namespace LinqToWiki.Test
 
         private static void AllUsers(Wiki wiki)
         {
-            var result = (from user in wiki.Query.AllUsers()
+            var result = (from user in wiki.Query.allusers()
                           where user.rights == rights.move_subpages
                           orderby user descending
                           select new { user.name, user.userid })
@@ -103,7 +103,7 @@ namespace LinqToWiki.Test
 
         private static void Backlinks(Wiki wiki)
         {
-            var result = (from bl in wiki.Query.Backlinks("User:Svick")
+            var result = (from bl in wiki.Query.backlinks("User:Svick")
                           where bl.ns == Namespace.Project
                           select bl.title)
                 .ToEnumerable().Take(10);
@@ -113,7 +113,7 @@ namespace LinqToWiki.Test
 
         private static void Blocks(Wiki wiki)
         {
-            var result = (from block in wiki.Query.Blocks()
+            var result = (from block in wiki.Query.blocks()
                           where block.end == DateTime.UtcNow.AddMinutes(-10)
                           where block.show == show.not_ip
                           where block.show == show.not_temp
@@ -125,7 +125,7 @@ namespace LinqToWiki.Test
 
         private static void CategoryMembers(Wiki wiki)
         {
-            var result = (from cm in wiki.Query.CategoryMembers()
+            var result = (from cm in wiki.Query.categorymembers()
                           where cm.title == "Category:Query languages"
                           //orderby cm.sortkey
                           select new { cm.title, cm.sortkeyprefix, cm.type })
@@ -136,10 +136,20 @@ namespace LinqToWiki.Test
 
         private static void DeletedRevs(Wiki wiki)
         {
-            var result = (from dr in wiki.Query.Deletedrevs()
+            var result = (from dr in wiki.Query.deletedrevs()
                           where dr.user == "Svick"
                           select dr.title)
                 .ToEnumerable();
+
+            Write(result);
+        }
+
+        private static void EmbeddedIn(Wiki wiki)
+        {
+            var result = (from ei in wiki.Query.embeddedin("Template:WikiProject cleanup listing")
+                          where ei.filterredir == filterredir.nonredirects
+                          select new { ei.title, ei.redirect })
+                .ToEnumerable().Take(10);
 
             Write(result);
         }

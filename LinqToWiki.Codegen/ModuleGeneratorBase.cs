@@ -22,7 +22,7 @@ namespace LinqToWiki.Codegen
             if (module.PropertyGroups == null)
                 return;
 
-            ClassNameBase = GetClassNameBase(module);
+            ClassNameBase = module.Name;
 
             GenerateInternal(module);
 
@@ -30,20 +30,6 @@ namespace LinqToWiki.Codegen
         }
 
         protected abstract void GenerateInternal(Module module);
-
-        protected static string GetClassNameBase(Module module)
-        {
-            var prefixes = new[] { "Api", "Query" };
-
-            string name = module.ClassName;
-            foreach (var prefix in prefixes)
-            {
-                if (name.StartsWith(prefix))
-                    name = name.Substring(prefix.Length);
-            }
-
-            return name;
-        }
 
         protected ClassDeclarationSyntax GenerateClassForProperties(string className, IEnumerable<Property> properties)
         {
