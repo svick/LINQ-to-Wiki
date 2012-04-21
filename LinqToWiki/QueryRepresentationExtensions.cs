@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Globalization;
 
 namespace LinqToWiki
@@ -37,17 +38,7 @@ namespace LinqToWiki
 
         public static string ToQueryString(this Enum e)
         {
-            string result = e.ToString();
-
-            if (result == "none")
-                result = string.Empty;
-            else
-                result = result.Replace('_', '-');
-
-            if (result.StartsWith("not-"))
-                result = '!' + result.Substring(4);
-
-            return result;
+            return TypeDescriptor.GetConverter(e).ConvertToString(e);
         }
 
         public static string ToQueryStringDynamic(object obj)

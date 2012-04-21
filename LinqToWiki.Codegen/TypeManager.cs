@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using LinqToWiki.Codegen.ModuleInfo;
 using System.Linq;
+using LinqToWiki.Codegen.ModuleInfo;
+using LinqToWiki.Collections;
 using Roslyn.Compilers.CSharp;
 
 namespace LinqToWiki.Codegen
@@ -93,12 +94,84 @@ namespace LinqToWiki.Codegen
 
             var namespaceDeclaration = enumsFile.SingleDescendant<NamespaceDeclarationSyntax>();
 
-            var enumDeclaration = SyntaxEx.EnumDeclaration(typeName, enumType.Values.Select(FixEnumMemberName));
+            var fixedMemberNameMapping = new TupleList<string, string>();
+            var memberNames = new List<string>();
+
+            foreach (var name in enumType.Values)
+            {
+                var fixedName = FixEnumMemberName(name);
+
+                if (name != fixedName)
+                    fixedMemberNameMapping.Add(fixedName, name);
+
+                memberNames.Add(fixedName);
+            }
+
+            var enumDeclaration = SyntaxEx.EnumDeclaration(typeName, memberNames);
+
+            var newNamespaceDeclaration = namespaceDeclaration;
+
+            if (fixedMemberNameMapping.Any())
+            {
+                var converter = GenerateConverter(typeName, fixedMemberNameMapping);
+
+                newNamespaceDeclaration = newNamespaceDeclaration.WithAdditionalMembers(converter);
+
+                enumDeclaration = enumDeclaration.WithAttribute(
+                    SyntaxEx.AttributeDeclaration(
+                        "TypeConverter", SyntaxEx.AttributeArgument(SyntaxEx.TypeOf(converter.Identifier.ValueText))));
+            }
+
+            newNamespaceDeclaration = newNamespaceDeclaration.WithAdditionalMembers(enumDeclaration);
 
             m_wiki.Files[Wiki.Names.Enums] = enumsFile.ReplaceNode(
-                namespaceDeclaration, namespaceDeclaration.WithAdditionalMembers(enumDeclaration));
+                namespaceDeclaration, newNamespaceDeclaration);
 
             m_enumTypes.Add(enumType, typeName);
+        }
+
+        private static ClassDeclarationSyntax GenerateConverter(string enumName, IEnumerable<Tuple<string, string>> mapping)
+        {
+            var converterClassName = enumName + "Converter";
+
+            var ctor = SyntaxEx.ConstructorDeclaration(
+                new[] { SyntaxKind.PublicKeyword }, converterClassName, new ParameterSyntax[0], new StatementSyntax[0],
+                SyntaxEx.BaseConstructorInitializer(SyntaxEx.TypeOf(enumName)));
+
+            var contextParameter = SyntaxEx.Parameter("ITypeDescriptorContext", "context");
+            var cultureParameter = SyntaxEx.Parameter("CultureInfo", "culture");
+            var valueParameter = SyntaxEx.Parameter("object", "value");
+            var destinationTypeParameter = SyntaxEx.Parameter("Type", "destinationType");
+
+            var castedValueLocal = SyntaxEx.LocalDeclaration(
+                enumName, "castedValue", SyntaxEx.Cast(enumName, (NamedNode)valueParameter));
+
+            var switchStatement = SyntaxEx.Switch(
+                (NamedNode)castedValueLocal,
+                mapping.Select(
+                    t =>
+                    SyntaxEx.SwitchCase(
+                        SyntaxEx.MemberAccess(enumName, t.Item1), SyntaxEx.Return(SyntaxEx.Literal(t.Item2)))));
+
+            var condition = SyntaxEx.If(
+                SyntaxEx.Equals((NamedNode)destinationTypeParameter, SyntaxEx.TypeOf("string")), switchStatement);
+
+            var baseCall = SyntaxEx.Return(
+                SyntaxEx.Invocation(
+                    SyntaxEx.MemberAccess("base", "ConvertTo"),
+                    (NamedNode)contextParameter, (NamedNode)cultureParameter,
+                    (NamedNode)valueParameter, (NamedNode)destinationTypeParameter));
+
+            var convertToMethod =
+                SyntaxEx.MethodDeclaration(
+                    new[] { SyntaxKind.PublicKeyword, SyntaxKind.OverrideKeyword }, "object", "ConvertTo",
+                    new[] { contextParameter, cultureParameter, valueParameter, destinationTypeParameter }, 
+                    castedValueLocal, condition, baseCall);
+
+            var classDeclaration = SyntaxEx.ClassDeclaration(
+                converterClassName, SyntaxEx.ParseTypeName("EnumConverter"), ctor, convertToMethod);
+
+            return classDeclaration;
         }
 
         private static string FixEnumMemberName(string value)
@@ -109,7 +182,7 @@ namespace LinqToWiki.Codegen
             if (value[0] == '!')
                 value = "not-" + value.Substring(1);
 
-            return value.Replace('-', '_');
+            return value.Replace('-', '_').Replace('/', '_');
         }
 
         // value is expected to be a string

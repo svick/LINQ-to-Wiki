@@ -79,6 +79,15 @@ namespace LinqToWiki.Codegen
             return namespaceDeclaration.Update(namespaceDeclaration.Members.Concat(members).ToSyntaxList());
         }
 
+        public static EnumDeclarationSyntax WithAttribute(this EnumDeclarationSyntax enumDeclaration, AttributeDeclarationSyntax attribute)
+        {
+            return enumDeclaration.Update(
+                enumDeclaration.Attributes.Concat(new[] { attribute }).ToSyntaxList(), enumDeclaration.Modifiers,
+                enumDeclaration.EnumKeyword, enumDeclaration.Identifier, enumDeclaration.BaseListOpt,
+                enumDeclaration.OpenBraceToken, enumDeclaration.Members, enumDeclaration.CloseBraceToken,
+                enumDeclaration.SemicolonTokenOpt);
+        }
+
         public static TNode WithDocumentationSummary<TNode>(this TNode node, string summary) where TNode : SyntaxNode
         {
             return node.WithLeadingTrivia(Syntax.Trivia(SyntaxEx.DocumentationComment(SyntaxEx.DocumentationSummary(summary))));
@@ -129,6 +138,11 @@ namespace LinqToWiki.Codegen
             return modifier == null ? Syntax.TokenList() : Syntax.TokenList(Syntax.Token(modifier.Value));
         }
 
+        public static ClassDeclarationSyntax ClassDeclaration(string className, TypeSyntax baseType, params MemberDeclarationSyntax[] members)
+        {
+            return ClassDeclaration(className, baseType, (IEnumerable<MemberDeclarationSyntax>)members);
+        }
+
         public static ClassDeclarationSyntax ClassDeclaration(string className, params MemberDeclarationSyntax[] members)
         {
             return ClassDeclaration(className, (IEnumerable<MemberDeclarationSyntax>)members);
@@ -136,9 +150,17 @@ namespace LinqToWiki.Codegen
 
         public static ClassDeclarationSyntax ClassDeclaration(string className, IEnumerable<MemberDeclarationSyntax> members)
         {
+            return ClassDeclaration(className, null, members);
+        }
+
+        public static ClassDeclarationSyntax ClassDeclaration(string className, TypeSyntax baseType, IEnumerable<MemberDeclarationSyntax> members)
+        {
+            var baseTypeSyntax = baseType == null ? null : Syntax.BaseList(types: new[] { baseType }.ToSeparatedList());
+
             return Syntax.ClassDeclaration(
                 modifiers: TokenList(new[] {SyntaxKind.PublicKeyword, SyntaxKind.SealedKeyword }),
                 identifier: Syntax.Identifier(className),
+                baseListOpt: baseTypeSyntax,
                 members: members.ToSyntaxList());
         }
 
@@ -166,8 +188,18 @@ namespace LinqToWiki.Codegen
 
         public static ConstructorInitializerSyntax ThisConstructorInitializer(params ExpressionSyntax[] arguments)
         {
+            return ConstructorInitializer(SyntaxKind.ThisConstructorInitializer, arguments);
+        }
+
+        public static ConstructorInitializerSyntax BaseConstructorInitializer(params ExpressionSyntax[] arguments)
+        {
+            return ConstructorInitializer(SyntaxKind.BaseConstructorInitializer, arguments);
+        }
+
+        private static ConstructorInitializerSyntax ConstructorInitializer(SyntaxKind kind, IEnumerable<ExpressionSyntax> arguments)
+        {
             return Syntax.ConstructorInitializer(
-                SyntaxKind.ThisConstructorInitializer,
+                kind,
                 argumentList: Syntax.ArgumentList(
                     arguments: arguments.Select(a => Syntax.Argument(expression: a)).ToSeparatedList()));
         }
@@ -376,6 +408,18 @@ namespace LinqToWiki.Codegen
                 elseOpt: elseStatement == null ? null : Syntax.ElseClause(statement: elseStatement));
         }
 
+        public static SwitchStatementSyntax Switch(ExpressionSyntax expression, IEnumerable<SwitchSectionSyntax> sections)
+        {
+            return Syntax.SwitchStatement(expression: expression, sections: sections.ToSyntaxList());
+        }
+
+        public static SwitchSectionSyntax SwitchCase(ExpressionSyntax value, params StatementSyntax[] statements)
+        {
+            return Syntax.SwitchSection(
+                new[] { Syntax.SwitchLabel(SyntaxKind.CaseSwitchLabel, valueOpt: value) }.ToSyntaxList(),
+                statements: statements.ToSyntaxList());
+        }
+
         public static InvocationExpressionSyntax Invocation(ExpressionSyntax expression, params ExpressionSyntax[] arguments)
         {
             return Invocation(expression, (IEnumerable<ExpressionSyntax>)arguments);
@@ -528,6 +572,24 @@ namespace LinqToWiki.Codegen
         private static XmlNameSyntax XmlName(string name)
         {
             return Syntax.XmlName(localName: Syntax.Identifier(name));
+        }
+
+        public static AttributeDeclarationSyntax AttributeDeclaration(string name, params AttributeArgumentSyntax[] arguments)
+        {
+            return Syntax.AttributeDeclaration(
+                attributes:
+                    new[]
+                    {
+                        Syntax.Attribute(
+                            Syntax.IdentifierName(name),
+                            Syntax.AttributeArgumentList(arguments: arguments.ToSeparatedList()))
+                    }.ToSeparatedList());
+        }
+
+        public static AttributeArgumentSyntax AttributeArgument(ExpressionSyntax expression, string name = null)
+        {
+            var nameSyntax = name == null ? null : Syntax.NameEquals(Syntax.Identifier(name));
+            return Syntax.AttributeArgument(expression: expression, nameEqualsOpt: nameSyntax);
         }
     }
 

@@ -114,7 +114,10 @@ namespace LinqToWiki.Codegen
 
         private void CreateEnumsFile()
         {
-            Files.Add(Names.Enums, SyntaxEx.CompilationUnit(SyntaxEx.NamespaceDeclaration(Namespace)));
+            Files.Add(
+                Names.Enums,
+                SyntaxEx.CompilationUnit(
+                    SyntaxEx.NamespaceDeclaration(Namespace), "System", "System.ComponentModel", "System.Globalization"));
         }
 
         private void RetrieveModuleNames()
@@ -166,7 +169,7 @@ namespace LinqToWiki.Codegen
         {
             var modules = GetQueryModules(moduleNames);
 
-            foreach (var module in modules.Take(24))
+            foreach (var module in modules.Take(27))
             {
                 if (module.QueryType == QueryType.List || module.QueryType == QueryType.Meta)
                     AddListModule(module);
@@ -214,6 +217,7 @@ namespace LinqToWiki.Codegen
                 new CompilerParameters(
                     new[]
                     {
+                        typeof(System.ComponentModel.TypeConverter).Assembly.Location,
                         typeof(System.Xml.Linq.XElement).Assembly.Location,
                         typeof(System.Xml.IXmlLineInfo).Assembly.Location,
                         typeof(WikiInfo).Assembly.Location

@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            LangBacklinks(wiki);
+            LogEvents(wiki);
         }
 
         private static void Login(Wiki wiki, string name, string password)
@@ -188,6 +188,16 @@ namespace LinqToWiki.Test
                           where lb.lang == "cs"
                           where lb.title == "Wikipedie:Cykly v kategoriích"
                           select lb.title)
+                .ToEnumerable().Take(10);
+
+            Write(result);
+        }
+
+        private static void LogEvents(Wiki wiki)
+        {
+            var result = (from le in wiki.Query.logevents()
+                          where le.action == action.block_block
+                          select new { le.title, le.user, le.comment, le.timestamp })
                 .ToEnumerable().Take(10);
 
             Write(result);
