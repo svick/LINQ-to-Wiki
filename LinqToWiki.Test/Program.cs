@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            LogEvents(wiki);
+            ProtectedTitles(wiki);
         }
 
         private static void Login(Wiki wiki, string name, string password)
@@ -202,6 +202,21 @@ namespace LinqToWiki.Test
                 .ToEnumerable().Take(10);
 
             Write(result);
+        }
+
+        private static void ProtectedTitles(Wiki wiki)
+        {
+            var result = from pt in wiki.Query.protectedtitles()
+                         where pt.level == level.autoconfirmed
+                         orderby pt descending
+                         select pt;
+
+            Write(result);
+        }
+
+        private static void Write<TSource, TResult>(WikiQueryResult<TSource, TResult> results)
+        {
+            Write(results.ToEnumerable().Take(10));
         }
 
         private static void Write<T>(IEnumerable<T> results)
