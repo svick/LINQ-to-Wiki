@@ -90,8 +90,20 @@ namespace LinqToWiki
                 if (parameters.Sort != null)
                     parsedParameters.Add(prefix + "sort", parameters.Sort);
 
-                // temporary! deal with asc/ascending in a systematic way
-                parsedParameters.Add(prefix + "dir", parameters.Ascending.Value ? "ascending" : "descending");
+                string dir;
+                switch (m_queryTypeProperties.SortType)
+                {
+                case SortType.Ascending:
+                    dir = parameters.Ascending.Value ? "ascending" : "descending";
+                    break;
+                case SortType.Newer:
+                    dir = parameters.Ascending.Value ? "newer" : "older";
+                    break;
+                default:
+                    throw new InvalidOperationException();
+                }
+
+                parsedParameters.Add(prefix + "dir", dir);
             }
 
             var selectedProps = new List<string>();

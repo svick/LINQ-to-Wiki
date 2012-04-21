@@ -62,7 +62,7 @@ namespace LinqToWiki
             var queryProcessor = new QueryProcessor<IEnumerable<Namespace>>(
                 wiki,
                 new QueryTypeProperties<IEnumerable<Namespace>>(
-                    "siteinfo", "", QueryType.Meta,
+                    "siteinfo", "", QueryType.Meta, null,
                     new TupleList<string, string>
                     { { "action", "query" }, { "meta", "siteinfo" }, { "siprop", "namespaces" } },
                     null, Namespace.Parse));

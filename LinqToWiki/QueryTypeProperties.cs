@@ -26,6 +26,12 @@ namespace LinqToWiki
         public QueryType? QueryType { get; private set; }
 
         /// <summary>
+        /// Whether <c>dir</c> parameter uses <c>ascending</c>/<c>descending</c> or <c>newer</c>/<c>older</c>.
+        /// If <c>null</c>, module doesn't support sorting.
+        /// </summary>
+        public SortType? SortType { get; private set; }
+
+        /// <summary>
         /// Parameters, that are included in all queries of this type.
         /// </summary>
         public IEnumerable<Tuple<string, string>> BaseParameters { get; private set; }
@@ -34,21 +40,24 @@ namespace LinqToWiki
         private readonly Func<XElement, WikiInfo, T> m_parser;
 
         public QueryTypeProperties(
-            string moduleName, string prefix, QueryType? queryType, IEnumerable<Tuple<string, string>> baseParameters,
-            IDictionary<string, string[]> props, Func<XElement, WikiInfo, T> parser)
+            string moduleName, string prefix, QueryType? queryType, SortType? sortType,
+            IEnumerable<Tuple<string, string>> baseParameters, IDictionary<string, string[]> props,
+            Func<XElement, WikiInfo, T> parser)
         {
             ModuleName = moduleName;
             Prefix = prefix;
             QueryType = queryType;
+            SortType = sortType;
             BaseParameters = baseParameters;
             m_props = props ?? new Dictionary<string, string[]>();
             m_parser = parser;
         }
 
         public QueryTypeProperties(
-            string moduleName, string prefix, QueryType? queryType, IEnumerable<Tuple<string, string>> baseParameters,
-            IDictionary<string, string[]> props, Func<XElement, T> parser)
-            : this(moduleName, prefix, queryType, baseParameters, props, (elem, _) => parser(elem))
+            string moduleName, string prefix, QueryType? queryType, SortType? sortType,
+            IEnumerable<Tuple<string, string>> baseParameters, IDictionary<string, string[]> props,
+            Func<XElement, T> parser)
+            : this(moduleName, prefix, queryType, sortType, baseParameters, props, (elem, _) => parser(elem))
         {}
 
         /// <summary>

@@ -197,6 +197,7 @@ namespace LinqToWiki.Test
         {
             var result = (from le in wiki.Query.logevents()
                           where le.action == action.block_block
+                          orderby le
                           select new { le.title, le.user, le.comment, le.timestamp })
                 .ToEnumerable().Take(10);
 

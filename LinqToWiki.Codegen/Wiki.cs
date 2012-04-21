@@ -50,7 +50,7 @@ namespace LinqToWiki.Codegen
             m_processor = new QueryProcessor<ParamInfo>(
                 new WikiInfo(baseUri, apiPath),
                 new QueryTypeProperties<ParamInfo>(
-                    "paraminfo", "", null,
+                    "paraminfo", "", null, null,
                     new TupleList<string, string> { { "action", "paraminfo" } },
                     null,
                     ParamInfo.Parse));

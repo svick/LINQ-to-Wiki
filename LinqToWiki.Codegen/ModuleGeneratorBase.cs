@@ -134,7 +134,7 @@ namespace LinqToWiki.Codegen
 
         protected void GenerateMethod(
             Module module, IEnumerable<Parameter> methodParameters, string resultClassName,
-            FieldDeclarationSyntax propsField, string fileName, bool nullableParameters)
+            FieldDeclarationSyntax propsField, string fileName, bool nullableParameters, SortType? sortType)
         {
             var queryActionFile = Wiki.Files[fileName];
             var queryActionClass = queryActionFile.SingleDescendant<ClassDeclarationSyntax>();
@@ -148,6 +148,9 @@ namespace LinqToWiki.Codegen
                 module.QueryType == null
                     ? (ExpressionSyntax)SyntaxEx.NullLiteral()
                     : SyntaxEx.MemberAccess("QueryType", module.QueryType.ToString()),
+                sortType == null
+                    ? (ExpressionSyntax)SyntaxEx.NullLiteral()
+                    : SyntaxEx.MemberAccess("SortType", sortType.ToString()),
                 CreateTupleListExpression(GetBaseParameters(module)),
                 propsField == null ? (ExpressionSyntax)SyntaxEx.NullLiteral() : (NamedNode)propsField,
                 SyntaxEx.MemberAccess(resultClassName, "Parse"));

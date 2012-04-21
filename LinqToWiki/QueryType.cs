@@ -6,4 +6,10 @@ namespace LinqToWiki
         Prop,
         Meta
     }
+
+    public enum SortType
+    {
+        Ascending,
+        Newer
+    }
 }

@@ -52,8 +52,21 @@ namespace LinqToWiki.Codegen
                     ? SyntaxEx.GenericName("WikiQuery", m_whereClassName, m_selectClassName)
                     : SyntaxEx.GenericName("WikiQuerySortable", m_whereClassName, m_orderByClassName, m_selectClassName);
 
+            SortType? sortType = null;
+
+            var dirParameter = sortParameters.SingleOrDefault(p => p.Name == "dir");
+
+            if (dirParameter != null)
+            {
+                var type = (EnumParameterType)dirParameter.Type;
+                if (type.Values.Any(x => x == "ascending"))
+                    sortType = SortType.Ascending;
+                else if (type.Values.Any(x => x == "newer"))
+                    sortType = SortType.Newer;
+            }
+
             GenerateMethod(
-                module, methodParameters, m_selectClassName, m_selectProps, Wiki.Names.QueryAction, false);
+                module, methodParameters, m_selectClassName, m_selectProps, Wiki.Names.QueryAction, false, sortType);
         }
 
         private static IList<Parameter> RemoveAndReturnByNames(List<Parameter> parameters, params string[] names)

@@ -26,7 +26,7 @@ namespace LinqToWiki
             var queryProcessor = new QueryProcessor<LoginResult>(
                 m_info,
                 new QueryTypeProperties<LoginResult>(
-                    "login", "lg", null, new TupleList<string, string> { { "action", "login" } }, null,
+                    "login", "lg", null, null, new TupleList<string, string> { { "action", "login" } }, null,
                     LoginResult.Parse));
 
             var parameters = QueryParameters.Create<LoginResult>();

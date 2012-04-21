@@ -22,7 +22,7 @@ namespace LinqToWiki
 
         private static readonly QueryTypeProperties<CategoryMembersSelect> CategoryMembersProperties =
             new QueryTypeProperties<CategoryMembersSelect>(
-                "categorymembers", "cm", QueryType.List,
+                "categorymembers", "cm", QueryType.List, SortType.Ascending,
                 new TupleList<string, string>(QueryBaseParameters) { { "list", "categorymembers" } },
                 CategoryMembersProps,
                 CategoryMembersSelect.Parse);

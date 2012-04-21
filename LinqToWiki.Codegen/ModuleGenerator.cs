@@ -27,7 +27,7 @@ namespace LinqToWiki.Codegen
 
             Wiki.Files.Add(ClassNameBase, codeUnit);
 
-            GenerateMethod(module, module.Parameters, m_resultClassName, null, Wiki.Names.Wiki, true);
+            GenerateMethod(module, module.Parameters, m_resultClassName, null, Wiki.Names.Wiki, true, null);
         }
 
         private ClassDeclarationSyntax GenerateResultClass(IEnumerable<PropertyGroup> propertyGroups)
