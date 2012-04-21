@@ -71,7 +71,6 @@ namespace LinqToWiki.Codegen
 
         private string GetEnumTypeName(EnumParameterType enumType, string propertyName, bool nullable)
         {
-            // TODO: better type naming (use module name)
             if (!m_enumTypes.ContainsKey(enumType))
                 GenerateType(enumType, propertyName);
 
@@ -85,8 +84,9 @@ namespace LinqToWiki.Codegen
 
         private void GenerateType(EnumParameterType enumType, string propertyName)
         {
+            // TODO: better handling of duplicate names
             string typeName = propertyName;
-            int i = 1;
+            int i = 2;
             while (m_enumTypes.Values.Contains(typeName))
                 typeName = propertyName + i;
 
