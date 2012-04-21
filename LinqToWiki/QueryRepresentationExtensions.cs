@@ -50,7 +50,7 @@ namespace LinqToWiki
             return result;
         }
 
-        public static string ToQueryString(object obj)
+        public static string ToQueryStringDynamic(object obj)
         {
             return ToQueryString((dynamic)obj);
         }

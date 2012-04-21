@@ -62,7 +62,7 @@ namespace LinqToWiki.Expressions
             object value = valueExpression.Value;
 
             return previousParameters.AddSingleValue(
-                ReversePropertyName(propertyName), QueryRepresentationExtensions.ToQueryString(value));
+                ReversePropertyName(propertyName), QueryRepresentationExtensions.ToQueryStringDynamic(value));
         }
 
         public static string ReversePropertyName(string propertyName)
