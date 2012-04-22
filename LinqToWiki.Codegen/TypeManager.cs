@@ -88,7 +88,7 @@ namespace LinqToWiki.Codegen
             string typeName = propertyName;
             int i = 2;
             while (m_enumTypes.Values.Contains(typeName))
-                typeName = propertyName + i;
+                typeName = propertyName + i++;
 
             var enumsFile = m_wiki.Files[Wiki.Names.Enums];
 
