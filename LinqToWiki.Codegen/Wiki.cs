@@ -169,7 +169,7 @@ namespace LinqToWiki.Codegen
         {
             var modules = GetQueryModules(moduleNames);
 
-            foreach (var module in modules.Take(32))
+            foreach (var module in modules.Take(34))
             {
                 if (module.QueryType == QueryType.List || module.QueryType == QueryType.Meta)
                     AddListModule(module);
