@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            QueryPage(wiki);
+            Random(wiki);
         }
 
         private static void Login(Wiki wiki, string name, string password)
@@ -218,6 +218,14 @@ namespace LinqToWiki.Test
         {
             var result = from qp in wiki.Query.querypage(page.Uncategorizedpages)
                          select qp;
+
+            Write(result);
+        }
+
+        private static void Random(Wiki wiki)
+        {
+            var result = from rp in wiki.Query.random()
+                         select rp.title;
 
             Write(result);
         }
