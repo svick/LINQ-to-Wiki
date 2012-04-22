@@ -32,9 +32,9 @@ namespace LinqToWiki
             {
             case QueryType.List:
             case QueryType.Meta:
-                return downloaded
-                    .Element("query")
-                    .Element(m_queryTypeProperties.ModuleName)
+                var moduleElement = downloaded.Element("query").Element(m_queryTypeProperties.ModuleName);
+                var resultsElement = moduleElement.Element("results") ?? moduleElement;
+                return resultsElement
                     .Elements()
                     .Select(x => parameters.Selector(m_queryTypeProperties.Parse(x, m_wiki)));
             case QueryType.Prop:

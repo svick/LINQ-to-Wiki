@@ -44,5 +44,10 @@ namespace LinqToWiki.Codegen.ModuleInfo
                             : element.Element("props").Elements().Select(PropertyGroup.Parse).ToArray()
                 };
         }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

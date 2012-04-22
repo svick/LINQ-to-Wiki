@@ -79,6 +79,8 @@ namespace LinqToWiki.Codegen
             var queryActionFile = Wiki.Files[Wiki.Names.QueryAction];
             var queryActionClass = queryActionFile.SingleDescendant<ClassDeclarationSyntax>();
 
+            propertyGroups = propertyGroups.Where(pg => pg.Name != null).ToArray();
+
             var initializers =
                 from pg in propertyGroups
                 from p in pg.Properties

@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            ProtectedTitles(wiki);
+            QueryPage(wiki);
         }
 
         private static void Login(Wiki wiki, string name, string password)
@@ -210,6 +210,14 @@ namespace LinqToWiki.Test
                          where pt.level == level.autoconfirmed
                          orderby pt descending
                          select pt;
+
+            Write(result);
+        }
+
+        private static void QueryPage(Wiki wiki)
+        {
+            var result = from qp in wiki.Query.querypage(page.Uncategorizedpages)
+                         select qp;
 
             Write(result);
         }
