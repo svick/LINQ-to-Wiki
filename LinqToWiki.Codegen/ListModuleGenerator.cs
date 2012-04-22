@@ -33,7 +33,7 @@ namespace LinqToWiki.Codegen
             var methodParameters = parameters.RemoveAndReturn(p => p.Required);
 
             // don't belong anywhere, are used in a special way
-            RemoveAndReturnByNames(parameters, "continue", "limit", "prop");
+            RemoveAndReturnByNames(parameters, "continue", "offset", "limit", "prop");
 
             var whereParameters = parameters;
 
