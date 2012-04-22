@@ -101,7 +101,7 @@ namespace LinqToWiki.Codegen
             {
                 var fixedName = FixEnumMemberName(name);
 
-                if (name != fixedName && '@' + name != fixedName)
+                if (name != fixedName.TrimStart('@'))
                     fixedMemberNameMapping.Add(fixedName, name);
 
                 memberNames.Add(fixedName);

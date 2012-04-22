@@ -66,7 +66,8 @@ namespace LinqToWiki.Codegen
                         SyntaxEx.MemberAccess(elementParameter, "Attribute"), SyntaxEx.Literal(property.Name));
                     checkForNull = true;
                 }
-                var propertyValueLocal = SyntaxEx.LocalDeclaration("var", GetPropertyName(property.Name) + "Value", propertyValueAccess);
+                var propertyValueLocal = SyntaxEx.LocalDeclaration(
+                    "var", GetPropertyName(property.Name, false) + "Value", propertyValueAccess);
 
                 statements.Add(propertyValueLocal);
 
@@ -95,7 +96,7 @@ namespace LinqToWiki.Codegen
         private static MethodDeclarationSyntax GenerateToStringMethod(IEnumerable<Property> properties)
         {
             var formatString = string.Join(
-                "; ", properties.Select((p, i) => string.Format("{0}: {{{1}}}", GetPropertyName(p.Name), i)));
+                "; ", properties.Select((p, i) => string.Format("{0}: {{{1}}}", GetPropertyName(p.Name, false), i)));
 
             var parameters = new List<ExpressionSyntax> { SyntaxEx.Literal(formatString) };
 
@@ -120,7 +121,7 @@ namespace LinqToWiki.Codegen
             return result;
         }
 
-        private static string GetPropertyName(string name)
+        private static string GetPropertyName(string name, bool identifier = true)
         {
             if (name == "*")
                 return "value";
@@ -129,7 +130,7 @@ namespace LinqToWiki.Codegen
             if (name == "default")
                 return "defaultvalue";
             if (name == "new")
-                return "@new";
+                return identifier ? "@new" : "new";
 
             return name;
         }
