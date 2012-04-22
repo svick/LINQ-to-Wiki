@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            Random(wiki);
+            RecentChanges(wiki);
         }
 
         private static void Login(Wiki wiki, string name, string password)
@@ -226,6 +226,17 @@ namespace LinqToWiki.Test
         {
             var result = from rp in wiki.Query.random()
                          select rp.title;
+
+            Write(result);
+        }
+
+        private static void RecentChanges(Wiki wiki)
+        {
+            var result = from rc in wiki.Query.recentchanges()
+                         where rc.type == type4.@new
+                         where rc.show == show2.bot
+                         orderby rc
+                         select new { rc.title, rc.comment, rc.@new, rc.bot, rc.timestamp };
 
             Write(result);
         }

@@ -128,6 +128,8 @@ namespace LinqToWiki.Codegen
                 return "ns";
             if (name == "default")
                 return "defaultvalue";
+            if (name == "new")
+                return "@new";
 
             return name;
         }

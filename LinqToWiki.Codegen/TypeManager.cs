@@ -101,7 +101,7 @@ namespace LinqToWiki.Codegen
             {
                 var fixedName = FixEnumMemberName(name);
 
-                if (name != fixedName)
+                if (name != fixedName && '@' + name != fixedName)
                     fixedMemberNameMapping.Add(fixedName, name);
 
                 memberNames.Add(fixedName);
@@ -174,15 +174,22 @@ namespace LinqToWiki.Codegen
             return classDeclaration;
         }
 
+        private static readonly char[] ToReplace = "-/ ".ToCharArray();
+
         private static string FixEnumMemberName(string value)
         {
             if (value == string.Empty)
                 return "none";
+            if (value == "new")
+                return "@new";
 
             if (value[0] == '!')
                 value = "not-" + value.Substring(1);
 
-            return value.Replace('-', '_').Replace('/', '_');
+            foreach (var c in ToReplace)
+                value = value.Replace(c, '_');
+
+            return value;
         }
 
         // value is expected to be a string
