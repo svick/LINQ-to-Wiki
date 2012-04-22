@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            Watchlist(wiki);
+            WatchlistRaw(wiki);
         }
 
         private static void Login(Wiki wiki, string name, string password)
@@ -281,6 +281,14 @@ namespace LinqToWiki.Test
         {
             var result = from wl in wiki.Query.watchlist()
                          select new { wl.title, wl.user, wl.timestamp, wl.comment };
+
+            Write(result);
+        }
+
+        private static void WatchlistRaw(Wiki wiki)
+        {
+            var result = from wr in wiki.Query.watchlistraw()
+                         select wr;
 
             Write(result);
         }
