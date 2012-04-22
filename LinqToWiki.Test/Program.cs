@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            UserContribs(wiki);
+            Users(wiki);
         }
 
         private static void Login(Wiki wiki, string name, string password)
@@ -263,6 +263,17 @@ namespace LinqToWiki.Test
                          where uc.start == DateTime.Now.AddDays(-2)
                          orderby uc
                          select new { uc.user, uc.title, uc.timestamp, uc.comment };
+
+            Write(result);
+        }
+
+        private static void Users(Wiki wiki)
+        {
+            var result = from u in wiki.Query.users()
+                         where u.users == "Svick"
+                         where u.users == "SvickBOT"
+                         where u.token == token2.userrights
+                         select u;
 
             Write(result);
         }
