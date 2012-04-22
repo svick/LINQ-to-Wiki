@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            Search(wiki);
+            Tags(wiki);
         }
 
         private static void Login(Wiki wiki, string name, string password)
@@ -245,6 +245,13 @@ namespace LinqToWiki.Test
         {
             var result = from s in wiki.Query.search("LINQ")
                          select new { s.title, snippet = s.snippet.Substring(0, 30) };
+
+            Write(result);
+        }
+
+        private static void Tags(Wiki wiki)
+        {
+            var result = wiki.Query.tags().Select(tag => new { tag.name, tag.displayname, tag.hitcount });
 
             Write(result);
         }
