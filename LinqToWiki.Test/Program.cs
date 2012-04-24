@@ -23,10 +23,10 @@ namespace LinqToWiki.Test
         {
             var result = wiki.login(name, password);
 
-            if (result.result == LinqToWiki.result.NeedToken)
+            if (result.result == loginresult.NeedToken)
                 result = wiki.login(name, password, token: result.token);
 
-            if (result.result != LinqToWiki.result.Success)
+            if (result.result != loginresult.Success)
                 throw new Exception(result.result.ToString());
         }
 
@@ -72,7 +72,7 @@ namespace LinqToWiki.Test
         {
             var result = (from m in wiki.Query.allmessages()
                           //where m.messages == "about"
-                          where m.customised == customised.modified
+                          where m.customised == allmessagescustomised.modified
                           select m)
                 .ToEnumerable().Take(10);
 
@@ -82,8 +82,8 @@ namespace LinqToWiki.Test
         private static void AllPages(Wiki wiki)
         {
             var result = (from page in wiki.Query.allpages()
-                          where page.prtype == prtype.edit
-                          where page.prlevel == prlevel.none
+                          where page.prtype == allpagesprtype.edit
+                          where page.prlevel == allpagesprlevel.none
                           select page.title)
                 .ToEnumerable().Take(10);
 
@@ -93,7 +93,7 @@ namespace LinqToWiki.Test
         private static void AllUsers(Wiki wiki)
         {
             var result = (from user in wiki.Query.allusers()
-                          where user.rights == rights.move_subpages
+                          where user.rights == allusersrights.move_subpages
                           orderby user descending
                           select new { user.name, user.userid })
                 .ToEnumerable().Take(20).ToList();
@@ -115,8 +115,8 @@ namespace LinqToWiki.Test
         {
             var result = (from block in wiki.Query.blocks()
                           where block.end == DateTime.UtcNow.AddMinutes(-10)
-                          where block.show == show.not_ip
-                          where block.show == show.not_temp
+                          where block.show == blocksshow.not_ip
+                          where block.show == blocksshow.not_temp
                           select new { block.user, block.timestamp, block.@by })
                 .ToEnumerable().Take(10);
 
@@ -147,7 +147,7 @@ namespace LinqToWiki.Test
         private static void EmbeddedIn(Wiki wiki)
         {
             var result = (from ei in wiki.Query.embeddedin("Template:WikiProject cleanup listing")
-                          where ei.filterredir == filterredir.nonredirects
+                          where ei.filterredir == embeddedinfilterredir.nonredirects
                           select new { ei.title, ei.redirect })
                 .ToEnumerable().Take(10);
 
@@ -196,7 +196,7 @@ namespace LinqToWiki.Test
         private static void LogEvents(Wiki wiki)
         {
             var result = (from le in wiki.Query.logevents()
-                          where le.action == action.block_block
+                          where le.action == logeventsaction.block_block
                           orderby le
                           select new { le.title, le.user, le.comment, le.timestamp })
                 .ToEnumerable().Take(10);
@@ -207,7 +207,7 @@ namespace LinqToWiki.Test
         private static void ProtectedTitles(Wiki wiki)
         {
             var result = from pt in wiki.Query.protectedtitles()
-                         where pt.level == level.autoconfirmed
+                         where pt.level == protectedtitleslevel.autoconfirmed
                          orderby pt descending
                          select pt;
 
@@ -216,7 +216,7 @@ namespace LinqToWiki.Test
 
         private static void QueryPage(Wiki wiki)
         {
-            var result = from qp in wiki.Query.querypage(page.Uncategorizedpages)
+            var result = from qp in wiki.Query.querypage(querypagepage.Uncategorizedpages)
                          select qp;
 
             Write(result);
@@ -233,8 +233,8 @@ namespace LinqToWiki.Test
         private static void RecentChanges(Wiki wiki)
         {
             var result = from rc in wiki.Query.recentchanges()
-                         where rc.type == type4.@new
-                         where rc.show == show2.bot
+                         where rc.type == recentchangestype2.@new
+                         where rc.show == recentchangesshow.bot
                          orderby rc
                          select new { rc.title, rc.comment, rc.@new, rc.bot, rc.timestamp };
 

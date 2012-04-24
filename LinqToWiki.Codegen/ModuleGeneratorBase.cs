@@ -74,7 +74,8 @@ namespace LinqToWiki.Codegen
                 var assignment = SyntaxEx.Assignment(
                     SyntaxEx.MemberAccess(resultLocal, GetPropertyName(property.Name)),
                     Wiki.TypeManager.CreateConverter(
-                        property, SyntaxEx.MemberAccess(propertyValueLocal, "Value"), (NamedNode)wikiParameter));
+                        property, ClassNameBase, SyntaxEx.MemberAccess(propertyValueLocal, "Value"),
+                        (NamedNode)wikiParameter));
 
                 if (checkForNull)
                 {
@@ -109,10 +110,11 @@ namespace LinqToWiki.Codegen
                 returnStatement);
         }
 
-        protected PropertyDeclarationSyntax GenerateProperty(string name, ParameterType type, bool nullable = false, string description = null)
+        protected PropertyDeclarationSyntax GenerateProperty(
+            string name, ParameterType type, bool nullable = false, string description = null)
         {
             var result = SyntaxEx.AutoPropertyDeclaration(
-                new[] { SyntaxKind.PublicKeyword }, Wiki.TypeManager.GetTypeName(type, name, nullable),
+                new[] { SyntaxKind.PublicKeyword }, Wiki.TypeManager.GetTypeName(type, name, ClassNameBase, nullable),
                 GetPropertyName(name), SyntaxKind.PrivateKeyword);
 
             if (description != null)
@@ -181,7 +183,7 @@ namespace LinqToWiki.Codegen
             foreach (var methodParameter in methodParameters)
             {
                 var parameter = SyntaxEx.Parameter(
-                    Wiki.TypeManager.GetTypeName(methodParameter), methodParameter.Name,
+                    Wiki.TypeManager.GetTypeName(methodParameter, ClassNameBase), methodParameter.Name,
                     nullableParameters ? SyntaxEx.NullLiteral() : null);
 
                 parameters.Add(parameter);

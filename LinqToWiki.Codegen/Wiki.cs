@@ -14,6 +14,8 @@ namespace LinqToWiki.Codegen
 {
     public class Wiki
     {
+        // TODO: split processing parameters
+
         internal static class Names
         {
             public const string Wiki = "Wiki";

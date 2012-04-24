@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApiErrorException.cs" />
+    <Compile Include="Collections\DictionaryDictionary.cs" />
     <Compile Include="Collections\TupleList.cs" />
     <Compile Include="Downloader.cs" />
     <Compile Include="Expressions\EnumFixer.cs" />

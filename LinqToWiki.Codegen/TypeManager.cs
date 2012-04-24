@@ -11,30 +11,26 @@ namespace LinqToWiki.Codegen
     {
         private readonly Wiki m_wiki;
 
-        private readonly Dictionary<EnumParameterType, string> m_enumTypes = new Dictionary<EnumParameterType, string>();
+        private readonly DictionaryDictionary<string, EnumParameterType, string> m_enumTypeNames =
+            new DictionaryDictionary<string, EnumParameterType, string>();
 
         public TypeManager(Wiki wiki)
         {
             m_wiki = wiki;
         }
 
-        public string GetTypeName(Property property)
+        public string GetTypeName(Parameter parameter, string moduleName)
         {
-            return GetTypeName(property.Type, property.Name);
+            return GetTypeName(parameter.Type, parameter.Name, moduleName);
         }
 
-        public string GetTypeName(Parameter parameter)
-        {
-            return GetTypeName(parameter.Type, parameter.Name);
-        }
-
-        public string GetTypeName(ParameterType parameterType, string propertyName, bool nullable = false)
+        public string GetTypeName(ParameterType parameterType, string propertyName, string moduleName, bool nullable = false)
         {
             var simpleType = parameterType as SimpleParameterType;
             if (simpleType != null)
                 return GetSimpleTypeName(simpleType, propertyName, nullable);
 
-            return GetEnumTypeName((EnumParameterType)parameterType, propertyName, nullable);
+            return GetEnumTypeName((EnumParameterType)parameterType, propertyName, moduleName, nullable);
         }
 
         private static string GetSimpleTypeName(SimpleParameterType simpleType, string propertyName, bool nullable)
@@ -69,12 +65,11 @@ namespace LinqToWiki.Codegen
             return result;
         }
 
-        private string GetEnumTypeName(EnumParameterType enumType, string propertyName, bool nullable)
+        private string GetEnumTypeName(EnumParameterType enumType, string propertyName, string moduleName, bool nullable)
         {
-            if (!m_enumTypes.ContainsKey(enumType))
-                GenerateType(enumType, propertyName);
-
-            string result = m_enumTypes[enumType];
+            string result;
+            if (!m_enumTypeNames.TryGetValue(moduleName, enumType, out result))
+                result = GenerateType(enumType, propertyName, moduleName);
 
             if (nullable)
                 result += '?';
@@ -82,13 +77,18 @@ namespace LinqToWiki.Codegen
             return result;
         }
 
-        private void GenerateType(EnumParameterType enumType, string propertyName)
+        private string GenerateType(EnumParameterType enumType, string propertyName, string moduleName)
         {
-            // TODO: better handling of duplicate names
-            string typeName = propertyName;
-            int i = 2;
-            while (m_enumTypes.Values.Contains(typeName))
-                typeName = propertyName + i++;
+            string typeName = moduleName + propertyName;
+
+            Dictionary<EnumParameterType, string> moduleTypes;
+
+            if (m_enumTypeNames.TryGetValue(moduleName, out moduleTypes))
+            {
+                int i = 2;
+                while (moduleTypes.Values.Contains(typeName))
+                    typeName = moduleName + propertyName + i++;
+            }
 
             var enumsFile = m_wiki.Files[Wiki.Names.Enums];
 
@@ -127,7 +127,9 @@ namespace LinqToWiki.Codegen
             m_wiki.Files[Wiki.Names.Enums] = enumsFile.ReplaceNode(
                 namespaceDeclaration, newNamespaceDeclaration);
 
-            m_enumTypes.Add(enumType, typeName);
+            m_enumTypeNames.Add(moduleName, enumType, typeName);
+
+            return typeName;
         }
 
         private static ClassDeclarationSyntax GenerateConverter(string enumName, IEnumerable<Tuple<string, string>> mapping)
@@ -193,13 +195,13 @@ namespace LinqToWiki.Codegen
         }
 
         // value is expected to be a string
-        public ExpressionSyntax CreateConverter(Property property, ExpressionSyntax value, ExpressionSyntax wiki)
+        public ExpressionSyntax CreateConverter(Property property, string moduleName, ExpressionSyntax value, ExpressionSyntax wiki)
         {
             var simpleType = property.Type as SimpleParameterType;
             if (simpleType != null)
                 return CreateSimpleConverter(simpleType, property.Name, value, wiki);
 
-            return CreateEnumConverter((EnumParameterType)property.Type, value);
+            return CreateEnumConverter((EnumParameterType)property.Type, moduleName, value);
         }
 
         private static ExpressionSyntax CreateSimpleConverter(
@@ -232,9 +234,9 @@ namespace LinqToWiki.Codegen
             return SyntaxEx.Invocation(SyntaxEx.MemberAccess("ValueParser", "Parse" + typeName), value);
         }
 
-        private ExpressionSyntax CreateEnumConverter(EnumParameterType type, ExpressionSyntax value)
+        private ExpressionSyntax CreateEnumConverter(EnumParameterType type, string moduleName, ExpressionSyntax value)
         {
-            var typeName = m_enumTypes[type];
+            var typeName = m_enumTypeNames[moduleName, type];
             return SyntaxEx.Cast(
                 typeName, SyntaxEx.Invocation(SyntaxEx.MemberAccess("Enum", "Parse"), SyntaxEx.TypeOf(typeName), value));
         }
