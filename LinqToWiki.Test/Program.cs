@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            WatchlistRaw(wiki);
+            CategoryMembers(wiki);
         }
 
         private static void Login(Wiki wiki, string name, string password)
@@ -71,7 +71,7 @@ namespace LinqToWiki.Test
         private static void AllMessages(Wiki wiki)
         {
             var result = (from m in wiki.Query.allmessages()
-                          //where m.messages == "about"
+                          where m.messages == new[] { "aboutsite", "abusefilter" }
                           where m.customised == allmessagescustomised.modified
                           select m)
                 .ToEnumerable().Take(10);
@@ -127,6 +127,8 @@ namespace LinqToWiki.Test
         {
             var result = (from cm in wiki.Query.categorymembers()
                           where cm.title == "Category:Query languages"
+                          where cm.ns == Namespace.Category // or new[] { Namespace.Category }
+                          where cm.startsortkeyprefix == "xml"
                           //orderby cm.sortkey
                           select new { cm.title, cm.sortkeyprefix, cm.type })
                 .ToEnumerable().Take(10);
@@ -270,8 +272,7 @@ namespace LinqToWiki.Test
         private static void Users(Wiki wiki)
         {
             var result = from u in wiki.Query.users()
-                         where u.users == "Svick"
-                         where u.users == "SvickBOT"
+                         where u.users == new[] { "Svick", "SvickBOT" }
                          select u;
 
             Write(result);
@@ -280,6 +281,7 @@ namespace LinqToWiki.Test
         private static void Watchlist(Wiki wiki)
         {
             var result = from wl in wiki.Query.watchlist()
+                         where wl.show == (watchlistshow.bot | watchlistshow.not_minor)
                          select new { wl.title, wl.user, wl.timestamp, wl.comment };
 
             Write(result);

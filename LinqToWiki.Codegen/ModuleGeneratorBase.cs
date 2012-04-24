@@ -111,10 +111,10 @@ namespace LinqToWiki.Codegen
         }
 
         protected PropertyDeclarationSyntax GenerateProperty(
-            string name, ParameterType type, bool nullable = false, string description = null)
+            string name, ParameterType type, bool nullable = false, string description = null, bool multi = false)
         {
             var result = SyntaxEx.AutoPropertyDeclaration(
-                new[] { SyntaxKind.PublicKeyword }, Wiki.TypeManager.GetTypeName(type, name, ClassNameBase, nullable),
+                new[] { SyntaxKind.PublicKeyword }, Wiki.TypeManager.GetTypeName(type, name, ClassNameBase, multi, nullable),
                 GetPropertyName(name), SyntaxKind.PrivateKeyword);
 
             if (description != null)

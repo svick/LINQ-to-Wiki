@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
+using System.Linq;
 
 namespace LinqToWiki
 {
@@ -38,7 +40,20 @@ namespace LinqToWiki
 
         public static string ToQueryString(this Enum e)
         {
-            return TypeDescriptor.GetConverter(e).ConvertToString(e);
+            IEnumerable<Enum> values;
+            var type = e.GetType();
+            if (type.IsDefined(typeof(FlagsAttribute), false))
+                values = Enum.GetValues(type).Cast<Enum>().Where(e.HasFlag);
+            else
+                values = new[] { e };
+
+            var converter = TypeDescriptor.GetConverter(e);
+            return string.Join("|", values.Select(converter.ConvertToString));
+        }
+
+        private static string ToQueryString(IEnumerable<object> collection)
+        {
+            return string.Join("|", collection.Select(ToQueryStringDynamic));
         }
 
         public static string ToQueryStringDynamic(object obj)

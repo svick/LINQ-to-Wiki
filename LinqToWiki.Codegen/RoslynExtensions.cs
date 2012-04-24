@@ -166,12 +166,30 @@ namespace LinqToWiki.Codegen
 
         public static EnumDeclarationSyntax EnumDeclaration(string enumName, IEnumerable<string> members)
         {
+            return EnumDeclaration(
+                enumName, members.Select(m => EnumMemberDeclaration(m)));
+        }
+
+        public static EnumDeclarationSyntax EnumDeclaration(
+            string enumName, IEnumerable<EnumMemberDeclarationSyntax> members, SyntaxKind? baseType = null)
+        {
             return Syntax.EnumDeclaration(
                 modifiers: TokenList(SyntaxKind.PublicKeyword),
                 identifier: Syntax.Identifier(enumName),
-                members:
-                    members.Select(m => Syntax.EnumMemberDeclaration(identifier: Syntax.Identifier(m)))
-                    .ToSeparatedList());
+                baseListOpt:
+                    baseType == null
+                        ? null
+                        : Syntax.BaseList(
+                            types:
+                                new TypeSyntax[] { Syntax.PredefinedType(Syntax.Token(baseType.Value)) }
+                                .ToSeparatedList()),
+                members: members.ToSeparatedList());
+        }
+
+        public static EnumMemberDeclarationSyntax EnumMemberDeclaration(string name, long? value = null, bool useHex = true)
+        {
+            var valueClause = value == null ? null : Syntax.EqualsValueClause(value: Literal(value.Value, useHex));
+            return Syntax.EnumMemberDeclaration(identifier: Syntax.Identifier(name), equalsValueOpt: valueClause);
         }
 
         public static ConstructorDeclarationSyntax ConstructorDeclaration(
@@ -239,6 +257,15 @@ namespace LinqToWiki.Codegen
         {
             return Syntax.LiteralExpression(
                 value ? SyntaxKind.TrueLiteralExpression : SyntaxKind.FalseLiteralExpression);
+        }
+
+        public static LiteralExpressionSyntax Literal(long value, bool useHex = false)
+        {
+            return Syntax.LiteralExpression(
+                SyntaxKind.NumericLiteralExpression,
+                Syntax.Literal(
+                    string.Format(System.Globalization.CultureInfo.InvariantCulture, useHex ? "0x{0:X}" : "{0}", value),
+                    value));
         }
 
         public static LiteralExpressionSyntax NullLiteral()
@@ -582,7 +609,9 @@ namespace LinqToWiki.Codegen
                     {
                         Syntax.Attribute(
                             Syntax.IdentifierName(name),
-                            Syntax.AttributeArgumentList(arguments: arguments.ToSeparatedList()))
+                            arguments.Length == 0
+                                ? null
+                                : Syntax.AttributeArgumentList(arguments: arguments.ToSeparatedList()))
                     }.ToSeparatedList());
         }
 

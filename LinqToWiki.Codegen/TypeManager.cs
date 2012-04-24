@@ -21,19 +21,19 @@ namespace LinqToWiki.Codegen
 
         public string GetTypeName(Parameter parameter, string moduleName)
         {
-            return GetTypeName(parameter.Type, parameter.Name, moduleName);
+            return GetTypeName(parameter.Type, parameter.Name, moduleName, parameter.Multi);
         }
 
-        public string GetTypeName(ParameterType parameterType, string propertyName, string moduleName, bool nullable = false)
+        public string GetTypeName(ParameterType parameterType, string propertyName, string moduleName, bool multi, bool nullable = false)
         {
             var simpleType = parameterType as SimpleParameterType;
             if (simpleType != null)
-                return GetSimpleTypeName(simpleType, propertyName, nullable);
+                return GetSimpleTypeName(simpleType, propertyName, multi, nullable);
 
-            return GetEnumTypeName((EnumParameterType)parameterType, propertyName, moduleName, nullable);
+            return GetEnumTypeName((EnumParameterType)parameterType, propertyName, moduleName, multi, nullable);
         }
 
-        private static string GetSimpleTypeName(SimpleParameterType simpleType, string propertyName, bool nullable)
+        private static string GetSimpleTypeName(SimpleParameterType simpleType, string propertyName, bool multi, bool nullable)
         {
             string result;
 
@@ -59,17 +59,19 @@ namespace LinqToWiki.Codegen
                 throw new InvalidOperationException(string.Format("Unknown type {0}", simpleType.Name));
             }
 
-            if (nullable && simpleType.Name != "string" && simpleType.Name != "namespace")
+            if (multi)
+                result = string.Format("ItemOrCollection<{0}>", result);
+            else if (nullable && simpleType.Name != "string" && simpleType.Name != "namespace")
                 result += '?';
 
             return result;
         }
 
-        private string GetEnumTypeName(EnumParameterType enumType, string propertyName, string moduleName, bool nullable)
+        private string GetEnumTypeName(EnumParameterType enumType, string propertyName, string moduleName, bool multi, bool nullable)
         {
             string result;
             if (!m_enumTypeNames.TryGetValue(moduleName, enumType, out result))
-                result = GenerateType(enumType, propertyName, moduleName);
+                result = GenerateType(enumType, propertyName, moduleName, multi);
 
             if (nullable)
                 result += '?';
@@ -77,7 +79,7 @@ namespace LinqToWiki.Codegen
             return result;
         }
 
-        private string GenerateType(EnumParameterType enumType, string propertyName, string moduleName)
+        private string GenerateType(EnumParameterType enumType, string propertyName, string moduleName, bool multi)
         {
             string typeName = moduleName + propertyName;
 
@@ -107,7 +109,24 @@ namespace LinqToWiki.Codegen
                 memberNames.Add(fixedName);
             }
 
-            var enumDeclaration = SyntaxEx.EnumDeclaration(typeName, memberNames);
+            EnumDeclarationSyntax enumDeclaration;
+
+            if (multi)
+            {
+                var members = new List<EnumMemberDeclarationSyntax>();
+
+                long value = 1;
+                foreach (var memberName in memberNames)
+                {
+                    members.Add(SyntaxEx.EnumMemberDeclaration(memberName, value));
+                    value *= 2;
+                }
+                enumDeclaration = SyntaxEx.EnumDeclaration(
+                    typeName, members, memberNames.Count <= 31 ? (SyntaxKind?)null : SyntaxKind.LongKeyword)
+                    .WithAttribute(SyntaxEx.AttributeDeclaration("Flags"));
+            }
+            else
+                enumDeclaration = SyntaxEx.EnumDeclaration(typeName, memberNames);
 
             var newNamespaceDeclaration = namespaceDeclaration;
 

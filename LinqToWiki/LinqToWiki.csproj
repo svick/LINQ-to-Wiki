@@ -15,7 +15,7 @@
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="ApiErrorException.cs" />
     <Compile Include="Collections\DictionaryDictionary.cs" />
+    <Compile Include="Collections\ItemOrCollection.cs" />
     <Compile Include="Collections\TupleList.cs" />
     <Compile Include="Downloader.cs" />
     <Compile Include="Expressions\EnumFixer.cs" />

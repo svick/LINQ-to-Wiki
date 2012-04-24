@@ -19,7 +19,7 @@ namespace LinqToWiki.Expressions
         public static QueryParameters<TSource, TResult> ParseWhere<TSource, TResult, TWhere>(
             Expression<Func<TWhere, bool>> expression, QueryParameters<TSource, TResult> previousParameters)
         {
-            // TODO: parse more complicated expressions, like Contains() or simple boolean expressions (without ==)
+            // TODO: parse more complicated expressions, like simple boolean expressions (without ==)
 
             var body = EnumFixer.Fix(PartialEvaluator.Eval(expression.Body));
 

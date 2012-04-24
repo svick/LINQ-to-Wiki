@@ -43,7 +43,7 @@ namespace LinqToWiki.Codegen
 
             var codeUnit = SyntaxEx.CompilationUnit(
                 SyntaxEx.NamespaceDeclaration(Wiki.Namespace, selectClass, whereClass, orderByClass),
-                "System", "System.Globalization", "System.Xml.Linq");
+                "System", "LinqToWiki.Collections", "System.Globalization", "System.Xml.Linq");
 
             Wiki.Files.Add(ClassNameBase, codeUnit);
 
@@ -108,7 +108,7 @@ namespace LinqToWiki.Codegen
         private ClassDeclarationSyntax GenerateWhere(IEnumerable<Parameter> parameters)
         {
             var propertyDeclarations =
-                parameters.Select(p => GenerateProperty(p.Name, p.Type, description: p.Description));
+                parameters.Select(p => GenerateProperty(p.Name, p.Type, multi: p.Multi, description: p.Description));
 
             return SyntaxEx.ClassDeclaration(m_whereClassName, propertyDeclarations)
                 .WithPrivateConstructor();
