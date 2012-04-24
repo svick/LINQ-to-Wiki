@@ -282,6 +282,7 @@ namespace LinqToWiki.Test
         {
             var result = from wl in wiki.Query.watchlist()
                          where wl.show == (watchlistshow.bot | watchlistshow.not_minor)
+                         where !wl.allrev
                          select new { wl.title, wl.user, wl.timestamp, wl.comment };
 
             Write(result);

@@ -19,17 +19,38 @@ namespace LinqToWiki.Expressions
         public static QueryParameters<TSource, TResult> ParseWhere<TSource, TResult, TWhere>(
             Expression<Func<TWhere, bool>> expression, QueryParameters<TSource, TResult> previousParameters)
         {
-            // TODO: parse more complicated expressions, like simple boolean expressions (without ==) and &&
+            // TODO: parse more complicated expressions, like &&
+
+            Tuple<MemberExpression, object> propertyValue = null;
 
             var body = EnumFixer.Fix(PartialEvaluator.Eval(expression.Body));
+
+            var memberExpression = body as MemberExpression;
+
+            if (memberExpression != null)
+                propertyValue = Tuple.Create<MemberExpression, object>(memberExpression, true);
+
+            var unaryExpression = body as UnaryExpression;
+
+            if (unaryExpression != null)
+            {
+                var memberAccess = unaryExpression.Operand as MemberExpression;
+                if (unaryExpression.NodeType == ExpressionType.Not && memberAccess != null)
+                    propertyValue = Tuple.Create<MemberExpression, object>(memberAccess, false);
+            }
 
             var binaryExpression = body as BinaryExpression;
 
             if (binaryExpression != null)
             {
                 if (binaryExpression.NodeType == ExpressionType.Equal)
-                    return ParseWhereEqualExpression(binaryExpression, previousParameters);
+                    propertyValue = ParseWhereEqualExpression(binaryExpression);
             }
+
+            if (propertyValue != null)
+                return previousParameters.AddSingleValue(
+                    ReversePropertyName(propertyValue.Item1.Member.Name.ToLowerInvariant()),
+                    QueryRepresentation.ToQueryStringDynamic(propertyValue.Item2));
 
             throw new ArgumentException();
         }
@@ -38,12 +59,10 @@ namespace LinqToWiki.Expressions
         /// Parses a part of <c>where</c> expression that contains <c>==</c>.
         /// </summary>
         /// <param name="expression">Subexpression to parse.</param>
-        /// <param name="previousParameters">Previous parameters, whose values should be included in the result.</param>
-        private static QueryParameters<TSource, TResult> ParseWhereEqualExpression<TSource, TResult>(
-            BinaryExpression expression, QueryParameters<TSource, TResult> previousParameters)
+        private static Tuple<MemberExpression, object> ParseWhereEqualExpression(BinaryExpression expression)
         {
-            var result = ParsePropertyEqualsConstantExpression(expression, previousParameters)
-                         ?? ParsePropertyEqualsConstantExpression(expression.Switch(), previousParameters);
+            var result = ParsePropertyEqualsConstantExpression(expression)
+                         ?? ParsePropertyEqualsConstantExpression(expression.Switch());
 
             if (result == null)
                 throw new ArgumentException("expression");
@@ -54,8 +73,7 @@ namespace LinqToWiki.Expressions
         /// <summary>
         /// Parses an expression that contains <c>==</c> and parameters in the “correct” order.
         /// </summary>
-        private static QueryParameters<TSource, TResult> ParsePropertyEqualsConstantExpression<TSource, TResult>(
-            BinaryExpression expression, QueryParameters<TSource, TResult> previousParameters)
+        private static Tuple<MemberExpression, object> ParsePropertyEqualsConstantExpression(BinaryExpression expression)
         {
             var memberAccess = expression.Left as MemberExpression;
 
@@ -65,8 +83,6 @@ namespace LinqToWiki.Expressions
             if (!(memberAccess.Expression is ParameterExpression))
                 return null;
 
-            string propertyName = memberAccess.Member.Name.ToLowerInvariant();
-
             var valueExpression = expression.Right as ConstantExpression;
 
             if (valueExpression == null)
@@ -74,8 +90,7 @@ namespace LinqToWiki.Expressions
 
             object value = valueExpression.Value;
 
-            return previousParameters.AddSingleValue(
-                ReversePropertyName(propertyName), QueryRepresentation.ToQueryStringDynamic(value));
+            return Tuple.Create(memberAccess, value);
         }
 
         public static string ReversePropertyName(string propertyName)
