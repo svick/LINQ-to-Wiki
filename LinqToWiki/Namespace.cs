@@ -6,7 +6,7 @@ using System.Xml.Linq;
 
 namespace LinqToWiki
 {
-    public class Namespace : IQueryRepresentation, IEquatable<Namespace>
+    public class Namespace : IEquatable<Namespace>
     {
         static Namespace()
         {

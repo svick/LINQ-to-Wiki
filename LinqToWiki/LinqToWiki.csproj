@@ -56,13 +56,12 @@
     <Compile Include="Expressions\EnumFixer.cs" />
     <Compile Include="Expressions\ExpressionParser.cs" />
     <Compile Include="Expressions\UsedPropertiesGatherer.cs" />
-    <Compile Include="IQueryRepresentation.cs" />
     <Compile Include="Namespace.cs" />
     <Compile Include="Parameters\NameValuesParameter.cs" />
     <Compile Include="Parameters\QueryParameters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryProcessor.cs" />
-    <Compile Include="QueryRepresentationExtensions.cs" />
+    <Compile Include="QueryRepresentation.cs" />
     <Compile Include="QueryType.cs" />
     <Compile Include="QueryTypeProperties.cs" />
     <Compile Include="ValueParser.cs" />

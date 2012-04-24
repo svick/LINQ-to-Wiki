@@ -4,11 +4,11 @@ using System.Globalization;
 
 namespace LinqToWiki
 {
-    public static class QueryRepresentationExtensions
+    public static class QueryRepresentation
     {
-        public static string ToQueryString(IQueryRepresentation queryRepresentation)
+        public static string ToQueryString(this Namespace ns)
         {
-            return queryRepresentation.GetQueryRepresentation();
+            return ns.GetQueryRepresentation();
         }
 
         public static string ToQueryString(this string s)
