@@ -19,7 +19,7 @@ namespace LinqToWiki.Expressions
         public static QueryParameters<TSource, TResult> ParseWhere<TSource, TResult, TWhere>(
             Expression<Func<TWhere, bool>> expression, QueryParameters<TSource, TResult> previousParameters)
         {
-            // TODO: parse more complicated expressions, like simple boolean expressions (without ==)
+            // TODO: parse more complicated expressions, like simple boolean expressions (without ==) and &&
 
             var body = EnumFixer.Fix(PartialEvaluator.Eval(expression.Body));
 
@@ -42,22 +42,35 @@ namespace LinqToWiki.Expressions
         private static QueryParameters<TSource, TResult> ParseWhereEqualExpression<TSource, TResult>(
             BinaryExpression expression, QueryParameters<TSource, TResult> previousParameters)
         {
-            // TODO: handle reverse order
+            var result = ParsePropertyEqualsConstantExpression(expression, previousParameters)
+                         ?? ParsePropertyEqualsConstantExpression(expression.Switch(), previousParameters);
 
+            if (result == null)
+                throw new ArgumentException("expression");
+
+            return result;
+        }
+
+        /// <summary>
+        /// Parses an expression that contains <c>==</c> and parameters in the “correct” order.
+        /// </summary>
+        private static QueryParameters<TSource, TResult> ParsePropertyEqualsConstantExpression<TSource, TResult>(
+            BinaryExpression expression, QueryParameters<TSource, TResult> previousParameters)
+        {
             var memberAccess = expression.Left as MemberExpression;
 
             if (memberAccess == null)
-                throw new ArgumentException();
+                return null;
 
             if (!(memberAccess.Expression is ParameterExpression))
-                throw new ArgumentException();
+                return null;
 
             string propertyName = memberAccess.Member.Name.ToLowerInvariant();
 
             var valueExpression = expression.Right as ConstantExpression;
 
             if (valueExpression == null)
-                throw new ArgumentException();
+                return null;
 
             object value = valueExpression.Value;
 

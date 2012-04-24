@@ -3,9 +3,25 @@ using System.Linq.Expressions;
 
 namespace LinqToWiki.Expressions
 {
-    public class EnumFixer : ExpressionVisitor
+    /// <summary>
+    /// Fixes expression containing comparison between enum property and integer constant
+    /// into one that uses enum value. This is necessary for further processing.
+    /// </summary>
+    /// <remarks>
+    /// Expressions that compare enum property with a enum constant (e.g. <c>x.Expiry == Expiry.Indefinite</c>)
+    /// are represented using a cast and an integer constant in compiler generated Expression
+    /// (e.g. <c>(int)x.Expiry == 0</c>).
+    /// 
+    /// This class converts the latter form back into the former, so that it can be easily processesed later.
+    /// </remarks>
+    class EnumFixer : ExpressionVisitor
     {
         protected override Expression VisitBinary(BinaryExpression node)
+        {
+            return PerformFix(node) ?? PerformFix(node.Switch()).Switch() ?? base.VisitBinary(node);
+        }
+
+        private static BinaryExpression PerformFix(BinaryExpression node)
         {
             var leftUnary = node.Left as UnaryExpression;
             var rightConstant = node.Right as ConstantExpression;
@@ -18,10 +34,12 @@ namespace LinqToWiki.Expressions
 
                 return Expression.MakeBinary(node.NodeType, leftUnary.Operand, Expression.Constant(enumValue));
             }
-
-            return base.VisitBinary(node);
+            return null;
         }
 
+        /// <summary>
+        /// Fixes expression containing enum into better form.
+        /// </summary>
         public static Expression Fix(Expression expression)
         {
             return new EnumFixer().Visit(expression);

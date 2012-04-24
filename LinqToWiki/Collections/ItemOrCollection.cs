@@ -50,6 +50,26 @@ namespace LinqToWiki.Collections
             throw new NotSupportedException();
         }
 
+        public static bool operator ==(T first, ItemOrCollection<T> second)
+        {
+            throw new NotSupportedException();
+        }
+
+        public static bool operator !=(T first, ItemOrCollection<T> second)
+        {
+            throw new NotSupportedException();
+        }
+
+        public static bool operator ==(IEnumerable<T> first, ItemOrCollection<T> second)
+        {
+            throw new NotSupportedException();
+        }
+
+        public static bool operator !=(IEnumerable<T> first, ItemOrCollection<T> second)
+        {
+            throw new NotSupportedException();
+        }
+
         #region To avoid compiler warning
 
         public override bool Equals(object obj)
