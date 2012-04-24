@@ -19,16 +19,21 @@ namespace LinqToWiki.Expressions
         public static QueryParameters<TSource, TResult> ParseWhere<TSource, TResult, TWhere>(
             Expression<Func<TWhere, bool>> expression, QueryParameters<TSource, TResult> previousParameters)
         {
-            // TODO: parse more complicated expressions, like &&
-
-            Tuple<MemberExpression, object> propertyValue = null;
-
             var body = EnumFixer.Fix(PartialEvaluator.Eval(expression.Body));
 
+            return ParseWhereSubexpression(body, previousParameters);
+        }
+
+        /// <summary>
+        /// Parses a single expression from <c>where</c>. If necessary, calls itself recursivelly.
+        /// </summary>
+        private static QueryParameters<TSource, TResult> ParseWhereSubexpression<TSource, TResult>(
+            Expression body, QueryParameters<TSource, TResult> previousParameters)
+        {
             var memberExpression = body as MemberExpression;
 
             if (memberExpression != null)
-                propertyValue = Tuple.Create<MemberExpression, object>(memberExpression, true);
+                return AddValue(previousParameters, memberExpression, true);
 
             var unaryExpression = body as UnaryExpression;
 
@@ -36,7 +41,9 @@ namespace LinqToWiki.Expressions
             {
                 var memberAccess = unaryExpression.Operand as MemberExpression;
                 if (unaryExpression.NodeType == ExpressionType.Not && memberAccess != null)
-                    propertyValue = Tuple.Create<MemberExpression, object>(memberAccess, false);
+                    return AddValue(previousParameters, memberAccess, false);
+
+                throw new ArgumentException(string.Format("Unknown type of unary expression: {0}.", unaryExpression));
             }
 
             var binaryExpression = body as BinaryExpression;
@@ -44,15 +51,35 @@ namespace LinqToWiki.Expressions
             if (binaryExpression != null)
             {
                 if (binaryExpression.NodeType == ExpressionType.Equal)
-                    propertyValue = ParseWhereEqualExpression(binaryExpression);
+                    return AddValue(previousParameters, ParseWhereEqualExpression(binaryExpression));
+
+                if (binaryExpression.NodeType == ExpressionType.AndAlso || binaryExpression.NodeType == ExpressionType.And)
+                {
+                    var afterLeft = ParseWhereSubexpression(binaryExpression.Left, previousParameters);
+                    return ParseWhereSubexpression(binaryExpression.Right, afterLeft);
+                }
+
+                throw new ArgumentException(string.Format("Unknown type of binary expression: {0}.", binaryExpression));
             }
 
-            if (propertyValue != null)
-                return previousParameters.AddSingleValue(
-                    ReversePropertyName(propertyValue.Item1.Member.Name.ToLowerInvariant()),
-                    QueryRepresentation.ToQueryStringDynamic(propertyValue.Item2));
+            throw new ArgumentException(string.Format("Unknown type of expression: {0}.", body));
+        }
 
-            throw new ArgumentException();
+        private static QueryParameters<TSource, TResult> AddValue<TSource, TResult>(
+            QueryParameters<TSource, TResult> previousParameters, Tuple<MemberExpression, object> propertyValue)
+        {
+            return AddValue(previousParameters, propertyValue.Item1, propertyValue.Item2);
+        }
+
+        /// <summary>
+        /// Adds single value to QueryParameters based on a property expression and a unformatted value.
+        /// </summary>
+        private static QueryParameters<TSource, TResult> AddValue<TSource, TResult>(
+            QueryParameters<TSource, TResult> previousParameters, MemberExpression memberExpression, object value)
+        {
+            return previousParameters.AddSingleValue(
+                ReversePropertyName(memberExpression.Member.Name.ToLowerInvariant()),
+                QueryRepresentation.ToQueryStringDynamic(value));
         }
 
         /// <summary>
@@ -65,7 +92,7 @@ namespace LinqToWiki.Expressions
                          ?? ParsePropertyEqualsConstantExpression(expression.Switch());
 
             if (result == null)
-                throw new ArgumentException("expression");
+                throw new ArgumentException(string.Format("Could not parse expression: {0}.", expression));
 
             return result;
         }

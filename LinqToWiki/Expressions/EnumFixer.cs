@@ -23,6 +23,10 @@ namespace LinqToWiki.Expressions
 
         private static BinaryExpression PerformFix(BinaryExpression node)
         {
+            // doesn't work correctly for other types of operations (and it's necessary)
+            if (node.NodeType != ExpressionType.Equal && node.NodeType != ExpressionType.NotEqual)
+                return null;
+
             var leftUnary = node.Left as UnaryExpression;
             var rightConstant = node.Right as ConstantExpression;
 
@@ -34,6 +38,7 @@ namespace LinqToWiki.Expressions
 
                 return Expression.MakeBinary(node.NodeType, leftUnary.Operand, Expression.Constant(enumValue));
             }
+
             return null;
         }
 

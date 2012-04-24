@@ -127,8 +127,8 @@ namespace LinqToWiki.Test
         {
             var result = (from cm in wiki.Query.categorymembers()
                           where cm.title == "Category:Query languages"
-                          where cm.ns == Namespace.Category // or new[] { Namespace.Category }
-                          where cm.startsortkeyprefix == "xml"
+                                && cm.ns == Namespace.Category // or new[] { Namespace.Category }
+                                && cm.startsortkeyprefix == "xml"
                           //orderby cm.sortkey
                           select new { cm.title, cm.sortkeyprefix, cm.type })
                 .ToEnumerable().Take(10);

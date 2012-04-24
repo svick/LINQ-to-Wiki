@@ -12,7 +12,7 @@ namespace LinqToWiki.Parameters
         /// <summary>
         /// Linked list of general parameters.
         /// </summary>
-        public NameValuesParameter Values { get; protected set; }
+        public NameValueParameter Value { get; protected set; }
 
         /// <summary>
         /// Property to sort by. Is represented by <c>sort</c> in the query.
@@ -31,7 +31,7 @@ namespace LinqToWiki.Parameters
         /// </summary>
         protected void CopyTo(QueryParameters target)
         {
-            target.Values = Values;
+            target.Value = Value;
             target.Sort = Sort;
             target.Ascending = Ascending;
         }
@@ -82,54 +82,28 @@ namespace LinqToWiki.Parameters
 
         /// <summary>
         /// Adds a single name-value pair to the current query and returns the result.
+        /// The parameter <see cref="value"/> can actually represent multiple values.
         /// </summary>
         public QueryParameters<TSource, TResult> AddSingleValue(string name, string value)
         {
             if (value == null)
                 return this;
 
-            var values = Values;
-
-            var pastValue = RemoveValue(ref values, name);
-
-            var newValue = pastValue == null ? new[] { value } : pastValue.Concat(new[] { value });
+            if (Value != null && Value.Any(v => v.Name == name))
+                throw new InvalidOperationException(
+                    string.Format("Tried adding value with the name '{0}' that is already present.", name));
 
             var result = Clone();
-            result.Values = new NameValuesParameter(values, name, newValue);
-            return result;
-        }
-
-        private static IEnumerable<string> RemoveValue(ref NameValuesParameter head, string name)
-        {
-            if (head == null)
-                return null;
-
-            IEnumerable<string> result;
-            if (head.Name == name)
-            {
-                result = head.Values;
-                head = head.Previous;
-            }
-            else
-            {
-                var previous = head.Previous;
-                result = RemoveValue(ref previous, name);
-
-                if (result != null)
-                    head = new NameValuesParameter(previous, head.Name, head.Values);
-            }
-
+            result.Value = new NameValueParameter(Value, name, value);
             return result;
         }
 
         /// <summary>
-        /// Adds a name-values pair to the current query and returns the result.
+        /// Adds a name-value pair to the current query and returns the result.
         /// </summary>
         public QueryParameters<TSource, TResult> AddMultipleValues(string name, IEnumerable<string> values)
         {
-            var result = Clone();
-            result.Values = new NameValuesParameter(Values, name, values);
-            return result;
+            return AddSingleValue(name, NameValueParameter.JoinValues(values));
         }
 
         /// <summary>

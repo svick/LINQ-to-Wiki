@@ -81,9 +81,9 @@ namespace LinqToWiki
 
             string prefix = m_queryTypeProperties.Prefix;
 
-            if (parameters.Values != null)
-                foreach (var value in parameters.Values)
-                    parsedParameters.Add(prefix + value.Name, NameValuesParameter.JoinValues(value.Values));
+            if (parameters.Value != null)
+                foreach (var value in parameters.Value)
+                    parsedParameters.Add(prefix + value.Name, value.Value);
 
             if (parameters.Ascending != null)
             {
@@ -126,7 +126,7 @@ namespace LinqToWiki
 
             if (list)
             {
-                parsedParameters.Add(prefix + "prop", NameValuesParameter.JoinValues(selectedProps));
+                parsedParameters.Add(prefix + "prop", NameValueParameter.JoinValues(selectedProps));
 
                 parsedParameters.Add(prefix + "limit", "max");
             }

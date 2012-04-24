@@ -4,15 +4,15 @@ using System.Collections.Generic;
 namespace LinqToWiki.Parameters
 {
     /// <summary>
-    /// Node of a linked list of name-values pairs, that represent general query parameters.
+    /// Node of a linked list of name-value pairs, that represent general query parameters.
     /// Also acts as a collection of parameters from the linked list ending with the current one.
     /// </summary>
-    public sealed class NameValuesParameter : IEnumerable<NameValuesParameter>
+    public sealed class NameValueParameter : IEnumerable<NameValueParameter>
     {
         /// <summary>
         /// Previous node in the list, or <c>null</c>, if this is the last one.
         /// </summary>
-        public NameValuesParameter Previous { get; private set; }
+        public NameValueParameter Previous { get; private set; }
 
         /// <summary>
         /// Name of the this parameter.
@@ -20,29 +20,23 @@ namespace LinqToWiki.Parameters
         public string Name { get; private set; }
 
         /// <summary>
-        /// Values of this parameter.
+        /// Value of this parameter.
+        /// Can represent multiple actual values, separated by <c>|</c>.
         /// </summary>
-        public IEnumerable<string> Values { get; private set; }
+        public string Value { get; private set; }
 
-        public NameValuesParameter(NameValuesParameter previous, string name, string value)
+        public NameValueParameter(NameValueParameter previous, string name, string value)
         {
             Previous = previous;
             Name = name;
-            Values = new[] { value };
+            Value = value;
         }
 
-        public NameValuesParameter(NameValuesParameter previous, string name, IEnumerable<string> values)
+        public IEnumerator<NameValueParameter> GetEnumerator()
         {
-            Previous = previous;
-            Name = name;
-            Values = values;
-        }
+            var stack = new Stack<NameValueParameter>();
 
-        public IEnumerator<NameValuesParameter> GetEnumerator()
-        {
-            var stack = new Stack<NameValuesParameter>();
-
-            for (NameValuesParameter current = this; current != null; current = current.Previous)
+            for (NameValueParameter current = this; current != null; current = current.Previous)
                 stack.Push(current);
 
             return stack.GetEnumerator();
@@ -55,12 +49,11 @@ namespace LinqToWiki.Parameters
 
         public override string ToString()
         {
-            return string.Format("{0}={1}", Name, JoinValues(Values));
+            return string.Format("{0}={1}", Name, Value);
         }
 
         public static string JoinValues(IEnumerable<string> values)
         {
-            //TODO: escaping
             return string.Join("|", values);
         }
     }

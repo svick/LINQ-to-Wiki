@@ -59,7 +59,7 @@
     <Compile Include="Expressions\ExpressionParser.cs" />
     <Compile Include="Expressions\UsedPropertiesGatherer.cs" />
     <Compile Include="Namespace.cs" />
-    <Compile Include="Parameters\NameValuesParameter.cs" />
+    <Compile Include="Parameters\NameValueParameter.cs" />
     <Compile Include="Parameters\QueryParameters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryProcessor.cs" />
