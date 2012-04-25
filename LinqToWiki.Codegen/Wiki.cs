@@ -89,7 +89,10 @@ namespace LinqToWiki.Codegen
         {
             var pageClass = SyntaxEx.ClassDeclaration(Names.Page);
 
-            Files.Add(Names.Page, SyntaxEx.CompilationUnit(SyntaxEx.NamespaceDeclaration(Namespace, pageClass)));
+            Files.Add(
+                Names.Page,
+                SyntaxEx.CompilationUnit(
+                    SyntaxEx.NamespaceDeclaration(Namespace, pageClass), "System", "LinqToWiki.Collections"));
         }
 
         private void CreateWikiClass()
@@ -212,8 +215,10 @@ namespace LinqToWiki.Codegen
                     AddListModule(module);
                 else
                 {
-                    if (propModules++ < 0 || module.Name == "info")
+                    if (propModules++ < 0)
                         AddPropModule(module);
+                    else if (module.Name == "info")
+                        AddInfoModule(module);
                 }
             }
         }
@@ -245,6 +250,11 @@ namespace LinqToWiki.Codegen
         private void AddPropModule(Module module)
         {
             new PropModuleGenerator(this).Generate(module);
+        }
+
+        private void AddInfoModule(Module module)
+        {
+            new InfoModuleGenerator(this).Generate(module);
         }
 
         private void AddModule(Module module)

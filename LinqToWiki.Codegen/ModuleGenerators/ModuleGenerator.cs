@@ -9,7 +9,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 {
     public class ModuleGenerator : ModuleGeneratorBase
     {
-        private string m_resultClassName;
+        protected string ResultClassName { get; private set; }
 
         public ModuleGenerator(Wiki wiki)
             : base(wiki)
@@ -17,7 +17,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
         protected override void GenerateInternal(Module module)
         {
-            m_resultClassName = ClassNameBase + "Result";
+            ResultClassName = ClassNameBase + "Result";
 
             var resultType = GenerateResultClass(module.PropertyGroups);
 
@@ -27,17 +27,22 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
             Wiki.Files.Add(ClassNameBase, codeUnit);
 
-            GenerateMethod(module, module.Parameters, m_resultClassName, null, Wiki.Names.Wiki, true, null);
+            GenerateMethod(module);
         }
 
-        private ClassDeclarationSyntax GenerateResultClass(IEnumerable<PropertyGroup> propertyGroups)
+        protected virtual void GenerateMethod(Module module)
+        {
+            GenerateMethod(module, module.Parameters, ResultClassName, null, Wiki.Names.Wiki, true, null);
+        }
+
+        protected virtual ClassDeclarationSyntax GenerateResultClass(IEnumerable<PropertyGroup> propertyGroups)
         {
             if (propertyGroups.Any(g => g.Name != null))
-                throw new NotImplementedException();
+                throw new NotSupportedException();
 
             var rootPropertyGroup = propertyGroups.Single(g => g.Name == null);
 
-            return GenerateClassForProperties(m_resultClassName, rootPropertyGroup.Properties);
+            return GenerateClassForProperties(ResultClassName, rootPropertyGroup.Properties);
         }
 
         protected override IEnumerable<Tuple<string, string>> GetBaseParameters(Module module)
@@ -52,7 +57,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
         protected override TypeSyntax GenerateMethodResultType()
         {
-            return SyntaxEx.ParseTypeName(m_resultClassName);
+            return SyntaxEx.ParseTypeName(ResultClassName);
         }
     }
 }

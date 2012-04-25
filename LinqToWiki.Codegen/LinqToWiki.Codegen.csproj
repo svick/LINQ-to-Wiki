@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ListExtensions.cs" />
+    <Compile Include="ModuleGenerators\InfoModuleGenerator.cs" />
     <Compile Include="ModuleGenerators\ListModuleGenerator.cs" />
     <Compile Include="ModuleGenerators\ModuleGenerator.cs" />
     <Compile Include="ModuleGenerators\ModuleGeneratorBase.cs" />

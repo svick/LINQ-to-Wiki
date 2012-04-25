@@ -139,7 +139,8 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
         protected void GenerateMethod(
             Module module, IEnumerable<Parameter> methodParameters, string resultClassName,
-            FieldDeclarationSyntax propsField, string fileName, bool nullableParameters, SortType? sortType)
+            FieldDeclarationSyntax propsField, string fileName, bool nullableParameters, SortType? sortType,
+            bool throwingBody = false)
         {
             var queryActionFile = Wiki.Files[fileName];
             var queryActionClass = queryActionFile.SingleDescendant<ClassDeclarationSyntax>();
@@ -178,13 +179,14 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             var parameters = new List<ParameterSyntax>();
             var statements = new List<StatementSyntax>();
 
-            statements.Add(queryParametersLocal);
+            if (!throwingBody)
+                statements.Add(queryParametersLocal);
 
             foreach (var methodParameter in methodParameters)
             {
                 var parameter = SyntaxEx.Parameter(
-                    Wiki.TypeManager.GetTypeName(methodParameter, ClassNameBase), methodParameter.Name,
-                    nullableParameters ? SyntaxEx.NullLiteral() : null);
+                    Wiki.TypeManager.GetTypeName(methodParameter, ClassNameBase, nullableParameters),
+                    methodParameter.Name, nullableParameters ? SyntaxEx.NullLiteral() : null);
 
                 parameters.Add(parameter);
 
@@ -194,15 +196,18 @@ namespace LinqToWiki.Codegen.ModuleGenerators
                         SyntaxEx.Literal(methodParameter.Name),
                         SyntaxEx.Invocation(SyntaxEx.MemberAccess(parameter, "ToQueryString"))));
 
-                if (nullableParameters)
+                if (!throwingBody)
                 {
-                    var assignmentWithCheck = SyntaxEx.If(
-                        SyntaxEx.NotEquals((NamedNode)parameter, SyntaxEx.NullLiteral()), queryParametersAssignment);
+                    if (nullableParameters)
+                    {
+                        var assignmentWithCheck = SyntaxEx.If(
+                            SyntaxEx.NotEquals((NamedNode)parameter, SyntaxEx.NullLiteral()), queryParametersAssignment);
 
-                    statements.Add(assignmentWithCheck);
+                        statements.Add(assignmentWithCheck);
+                    }
+                    else
+                        statements.Add(queryParametersAssignment);
                 }
-                else
-                    statements.Add(queryParametersAssignment);
 
                 var parameterDocumentation = SyntaxEx.DocumentationParameter(
                     methodParameter.Name, methodParameter.Description);
@@ -216,7 +221,10 @@ namespace LinqToWiki.Codegen.ModuleGenerators
                     Syntax.IdentifierName("m_wiki"),
                     (NamedNode)propertiesField), (NamedNode)queryParametersLocal);
 
-            statements.Add(SyntaxEx.Return(queryCreation));
+            if (throwingBody)
+                statements.Add(SyntaxEx.Throw(SyntaxEx.ObjectCreation("NotSupportedException")));
+            else
+                statements.Add(SyntaxEx.Return(queryCreation));
 
             var method = SyntaxEx.MethodDeclaration(
                 new[] { SyntaxKind.PublicKeyword }, GenerateMethodResultType(), ClassNameBase, parameters, statements)

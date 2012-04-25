@@ -437,6 +437,11 @@ namespace LinqToWiki.Codegen
             return Syntax.ReturnStatement(expressionOpt: expression);
         }
 
+        public static ThrowStatementSyntax Throw(ExpressionSyntax expression)
+        {
+            return Syntax.ThrowStatement(expressionOpt: expression);
+        }
+
         public static IfStatementSyntax If(
             ExpressionSyntax condition, StatementSyntax ifStatement, StatementSyntax elseStatement = null)
         {

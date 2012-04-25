@@ -19,9 +19,9 @@ namespace LinqToWiki.Codegen
             m_wiki = wiki;
         }
 
-        public string GetTypeName(Parameter parameter, string moduleName)
+        public string GetTypeName(Parameter parameter, string moduleName, bool nullable)
         {
-            return GetTypeName(parameter.Type, parameter.Name, moduleName, parameter.Multi);
+            return GetTypeName(parameter.Type, parameter.Name, moduleName, parameter.Multi, nullable);
         }
 
         public string GetTypeName(ParameterType parameterType, string propertyName, string moduleName, bool multi, bool nullable = false)
