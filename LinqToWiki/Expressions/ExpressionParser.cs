@@ -180,5 +180,24 @@ namespace LinqToWiki.Expressions
 
             return previousParameters.WithSelect(usedProperties, expression.Compile());
         }
+
+        /// <summary>
+        /// Parses a <c>select</c> expression that looks like an identity (based on it type).
+        /// </summary>
+        /// <param name="expression">Expression to parse.</param>
+        /// <param name="previousParameters">Previous parameters, whose values should be included in the result.</param>
+        public static QueryParameters<T, T> ParseIdentitySelect<T>(Expression<Func<T, T>> expression, QueryParameters<T, T> previousParameters)
+        {
+            var parameter = expression.Parameters.Single();
+
+            var body = expression.Body as ParameterExpression;
+
+            if (parameter != body)
+                throw new InvalidOperationException(
+                    string.Format(
+                        "Select expression with the return type of '{0}' has to be identity.", expression.Body.Type));
+
+            return previousParameters;
+        }
     }
 }
