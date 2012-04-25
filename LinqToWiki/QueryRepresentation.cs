@@ -56,6 +56,11 @@ namespace LinqToWiki
             return string.Join("|", collection.Select(ToQueryStringDynamic));
         }
 
+        private static string ToQueryString(object obj)
+        {
+            throw new InvalidOperationException(string.Format("Object '{0}' cannot converted to query string.", obj));
+        }
+
         public static string ToQueryStringDynamic(object obj)
         {
             return ToQueryString((dynamic)obj);
