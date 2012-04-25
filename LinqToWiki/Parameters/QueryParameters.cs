@@ -9,9 +9,6 @@ namespace LinqToWiki.Parameters
     /// </summary>
     public abstract class QueryParameters
     {
-        protected QueryParameters()
-        {}
-
         /// <summary>
         /// Linked list of general parameters.
         /// </summary>

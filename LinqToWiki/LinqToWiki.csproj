@@ -61,6 +61,7 @@
     <Compile Include="Expressions\UsedPropertiesGatherer.cs" />
     <Compile Include="IPagesSource.cs" />
     <Compile Include="Namespace.cs" />
+    <Compile Include="PageData.cs" />
     <Compile Include="Parameters\NameValueParameter.cs" />
     <Compile Include="Parameters\PageQueryParameters.cs" />
     <Compile Include="Parameters\QueryParameters.cs" />

@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using LinqToWiki.Codegen.ModuleInfo;
+using LinqToWiki.Collections;
 using Roslyn.Compilers.CSharp;
 
 namespace LinqToWiki.Codegen.ModuleGenerators
@@ -21,12 +23,19 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             var containingFile = Wiki.Files[Wiki.Names.Page];
             var containingClass = containingFile.SingleDescendant<ClassDeclarationSyntax>();
 
-            var propertiesField = CreatePropertiesField(module, ResultClassName, null, null);
+            var propsField = CreatePropsField(module.PropertyGroups);
+
+            var propertiesField = CreatePropertiesField(module, ResultClassName, propsField, null);
 
             var moduleProperty = CreateThrowingProperty(module);
 
             Wiki.Files[Wiki.Names.Page] = containingFile.ReplaceNode(
-                containingClass, containingClass.WithAdditionalMembers(propertiesField, moduleProperty));
+                containingClass, containingClass.WithAdditionalMembers(propsField, propertiesField, moduleProperty));
+        }
+
+        protected override IEnumerable<Tuple<string, string>> GetBaseParameters(Module module)
+        {
+            return new TupleList<string, string>();
         }
 
         private PropertyDeclarationSyntax CreateThrowingProperty(Module module)

@@ -5,11 +5,22 @@ using System.Xml.Linq;
 
 namespace LinqToWiki
 {
-    /// <summary>
-    /// Represents a certain type of query and its properties.
-    /// </summary>
-    public class QueryTypeProperties<T>
+    public abstract class QueryTypeProperties
     {
+        private readonly IDictionary<string, string[]> m_props;
+
+        protected QueryTypeProperties(
+            string moduleName, string prefix, QueryType? queryType, SortType? sortType,
+            IEnumerable<Tuple<string, string>> baseParameters, IDictionary<string, string[]> props)
+        {
+            ModuleName = moduleName;
+            Prefix = prefix;
+            QueryType = queryType;
+            SortType = sortType;
+            BaseParameters = baseParameters;
+            m_props = props ?? new Dictionary<string, string[]>();
+        }
+
         /// <summary>
         /// Name of the module.
         /// </summary>
@@ -36,30 +47,6 @@ namespace LinqToWiki
         /// </summary>
         public IEnumerable<Tuple<string, string>> BaseParameters { get; private set; }
 
-        private readonly IDictionary<string, string[]> m_props;
-        private readonly Func<XElement, WikiInfo, T> m_parser;
-
-        public QueryTypeProperties(
-            string moduleName, string prefix, QueryType? queryType, SortType? sortType,
-            IEnumerable<Tuple<string, string>> baseParameters, IDictionary<string, string[]> props,
-            Func<XElement, WikiInfo, T> parser)
-        {
-            ModuleName = moduleName;
-            Prefix = prefix;
-            QueryType = queryType;
-            SortType = sortType;
-            BaseParameters = baseParameters;
-            m_props = props ?? new Dictionary<string, string[]>();
-            m_parser = parser;
-        }
-
-        public QueryTypeProperties(
-            string moduleName, string prefix, QueryType? queryType, SortType? sortType,
-            IEnumerable<Tuple<string, string>> baseParameters, IDictionary<string, string[]> props,
-            Func<XElement, T> parser)
-            : this(moduleName, prefix, queryType, sortType, baseParameters, props, (elem, _) => parser(elem))
-        {}
-
         /// <summary>
         /// Returns the value of <c>prop</c> for given property.
         /// </summary>
@@ -75,6 +62,30 @@ namespace LinqToWiki
         {
             return m_props.Values.SelectMany(p => p).Distinct();
         }
+    }
+
+    /// <summary>
+    /// Represents a certain type of query and its properties.
+    /// </summary>
+    public class QueryTypeProperties<T> : QueryTypeProperties
+    {
+        private readonly Func<XElement, WikiInfo, T> m_parser;
+
+        public QueryTypeProperties(
+            string moduleName, string prefix, QueryType? queryType, SortType? sortType,
+            IEnumerable<Tuple<string, string>> baseParameters, IDictionary<string, string[]> props,
+            Func<XElement, WikiInfo, T> parser)
+            : base(moduleName, prefix, queryType, sortType, baseParameters, props)
+        {
+            m_parser = parser;
+        }
+
+        public QueryTypeProperties(
+            string moduleName, string prefix, QueryType? queryType, SortType? sortType,
+            IEnumerable<Tuple<string, string>> baseParameters, IDictionary<string, string[]> props,
+            Func<XElement, T> parser)
+            : this(moduleName, prefix, queryType, sortType, baseParameters, props, (elem, _) => parser(elem))
+        {}
 
         /// <summary>
         /// Parses an XML element representing one item from the result.

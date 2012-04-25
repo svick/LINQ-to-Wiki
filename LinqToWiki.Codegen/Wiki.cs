@@ -92,7 +92,8 @@ namespace LinqToWiki.Codegen
             Files.Add(
                 Names.Page,
                 SyntaxEx.CompilationUnit(
-                    SyntaxEx.NamespaceDeclaration(Namespace, pageClass), "System", "LinqToWiki.Collections"));
+                    SyntaxEx.NamespaceDeclaration(Namespace, pageClass),
+                    "System", "System.Collections.Generic", "LinqToWiki.Collections"));
         }
 
         private void CreateWikiClass()

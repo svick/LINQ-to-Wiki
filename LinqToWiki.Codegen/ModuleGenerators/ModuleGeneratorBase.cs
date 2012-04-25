@@ -71,16 +71,24 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
                 statements.Add(propertyValueLocal);
 
+                var valueValue = SyntaxEx.MemberAccess(propertyValueLocal, "Value");
+
                 var assignment = SyntaxEx.Assignment(
                     SyntaxEx.MemberAccess(resultLocal, GetPropertyName(property.Name)),
                     Wiki.TypeManager.CreateConverter(
-                        property, ClassNameBase, SyntaxEx.MemberAccess(propertyValueLocal, "Value"),
+                        property, ClassNameBase, valueValue,
                         (NamedNode)wikiParameter));
 
                 if (checkForNull)
                 {
-                    var ifStatement = SyntaxEx.If(
-                        SyntaxEx.NotEquals((NamedNode)propertyValueLocal, SyntaxEx.NullLiteral()), assignment);
+                    ExpressionSyntax condition = SyntaxEx.NotEquals((NamedNode)propertyValueLocal, SyntaxEx.NullLiteral());
+
+                    var simpleType = property.Type as SimpleParameterType;
+                    if (simpleType == null || (simpleType.Name != "string" && simpleType.Name != "boolean"))
+                        condition = SyntaxEx.And(
+                            condition, SyntaxEx.NotEquals(valueValue, SyntaxEx.Literal("")));
+
+                    var ifStatement = SyntaxEx.If(condition, assignment);
                     statements.Add(ifStatement);
                 }
                 else
@@ -242,6 +250,24 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             return SyntaxEx.ObjectCreation(
                 "TupleList<string, string>", null,
                 tupleList.Select(t => new[] { t.Item1, t.Item2 }.Select(SyntaxEx.Literal)));
+        }
+
+        protected FieldDeclarationSyntax CreatePropsField(IEnumerable<PropertyGroup> propertyGroups)
+        {
+            var initializers =
+                from pg in propertyGroups
+                from p in pg.Properties
+                group pg.Name by p.Name
+                into g
+                select new[] { SyntaxEx.Literal(g.Key), SyntaxEx.ArrayCreation(null, g.Select(SyntaxEx.Literal)) };
+
+            var propsInitializer = SyntaxEx.ObjectCreation("Dictionary<string, string[]>", null, initializers);
+
+            var propsField =
+                SyntaxEx.FieldDeclaration(
+                    new[] { SyntaxKind.PrivateKeyword, SyntaxKind.StaticKeyword, SyntaxKind.ReadOnlyKeyword },
+                    "IDictionary<string, string[]>", ClassNameBase + "Props", propsInitializer);
+            return propsField;
         }
     }
 }

@@ -541,6 +541,11 @@ namespace LinqToWiki.Codegen
             return Syntax.BinaryExpression(SyntaxKind.NotEqualsExpression, left: left, right: right);
         }
 
+        public static BinaryExpressionSyntax And(ExpressionSyntax left, ExpressionSyntax right)
+        {
+            return Syntax.BinaryExpression(SyntaxKind.LogicalAndExpression, left: left, right: right);
+        }
+
         public static TypeOfExpressionSyntax TypeOf(string typeName)
         {
             return Syntax.TypeOfExpression(

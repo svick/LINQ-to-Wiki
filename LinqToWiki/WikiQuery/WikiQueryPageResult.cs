@@ -10,11 +10,11 @@ namespace LinqToWiki
     /// </summary>
     public class WikiQueryPageResult<TPage, TResult>
     {
-        private readonly QueryPageProcessor<TPage> m_queryProcessor;
+        private readonly QueryPageProcessor m_queryProcessor;
         private readonly PageQueryParameters m_parameters;
-        private readonly Func<TPage, TResult> m_selector;
+        private readonly Func<PageData, TResult> m_selector;
 
-        public WikiQueryPageResult(QueryPageProcessor<TPage> queryProcessor, PageQueryParameters parameters, Func<TPage, TResult> selector)
+        public WikiQueryPageResult(QueryPageProcessor queryProcessor, PageQueryParameters parameters, Func<PageData, TResult> selector)
         {
             m_selector = selector;
             m_queryProcessor = queryProcessor;

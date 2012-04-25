@@ -10,7 +10,7 @@ namespace LinqToWiki
     /// <summary>
     /// Processes query parameters and parses the result of the query.
     /// </summary>
-    public class QueryProcessor<T>
+    public class QueryProcessor<T> : QueryProcessor
     {
         private readonly WikiInfo m_wiki;
         private readonly QueryTypeProperties<T> m_queryTypeProperties;
@@ -26,7 +26,7 @@ namespace LinqToWiki
         /// </summary>
         public IEnumerable<TResult> ExecuteList<TResult>(QueryParameters<T, TResult> parameters)
         {
-            var downloaded = Download(parameters, true);
+            var downloaded = Download(ProcessParameters(parameters, true));
 
             switch (m_queryTypeProperties.QueryType)
             {
@@ -50,7 +50,7 @@ namespace LinqToWiki
         /// </summary>
         public TResult ExecuteSingle<TResult>(QueryParameters<T, TResult> parameters)
         {
-            var downloaded = Download(parameters, false);
+            var downloaded = Download(ProcessParameters(parameters, false));
 
             switch (m_queryTypeProperties.QueryType)
             {
@@ -72,14 +72,42 @@ namespace LinqToWiki
             throw new NotSupportedException();
         }
 
-
-        private XElement Download<TResult>(QueryParameters<T, TResult> parameters, bool list)
+        private XElement Download(IEnumerable<Tuple<string, string>> processedParameters)
         {
-            // TODO: too long, split
+            return Download(m_wiki, processedParameters);
+        }
 
-            var parsedParameters = new TupleList<string, string>(m_queryTypeProperties.BaseParameters);
+        private IEnumerable<Tuple<string, string>> ProcessParameters(QueryParameters parameters, bool list)
+        {
+            return ProcessParameters(m_queryTypeProperties, parameters, list);
+        }
+    }
 
-            string prefix = m_queryTypeProperties.Prefix;
+    public abstract class QueryProcessor
+    {
+        public static XElement Download(WikiInfo wiki, IEnumerable<Tuple<string, string>> processedParameters)
+        {
+            var downloaded = wiki.Downloader.Download(processedParameters);
+
+            var root = downloaded.Root;
+
+            var error = root.Element("error");
+            if (error != null)
+                throw ParseError(error);
+
+            return root;
+        }
+
+        private static Exception ParseError(XElement error)
+        {
+            return new ApiErrorException((string)error.Attribute("code"), (string)error.Attribute("info"));
+        }
+
+        public static IEnumerable<Tuple<string, string>> ProcessParameters(QueryTypeProperties queryTypeProperties, QueryParameters parameters, bool list)
+        {
+            var parsedParameters = new TupleList<string, string>(queryTypeProperties.BaseParameters);
+
+            string prefix = queryTypeProperties.Prefix;
 
             if (parameters.Value != null)
                 foreach (var value in parameters.Value)
@@ -91,7 +119,7 @@ namespace LinqToWiki
                     parsedParameters.Add(prefix + "sort", parameters.Sort);
 
                 string dir;
-                switch (m_queryTypeProperties.SortType)
+                switch (queryTypeProperties.SortType)
                 {
                 case SortType.Ascending:
                     dir = parameters.Ascending.Value ? "ascending" : "descending";
@@ -109,12 +137,12 @@ namespace LinqToWiki
             var selectedProps = new List<string>();
 
             if (parameters.Properties == null)
-                selectedProps.AddRange(m_queryTypeProperties.GetAllProps().Except(new[] { "" }));
+                selectedProps.AddRange(queryTypeProperties.GetAllProps().Except(new[] { "" }));
             else
             {
                 var requiredPropsCollection =
                     parameters.Properties
-                        .Select(m_queryTypeProperties.GetProps)
+                        .Select(queryTypeProperties.GetProps)
                         .Where(ps => !ps.SequenceEqual(new[] { "" }))
                         .OrderBy(ps => ps.Length);
                 foreach (var props in requiredPropsCollection)
@@ -133,20 +161,7 @@ namespace LinqToWiki
 
             // TODO: add paging, maxlag
 
-            var downloaded = m_wiki.Downloader.Download(parsedParameters);
-
-            var root = downloaded.Root;
-
-            var error = root.Element("error");
-            if (error != null)
-                throw ParseError(error);
-
-            return root;
-        }
-
-        private static Exception ParseError(XElement error)
-        {
-            return new ApiErrorException((string)error.Attribute("code"), (string)error.Attribute("info"));
+            return parsedParameters;
         }
     }
 }

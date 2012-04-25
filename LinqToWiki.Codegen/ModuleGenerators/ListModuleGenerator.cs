@@ -81,19 +81,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
             propertyGroups = propertyGroups.Where(pg => pg.Name != null).ToArray();
 
-            var initializers =
-                from pg in propertyGroups
-                from p in pg.Properties
-                group pg.Name by p.Name
-                into g
-                select new[] { SyntaxEx.Literal(g.Key), SyntaxEx.ArrayCreation(null, g.Select(SyntaxEx.Literal)) };
-
-            var propsInitializer = SyntaxEx.ObjectCreation("Dictionary<string, string[]>", null, initializers);
-
-            var propsField =
-                SyntaxEx.FieldDeclaration(
-                    new[] { SyntaxKind.PrivateKeyword, SyntaxKind.StaticKeyword, SyntaxKind.ReadOnlyKeyword },
-                    "IDictionary<string, string[]>", ClassNameBase + "Props", propsInitializer);
+            var propsField = CreatePropsField(propertyGroups);
 
             m_selectProps = propsField;
 
