@@ -222,12 +222,23 @@ namespace LinqToWiki.Codegen
                     arguments: arguments.Select(a => Syntax.Argument(expression: a)).ToSeparatedList()));
         }
 
-        public static ParameterSyntax Parameter(string type, string name, ExpressionSyntax defaultValue = null)
+        public static ParameterSyntax Parameter(
+            string typeName, string name, ExpressionSyntax defaultValue = null,
+            IEnumerable<SyntaxKind> modifiers = null)
+        {
+            return Parameter(Syntax.ParseTypeName(typeName), name, defaultValue, modifiers);
+        }
+
+        public static ParameterSyntax Parameter(
+            TypeSyntax type, string name, ExpressionSyntax defaultValue = null,
+            IEnumerable<SyntaxKind> modifiers = null)
         {
             return Syntax.Parameter(
-                typeOpt: Syntax.ParseTypeName(type),
+                typeOpt: type,
                 identifier: Syntax.Identifier(name),
-                defaultOpt: defaultValue == null ? null : Syntax.EqualsValueClause(value: defaultValue));
+                defaultOpt: defaultValue == null ? null : Syntax.EqualsValueClause(value: defaultValue),
+                modifiers:
+                    modifiers == null ? default(SyntaxTokenList) : Syntax.TokenList(modifiers.Select(Syntax.Token)));
         }
 
         public static ExpressionStatementSyntax Assignment(NamedNode left, NamedNode right)

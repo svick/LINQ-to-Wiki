@@ -23,6 +23,7 @@ namespace LinqToWiki.Codegen
             public const string WikiInfo = "WikiInfo";
             public const string QueryAction = "QueryAction";
             public const string Enums = "Enums";
+            public const string Page = "Page";
         }
 
         private readonly QueryProcessor<ParamInfo> m_processor;
@@ -58,6 +59,7 @@ namespace LinqToWiki.Codegen
                     null,
                     ParamInfo.Parse));
 
+            CreatePageClass();
             CreateWikiClass();
             CreateQueryActionClass();
             CreateEnumsFile();
@@ -83,6 +85,13 @@ namespace LinqToWiki.Codegen
                     "System", "System.Collections.Generic", "LinqToWiki.Collections", "LinqToWiki.Parameters"));
         }
 
+        private void CreatePageClass()
+        {
+            var pageClass = SyntaxEx.ClassDeclaration(Names.Page);
+
+            Files.Add(Names.Page, SyntaxEx.CompilationUnit(SyntaxEx.NamespaceDeclaration(Namespace, pageClass)));
+        }
+
         private void CreateWikiClass()
         {
             var wikiField = SyntaxEx.FieldDeclaration(
@@ -106,13 +115,36 @@ namespace LinqToWiki.Codegen
                 new[] { baseUriParameter, apiPathParameter },
                 new StatementSyntax[] { wikiAssignment, queryAssignment });
 
-            var wikiClass = SyntaxEx.ClassDeclaration(Names.Wiki, wikiField, queryProperty, ctor);
+            var members = new List<MemberDeclarationSyntax> { wikiField, queryProperty, ctor };
+
+            var titlesParameterVersions =
+                new[]
+                {
+                    SyntaxEx.Parameter(SyntaxEx.GenericName("IEnumerable", "string"), "titles"),
+                    SyntaxEx.Parameter("string[]", "titles", modifiers: new[] { SyntaxKind.ParamsKeyword })
+                };
+
+            foreach (var titlesParameter in titlesParameterVersions)
+            {
+                var createTitlesReturn = SyntaxEx.Return(
+                    SyntaxEx.ObjectCreation(
+                        SyntaxEx.GenericName("TitlesSource", Names.Page), (NamedNode)wikiField,
+                        (NamedNode)titlesParameter));
+
+                var createTitlesSourceMethod = SyntaxEx.MethodDeclaration(
+                    new[] { SyntaxKind.PublicKeyword }, SyntaxEx.GenericName("IPagesSource", Names.Page),
+                    "CreateTitlesSource", new[] { titlesParameter }, createTitlesReturn);
+
+                members.Add(createTitlesSourceMethod);
+            }
+
+            var wikiClass = SyntaxEx.ClassDeclaration(Names.Wiki, members);
 
             Files.Add(
                 Names.Wiki,
                 SyntaxEx.CompilationUnit(
                     SyntaxEx.NamespaceDeclaration(Namespace, wikiClass),
-                    "LinqToWiki.Collections", "LinqToWiki.Parameters"));
+                    "System.Collections.Generic", "LinqToWiki.Collections", "LinqToWiki.Parameters"));
         }
 
         private void CreateEnumsFile()
@@ -180,7 +212,7 @@ namespace LinqToWiki.Codegen
                     AddListModule(module);
                 else
                 {
-                    if (propModules++ < 1)
+                    if (propModules++ < 0 || module.Name == "info")
                         AddPropModule(module);
                 }
             }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using LinqToWiki.Collections;
 using LinqToWiki.Expressions;
 using LinqToWiki.Parameters;
 
@@ -10,6 +11,19 @@ namespace LinqToWiki
     {
         IEnumerable<Tuple<string, string>> BaseParameters { get; }
         QueryPageProcessor<TPage> QueryPageProcessor { get; }
+    }
+
+    public class TitlesSource<TPage> : IPagesSource<TPage>
+    {
+        public TitlesSource(WikiInfo wiki, IEnumerable<string> titles)
+        {
+            QueryPageProcessor = new QueryPageProcessor<TPage>(wiki);
+            BaseParameters = new TupleList<string, string> { { "titles", NameValueParameter.JoinValues(titles) } };
+        }
+
+        public IEnumerable<Tuple<string, string>> BaseParameters { get; private set; }
+
+        public QueryPageProcessor<TPage> QueryPageProcessor { get; private set; }
     }
 
     public static class PagesSourceExtensions

@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            WatchlistRaw(wiki);
+            Props(wiki);
         }
 
         private static void Login(Wiki wiki, string name, string password)
@@ -28,6 +28,11 @@ namespace LinqToWiki.Test
 
             if (result.result != loginresult.Success)
                 throw new Exception(result.result.ToString());
+        }
+
+        private static void Props(Wiki wiki)
+        {
+            var source = wiki.CreateTitlesSource("User:Svick");
         }
 
         private static void AllCategories(Wiki wiki)
