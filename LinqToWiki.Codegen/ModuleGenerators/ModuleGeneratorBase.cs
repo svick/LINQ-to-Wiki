@@ -4,7 +4,7 @@ using System.Linq;
 using LinqToWiki.Codegen.ModuleInfo;
 using Roslyn.Compilers.CSharp;
 
-namespace LinqToWiki.Codegen
+namespace LinqToWiki.Codegen.ModuleGenerators
 {
     public abstract class ModuleGeneratorBase
     {
@@ -237,15 +237,6 @@ namespace LinqToWiki.Codegen
             return SyntaxEx.ObjectCreation(
                 "TupleList<string, string>", null,
                 tupleList.Select(t => new[] { t.Item1, t.Item2 }.Select(SyntaxEx.Literal)));
-        }
-    }
-
-    internal static class ModuleGeneratorRoslynExtensions
-    {
-        public static ClassDeclarationSyntax WithPrivateConstructor(this ClassDeclarationSyntax selectClass)
-        {
-            return selectClass.WithAdditionalMembers(
-                SyntaxEx.ConstructorDeclaration(new[] { SyntaxKind.PrivateKeyword }, selectClass.Identifier.ValueText));
         }
     }
 }

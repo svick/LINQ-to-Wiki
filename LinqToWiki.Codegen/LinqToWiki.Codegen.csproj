@@ -43,9 +43,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ListExtensions.cs" />
-    <Compile Include="ListModuleGenerator.cs" />
-    <Compile Include="ModuleGenerator.cs" />
-    <Compile Include="ModuleGeneratorBase.cs" />
+    <Compile Include="ModuleGenerators\ListModuleGenerator.cs" />
+    <Compile Include="ModuleGenerators\ModuleGenerator.cs" />
+    <Compile Include="ModuleGenerators\ModuleGeneratorBase.cs" />
+    <Compile Include="ModuleGenerators\ModuleGeneratorRoslynExtensions.cs" />
     <Compile Include="ModuleInfo\EnumParameterType.cs" />
     <Compile Include="ModuleInfo\Parameter.cs" />
     <Compile Include="ModuleInfo\ParameterType.cs" />

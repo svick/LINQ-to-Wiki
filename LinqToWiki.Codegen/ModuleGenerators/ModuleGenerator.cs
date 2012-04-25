@@ -5,7 +5,7 @@ using LinqToWiki.Codegen.ModuleInfo;
 using LinqToWiki.Collections;
 using Roslyn.Compilers.CSharp;
 
-namespace LinqToWiki.Codegen
+namespace LinqToWiki.Codegen.ModuleGenerators
 {
     public class ModuleGenerator : ModuleGeneratorBase
     {

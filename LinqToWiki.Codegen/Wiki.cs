@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using LinqToWiki.Codegen.ModuleGenerators;
 using LinqToWiki.Codegen.ModuleInfo;
 using LinqToWiki.Collections;
 using LinqToWiki.Parameters;
