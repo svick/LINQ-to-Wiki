@@ -8,13 +8,13 @@ namespace LinqToWiki
     /// <summary>
     /// Represents a sortable query.
     /// </summary>
-    public class WikiQuerySortable<TWhere, TOrderBy, TSelect> : WikiQueryResult<TSelect, TSelect>
+    public class WikiQuerySortable<TWhere, TOrderBy, TSelect> : WikiQuery<TWhere, TSelect>
     {
         public WikiQuerySortable(QueryProcessor<TSelect> queryProcessor, QueryParameters<TSelect, TSelect> parameters)
             : base(queryProcessor, parameters)
         {}
 
-        public WikiQuerySortable<TWhere, TOrderBy, TSelect> Where(Expression<Func<TWhere, bool>> predicate)
+        public new WikiQuerySortable<TWhere, TOrderBy, TSelect> Where(Expression<Func<TWhere, bool>> predicate)
         {
             return new WikiQuerySortable<TWhere, TOrderBy, TSelect>(QueryProcessor, ExpressionParser.ParseWhere(predicate, Parameters));
         }
@@ -29,14 +29,9 @@ namespace LinqToWiki
             return new WikiQuery<TWhere, TSelect>(QueryProcessor, ExpressionParser.ParseOrderBy(keySelector, Parameters, false));
         }
 
-        public WikiQuerySortable<TWhere, TOrderBy, TSelect> Select(Expression<Func<TSelect, TSelect>> selector)
+        public new WikiQuerySortable<TWhere, TOrderBy, TSelect> Select(Expression<Func<TSelect, TSelect>> selector)
         {
             return new WikiQuerySortable<TWhere, TOrderBy, TSelect>(QueryProcessor, ExpressionParser.ParseIdentitySelect(selector, Parameters));
-        }
-
-        public WikiQueryResult<TSelect, TResult> Select<TResult>(Expression<Func<TSelect, TResult>> selector)
-        {
-            return new WikiQueryResult<TSelect, TResult>(QueryProcessor, ExpressionParser.ParseSelect(selector, Parameters));
         }
     }
 
@@ -54,14 +49,14 @@ namespace LinqToWiki
             return new WikiQuery<TWhere, TSelect>(QueryProcessor, ExpressionParser.ParseWhere(predicate, Parameters));
         }
 
-        public WikiQueryResult<TSelect, TResult> Select<TResult>(Expression<Func<TSelect, TResult>> selector)
-        {
-            return new WikiQueryResult<TSelect, TResult>(QueryProcessor, ExpressionParser.ParseSelect(selector, Parameters));
-        }
-
         public WikiQuery<TWhere, TSelect> Select(Expression<Func<TSelect, TSelect>> selector)
         {
             return new WikiQuery<TWhere, TSelect>(QueryProcessor, ExpressionParser.ParseIdentitySelect(selector, Parameters));
+        }
+
+        public WikiQueryResult<TSelect, TResult> Select<TResult>(Expression<Func<TSelect, TResult>> selector)
+        {
+            return new WikiQueryResult<TSelect, TResult>(QueryProcessor, ExpressionParser.ParseSelect(selector, Parameters));
         }
     }
 }

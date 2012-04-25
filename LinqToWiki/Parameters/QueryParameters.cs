@@ -9,6 +9,9 @@ namespace LinqToWiki.Parameters
     /// </summary>
     public abstract class QueryParameters
     {
+        protected QueryParameters()
+        {}
+
         /// <summary>
         /// Linked list of general parameters.
         /// </summary>
@@ -26,6 +29,12 @@ namespace LinqToWiki.Parameters
         public bool? Ascending { get; protected set; }
 
         /// <summary>
+        /// Properties of the source that should be included in the result.
+        /// The value of <c>null</c> means that all properties should be included.
+        /// </summary>
+        public IEnumerable<string> Properties { get; protected set; }
+
+        /// <summary>
         /// Copies properties of this instance to <see cref="target"/>.
         /// Copies only properties of <see cref="QueryParameters"/> and not the inherited classes.
         /// </summary>
@@ -34,14 +43,15 @@ namespace LinqToWiki.Parameters
             target.Value = Value;
             target.Sort = Sort;
             target.Ascending = Ascending;
+            target.Properties = Properties;
         }
 
         /// <summary>
-        /// Creates new query parameters.
+        /// Creates new generic query parameters.
         /// </summary>
         public static QueryParameters<TSource, TSource> Create<TSource>()
         {
-            return new QueryParametersWithoutSelect<TSource>();
+            return new QueryParameters<TSource, TSource>(x => x);
         }
     }
 
@@ -52,30 +62,24 @@ namespace LinqToWiki.Parameters
     /// </summary>
     /// <typeparam name="TSource">Type used to represent the source of the query.</typeparam>
     /// <typeparam name="TResult">Type of the item in the result collection.</typeparam>
-    public abstract class QueryParameters<TSource, TResult> : QueryParameters
+    public class QueryParameters<TSource, TResult> : QueryParameters
     {
-        /// <summary>
-        /// Properties of the source that should be included in the result.
-        /// The value of <c>null</c> means that all properties should be included.
-        /// </summary>
-        public IEnumerable<string> Properties { get; protected set; }
+        public QueryParameters(Func<TSource, TResult> selector)
+        {
+            Selector = selector;
+        }
 
         /// <summary>
         /// Function, that can be used to convert an instance of the source object to the result object.
         /// </summary>
-        public Func<TSource, TResult> Selector { get; protected set; }
-
-        /// <summary>
-        /// Creates a clone of the current object without copying properties of <see cref="QueryParameters"/>.
-        /// </summary>
-        protected abstract QueryParameters<TSource, TResult> CloneNonShared();
+        public Func<TSource, TResult> Selector { get; private set; }
 
         /// <summary>
         /// Creates a clone of the current object.
         /// </summary>
-        protected QueryParameters<TSource, TResult> Clone()
+        private QueryParameters<TSource, TResult> Clone()
         {
-            var result = CloneNonShared();
+            var result = new QueryParameters<TSource, TResult>(Selector);
             CopyTo(result);
             return result;
         }
@@ -128,48 +132,10 @@ namespace LinqToWiki.Parameters
         public QueryParameters<TSource, TNewResult> WithSelect<TNewResult>(
             IEnumerable<string> properties, Func<TSource, TNewResult> selector)
         {
-            var result = new QueryParametersWithSelect<TSource, TNewResult>(properties, selector);
+            var result = new QueryParameters<TSource, TNewResult>(selector);
             CopyTo(result);
+            result.Properties = properties;
             return result;
-        }
-    }
-
-    /// <summary>
-    /// Represents a query wihtout projection, the result is the same as the source.
-    /// </summary>
-    class QueryParametersWithoutSelect<TSource> : QueryParameters<TSource, TSource>
-    {
-        public QueryParametersWithoutSelect()
-        {
-            Selector = x => x;
-        }
-
-        /// <summary>
-        /// Creates a clone of the current object without copying properties of <see cref="QueryParameters"/>.
-        /// </summary>
-        protected override QueryParameters<TSource, TSource> CloneNonShared()
-        {
-            return new QueryParametersWithoutSelect<TSource>();
-        }
-    }
-
-    /// <summary>
-    /// Represents a query with projection.
-    /// </summary>
-    class QueryParametersWithSelect<TSource, TResult> : QueryParameters<TSource, TResult>
-    {
-        internal QueryParametersWithSelect(IEnumerable<string> properties, Func<TSource, TResult> selector)
-        {
-            Selector = selector;
-            Properties = properties;
-        }
-
-        /// <summary>
-        /// Creates a clone of the current object without copying properties of <see cref="QueryParameters"/>.
-        /// </summary>
-        protected override QueryParameters<TSource, TResult> CloneNonShared()
-        {
-            return new QueryParametersWithSelect<TSource, TResult>(Properties, Selector);
         }
     }
 }

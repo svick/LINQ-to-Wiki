@@ -172,14 +172,20 @@ namespace LinqToWiki.Codegen
         {
             var modules = GetQueryModules(moduleNames);
 
-            foreach (var module in modules.Take(43))
+            int propModules = 0;
+
+            foreach (var module in modules)
             {
                 if (module.QueryType == QueryType.List || module.QueryType == QueryType.Meta)
                     AddListModule(module);
-
-                // TODO: other types of modules
+                else
+                {
+                    if (propModules++ < 1)
+                        AddPropModule(module);
+                }
             }
         }
+
 
         public void AddModules(IEnumerable<string> moduleNames)
         {
@@ -202,6 +208,11 @@ namespace LinqToWiki.Codegen
         private void AddListModule(Module module)
         {
             new ListModuleGenerator(this).Generate(module);
+        }
+
+        private void AddPropModule(Module module)
+        {
+            new PropModuleGenerator(this).Generate(module);
         }
 
         private void AddModule(Module module)

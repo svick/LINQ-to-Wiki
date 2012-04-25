@@ -57,20 +57,28 @@
     <Compile Include="Expressions\EnumFixer.cs" />
     <Compile Include="Expressions\ExpressionExtensions.cs" />
     <Compile Include="Expressions\ExpressionParser.cs" />
+    <Compile Include="Expressions\PageExpressionParser.cs" />
     <Compile Include="Expressions\UsedPropertiesGatherer.cs" />
+    <Compile Include="IPagesSource.cs" />
     <Compile Include="Namespace.cs" />
     <Compile Include="Parameters\NameValueParameter.cs" />
+    <Compile Include="Parameters\PageQueryParameters.cs" />
     <Compile Include="Parameters\QueryParameters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QueryPageProcessor.cs" />
     <Compile Include="QueryProcessor.cs" />
     <Compile Include="QueryRepresentation.cs" />
     <Compile Include="QueryType.cs" />
     <Compile Include="QueryTypeProperties.cs" />
     <Compile Include="ValueParser.cs" />
     <Compile Include="WikiInfo.cs" />
-    <Compile Include="WikiQuery.cs" />
-    <Compile Include="WikiQueryResult.cs" />
+    <Compile Include="WikiQuery\WikiQuery.cs" />
+    <Compile Include="WikiQuery\WikiQueryGenerator.cs" />
+    <Compile Include="WikiQuery\WikiQueryPageResult.cs" />
+    <Compile Include="WikiQuery\WikiQueryPagesSource.cs" />
+    <Compile Include="WikiQuery\WikiQueryResult.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
