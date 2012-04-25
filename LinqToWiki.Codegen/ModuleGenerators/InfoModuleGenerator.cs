@@ -18,9 +18,25 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
         protected override void GenerateMethod(Module module)
         {
-            GenerateMethod(
-                module, module.Parameters.Where(p => p.Name != "continue" && p.Name != "prop"),
-                ResultClassName, null, Wiki.Names.Page, true, null, true);
+            var containingFile = Wiki.Files[Wiki.Names.Page];
+            var containingClass = containingFile.SingleDescendant<ClassDeclarationSyntax>();
+
+            var propertiesField = CreatePropertiesField(module, ResultClassName, null, null);
+
+            var moduleProperty = CreateThrowingProperty(module);
+
+            Wiki.Files[Wiki.Names.Page] = containingFile.ReplaceNode(
+                containingClass, containingClass.WithAdditionalMembers(propertiesField, moduleProperty));
+        }
+
+        private PropertyDeclarationSyntax CreateThrowingProperty(Module module)
+        {
+            var summary = SyntaxEx.DocumentationSummary(module.Description);
+
+            return SyntaxEx.PropertyDeclaration(
+                new[] { SyntaxKind.PublicKeyword }, GenerateMethodResultType(), ClassNameBase,
+                new StatementSyntax[] { SyntaxEx.Throw(SyntaxEx.ObjectCreation("NotSupportedException")) })
+                .WithLeadingTrivia(Syntax.Trivia(SyntaxEx.DocumentationComment(summary)));
         }
     }
 }

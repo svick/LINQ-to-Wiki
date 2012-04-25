@@ -129,8 +129,7 @@ namespace LinqToWiki.Codegen
 
         private static SyntaxTokenList TokenList(IEnumerable<SyntaxKind> modifiers)
         {
-            return Syntax.TokenList(
-                modifiers.Select(Syntax.Token));
+            return Syntax.TokenList(modifiers.Select(Syntax.Token));
         }
 
         private static SyntaxTokenList TokenList(SyntaxKind? modifier)
@@ -238,7 +237,7 @@ namespace LinqToWiki.Codegen
                 identifier: Syntax.Identifier(name),
                 defaultOpt: defaultValue == null ? null : Syntax.EqualsValueClause(value: defaultValue),
                 modifiers:
-                    modifiers == null ? default(SyntaxTokenList) : Syntax.TokenList(modifiers.Select(Syntax.Token)));
+                    modifiers == null ? default(SyntaxTokenList) : TokenList(modifiers));
         }
 
         public static ExpressionStatementSyntax Assignment(NamedNode left, NamedNode right)
@@ -315,6 +314,30 @@ namespace LinqToWiki.Codegen
                             SyntaxKind.SetAccessorDeclaration,
                             modifiers: TokenList(setModifier),
                             semicolonTokenOpt: Syntax.Token(SyntaxKind.SemicolonToken)))));
+        }
+
+        public static PropertyDeclarationSyntax PropertyDeclaration(
+            IEnumerable<SyntaxKind> modifiers, TypeSyntax type, string propertyName,
+            IEnumerable<StatementSyntax> getStatements, SyntaxKind? getModifier = null,
+            IEnumerable<StatementSyntax> setStatements = null, SyntaxKind? setModifier = null)
+        {
+            var accessors = new List<AccessorDeclarationSyntax>();
+
+            accessors.Add(
+                Syntax.AccessorDeclaration(
+                    SyntaxKind.GetAccessorDeclaration, modifiers: TokenList(getModifier),
+                    bodyOpt: Syntax.Block(statements: getStatements.ToSyntaxList())));
+
+            if (setStatements != null)
+                accessors.Add(
+                    Syntax.AccessorDeclaration(
+                        SyntaxKind.SetAccessorDeclaration, modifiers: TokenList(setModifier),
+                        bodyOpt: Syntax.Block(statements: setStatements.ToSyntaxList())));
+
+            return Syntax.PropertyDeclaration(
+                modifiers: TokenList(modifiers), type: type,
+                identifier: Syntax.Identifier(propertyName),
+                accessorList: Syntax.AccessorList(accessors: accessors.ToSyntaxList()));
         }
 
         public static MethodDeclarationSyntax MethodDeclaration(

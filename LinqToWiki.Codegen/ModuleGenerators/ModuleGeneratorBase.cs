@@ -139,12 +139,77 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
         protected void GenerateMethod(
             Module module, IEnumerable<Parameter> methodParameters, string resultClassName,
-            FieldDeclarationSyntax propsField, string fileName, bool nullableParameters, SortType? sortType,
-            bool throwingBody = false)
+            FieldDeclarationSyntax propsField, string fileName, bool nullableParameters, SortType? sortType)
         {
-            var queryActionFile = Wiki.Files[fileName];
-            var queryActionClass = queryActionFile.SingleDescendant<ClassDeclarationSyntax>();
+            var containingFile = Wiki.Files[fileName];
+            var containingClass = containingFile.SingleDescendant<ClassDeclarationSyntax>();
 
+            var propertiesField = CreatePropertiesField(module, resultClassName, propsField, sortType);
+
+            ExpressionSyntax queryParameters = SyntaxEx.Invocation(
+                SyntaxEx.MemberAccess("QueryParameters", SyntaxEx.GenericName("Create", resultClassName)));
+
+            var queryParametersLocal = SyntaxEx.LocalDeclaration("var", "queryParameters", queryParameters);
+
+            var documentationElements = new List<XmlElementSyntax>();
+
+            var summary = SyntaxEx.DocumentationSummary(module.Description);
+            documentationElements.Add(summary);
+
+            var parameters = new List<ParameterSyntax>();
+            var statements = new List<StatementSyntax>();
+
+            statements.Add(queryParametersLocal);
+
+            foreach (var methodParameter in methodParameters)
+            {
+                var parameter = SyntaxEx.Parameter(
+                    Wiki.TypeManager.GetTypeName(methodParameter, ClassNameBase, nullableParameters),
+                    methodParameter.Name, nullableParameters ? SyntaxEx.NullLiteral() : null);
+
+                parameters.Add(parameter);
+
+                var queryParametersAssignment = SyntaxEx.Assignment(
+                    queryParametersLocal, SyntaxEx.Invocation(
+                        SyntaxEx.MemberAccess(queryParametersLocal, "AddSingleValue"),
+                        SyntaxEx.Literal(methodParameter.Name),
+                        SyntaxEx.Invocation(SyntaxEx.MemberAccess(parameter, "ToQueryString"))));
+                
+                if (nullableParameters)
+                {
+                    var assignmentWithCheck = SyntaxEx.If(
+                        SyntaxEx.NotEquals((NamedNode)parameter, SyntaxEx.NullLiteral()), queryParametersAssignment);
+
+                    statements.Add(assignmentWithCheck);
+                }
+                else
+                    statements.Add(queryParametersAssignment);
+
+                var parameterDocumentation = SyntaxEx.DocumentationParameter(
+                    methodParameter.Name, methodParameter.Description);
+
+                documentationElements.Add(parameterDocumentation);
+            }
+
+            var queryCreation = GenerateMethodResult(
+                SyntaxEx.ObjectCreation(
+                    SyntaxEx.GenericName("QueryProcessor", resultClassName),
+                    Syntax.IdentifierName("m_wiki"),
+                    (NamedNode)propertiesField), (NamedNode)queryParametersLocal);
+
+            statements.Add(SyntaxEx.Return(queryCreation));
+
+            var method = SyntaxEx.MethodDeclaration(
+                new[] { SyntaxKind.PublicKeyword }, GenerateMethodResultType(), ClassNameBase, parameters, statements)
+                .WithLeadingTrivia(Syntax.Trivia(SyntaxEx.DocumentationComment(documentationElements)));
+
+            Wiki.Files[fileName] = containingFile.ReplaceNode(
+                containingClass, containingClass.WithAdditionalMembers(propertiesField, method));
+        }
+
+        protected FieldDeclarationSyntax CreatePropertiesField(
+            Module module, string resultClassName, FieldDeclarationSyntax propsField, SortType? sortType)
+        {
             var queryTypePropertiesType = SyntaxEx.GenericName("QueryTypeProperties", resultClassName);
 
             var propertiesInitializer = SyntaxEx.ObjectCreation(
@@ -161,77 +226,9 @@ namespace LinqToWiki.Codegen.ModuleGenerators
                 propsField == null ? (ExpressionSyntax)SyntaxEx.NullLiteral() : (NamedNode)propsField,
                 SyntaxEx.MemberAccess(resultClassName, "Parse"));
 
-            var propertiesField =
-                SyntaxEx.FieldDeclaration(
-                    new[] { SyntaxKind.PrivateKeyword, SyntaxKind.StaticKeyword, SyntaxKind.ReadOnlyKeyword },
-                    queryTypePropertiesType, ClassNameBase + "Properties", propertiesInitializer);
-
-            ExpressionSyntax queryParameters = SyntaxEx.Invocation(
-                SyntaxEx.MemberAccess("QueryParameters", SyntaxEx.GenericName("Create", resultClassName)));
-
-            var queryParametersLocal = SyntaxEx.LocalDeclaration("var", "queryParameters", queryParameters);
-
-            var documentationElements = new List<XmlElementSyntax>();
-
-            var summary = SyntaxEx.DocumentationSummary(module.Description);
-            documentationElements.Add(summary);
-
-            var parameters = new List<ParameterSyntax>();
-            var statements = new List<StatementSyntax>();
-
-            if (!throwingBody)
-                statements.Add(queryParametersLocal);
-
-            foreach (var methodParameter in methodParameters)
-            {
-                var parameter = SyntaxEx.Parameter(
-                    Wiki.TypeManager.GetTypeName(methodParameter, ClassNameBase, nullableParameters),
-                    methodParameter.Name, nullableParameters ? SyntaxEx.NullLiteral() : null);
-
-                parameters.Add(parameter);
-
-                var queryParametersAssignment = SyntaxEx.Assignment(
-                    queryParametersLocal, SyntaxEx.Invocation(
-                        SyntaxEx.MemberAccess(queryParametersLocal, "AddSingleValue"),
-                        SyntaxEx.Literal(methodParameter.Name),
-                        SyntaxEx.Invocation(SyntaxEx.MemberAccess(parameter, "ToQueryString"))));
-
-                if (!throwingBody)
-                {
-                    if (nullableParameters)
-                    {
-                        var assignmentWithCheck = SyntaxEx.If(
-                            SyntaxEx.NotEquals((NamedNode)parameter, SyntaxEx.NullLiteral()), queryParametersAssignment);
-
-                        statements.Add(assignmentWithCheck);
-                    }
-                    else
-                        statements.Add(queryParametersAssignment);
-                }
-
-                var parameterDocumentation = SyntaxEx.DocumentationParameter(
-                    methodParameter.Name, methodParameter.Description);
-
-                documentationElements.Add(parameterDocumentation);
-            }
-
-            var queryCreation = GenerateMethodResult(
-                SyntaxEx.ObjectCreation(
-                    SyntaxEx.GenericName("QueryProcessor", resultClassName),
-                    Syntax.IdentifierName("m_wiki"),
-                    (NamedNode)propertiesField), (NamedNode)queryParametersLocal);
-
-            if (throwingBody)
-                statements.Add(SyntaxEx.Throw(SyntaxEx.ObjectCreation("NotSupportedException")));
-            else
-                statements.Add(SyntaxEx.Return(queryCreation));
-
-            var method = SyntaxEx.MethodDeclaration(
-                new[] { SyntaxKind.PublicKeyword }, GenerateMethodResultType(), ClassNameBase, parameters, statements)
-                .WithLeadingTrivia(Syntax.Trivia(SyntaxEx.DocumentationComment(documentationElements)));
-
-            Wiki.Files[fileName] = queryActionFile.ReplaceNode(
-                queryActionClass, queryActionClass.WithAdditionalMembers(propertiesField, method));
+            return SyntaxEx.FieldDeclaration(
+                new[] { SyntaxKind.PrivateKeyword, SyntaxKind.StaticKeyword, SyntaxKind.ReadOnlyKeyword },
+                queryTypePropertiesType, ClassNameBase + "Properties", propertiesInitializer);
         }
 
         protected abstract IEnumerable<Tuple<string, string>> GetBaseParameters(Module module);

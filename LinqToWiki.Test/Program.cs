@@ -32,7 +32,9 @@ namespace LinqToWiki.Test
 
         private static void Props(Wiki wiki)
         {
-            var source = wiki.CreateTitlesSource("User:Svick");
+            var source = wiki.CreateTitlesSource("User:Svick").Select(p => p.info).ToEnumerable();
+
+            Write(source);
         }
 
         private static void AllCategories(Wiki wiki)
