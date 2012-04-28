@@ -21,6 +21,11 @@ namespace LinqToWiki.Expressions
 
     class PageSelectVisitor : ExpressionVisitor
     {
+        /// <summary>
+        /// Result properties that are always present and don't need prop=info
+        /// </summary>
+        private static readonly IEnumerable<string> NonInfoProperties = new[] { "pageid", "ns", "title" };
+
         private readonly ParameterExpression m_pageParameter;
         private readonly ParameterExpression m_pageDataParameter = Expression.Parameter(typeof(PageData), "pageData");
         private readonly MethodCallExpression m_pageDataGetInfoCall;
@@ -64,9 +69,11 @@ namespace LinqToWiki.Expressions
 
             var parameters = visitor.m_parameters;
 
+            // TODO: handle tokens in a special way
+
             if (gatherer.UsedDirectly)
                 parameters.Add("info", new PropQueryParameters("info", typeof(TSource)));
-            else if (gatherer.UsedProperties.Any())
+            else if (gatherer.UsedProperties.Any(p => !NonInfoProperties.Contains(p)))
                 parameters.Add("info", new PropQueryParameters("info", typeof(TSource)).WithProperties(gatherer.UsedProperties));
 
             processedExpression =

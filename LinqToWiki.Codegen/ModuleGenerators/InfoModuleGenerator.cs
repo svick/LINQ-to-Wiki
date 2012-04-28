@@ -13,6 +13,24 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             : base(wiki)
         {}
 
+        private static readonly PropertyGroup SpecialProperties =
+            new PropertyGroup
+            {
+                Name = string.Empty,
+                Properties =
+                    new[]
+                    {
+                        new Property { Name = "pageid", Type = new SimpleParameterType("integer") },
+                        new Property { Name = "ns", Type = new SimpleParameterType("namespace") },
+                        new Property { Name = "title", Type = new SimpleParameterType("string") }
+                    }
+            };
+
+        protected override IEnumerable<PropertyGroup> GetPropertyGroups(Module module)
+        {
+            return new[] { SpecialProperties }.Concat(base.GetPropertyGroups(module));
+        }
+
         protected override ClassDeclarationSyntax GenerateResultClass(IEnumerable<PropertyGroup> propertyGroups)
         {
             return GenerateClassForProperties(ResultClassName, propertyGroups.SelectMany(g => g.Properties));
@@ -23,7 +41,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             var containingFile = Wiki.Files[Wiki.Names.Page];
             var containingClass = containingFile.SingleDescendant<ClassDeclarationSyntax>();
 
-            var propsField = CreatePropsField(module.PropertyGroups);
+            var propsField = CreatePropsField(GetPropertyGroups(module));
 
             var propertiesField = CreatePropertiesField(module, ResultClassName, propsField, null);
 

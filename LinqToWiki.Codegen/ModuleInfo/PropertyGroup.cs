@@ -6,9 +6,9 @@ namespace LinqToWiki.Codegen.ModuleInfo
 {
     public class PropertyGroup
     {
-        public string Name { get; private set; }
+        public string Name { get; internal set; }
 
-        public IEnumerable<Property> Properties { get; private set; }
+        public IEnumerable<Property> Properties { get; internal set; }
 
         public static PropertyGroup Parse(XElement element)
         {

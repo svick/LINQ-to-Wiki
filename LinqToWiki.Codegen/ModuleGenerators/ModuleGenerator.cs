@@ -19,7 +19,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
         {
             ResultClassName = ClassNameBase + "Result";
 
-            var resultType = GenerateResultClass(module.PropertyGroups);
+            var resultType = GenerateResultClass(GetPropertyGroups(module));
 
             var codeUnit = SyntaxEx.CompilationUnit(
                 SyntaxEx.NamespaceDeclaration(Wiki.Namespace, resultType),
@@ -28,6 +28,11 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             Wiki.Files.Add(ClassNameBase, codeUnit);
 
             GenerateMethod(module);
+        }
+
+        protected virtual IEnumerable<PropertyGroup> GetPropertyGroups(Module module)
+        {
+            return module.PropertyGroups;
         }
 
         protected virtual void GenerateMethod(Module module)

@@ -33,7 +33,7 @@ namespace LinqToWiki.Test
         private static void Props(Wiki wiki)
         {
             var source = wiki.CreateTitlesSource("User:Svick", "User talk:Svick/WikiProject cleanup listing")
-                .Select(p => new { p.info.touched, p.info.watched, p.info.displaytitle }).ToEnumerable();
+                .Select(p => new { p.info.title, p.info.touched, p.info.watched }).ToEnumerable();
 
             Write(source);
         }

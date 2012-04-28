@@ -5,11 +5,11 @@ namespace LinqToWiki.Codegen.ModuleInfo
 {
     public class Property : IEquatable<Property>
     {
-        public string Name { get; private set; }
+        public string Name { get; internal set; }
 
-        public ParameterType Type { get; private set; }
+        public ParameterType Type { get; internal set; }
 
-        public bool Nullable { get; private set; }
+        public bool Nullable { get; internal set; }
 
         public static Property Parse(XElement element)
         {
