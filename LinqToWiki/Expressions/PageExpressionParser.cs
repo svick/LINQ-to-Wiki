@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Xml.Linq;
 using LinqToWiki.Parameters;
 
 namespace LinqToWiki.Expressions
@@ -36,6 +35,8 @@ namespace LinqToWiki.Expressions
 
         private readonly Dictionary<string, PropQueryParameters> m_parameters = new Dictionary<string, PropQueryParameters>();
 
+        private bool m_canUsePage;
+
         private PageSelectVisitor(ParameterExpression pageParameter)
         {
             m_pageParameter = pageParameter;
@@ -44,6 +45,19 @@ namespace LinqToWiki.Expressions
 
             m_pageDataGetInfoCall = Expression.Call(
                 m_pageDataParameter, PageDataGetInfoMethod.MakeGenericMethod(m_infoType));
+        }
+
+        public override Expression Visit(Expression node)
+        {
+            if (!m_canUsePage)
+            {
+                var type = node.Type;
+                if (type.IsGenericType && BaseTypes(type).Contains(typeof(WikiQueryResult<,>)))
+                    throw new InvalidOperationException(
+                        "Can't use the result of a query directly, you have to use ToEnumerable or ToList.");
+            }
+
+            return base.Visit(node);
         }
 
         protected override Expression VisitMember(MemberExpression node)
@@ -73,6 +87,7 @@ namespace LinqToWiki.Expressions
 
             if (declaringType.IsGenericType)
             {
+                // ToEnumerable or ToList
                 if (declaringType.GetGenericTypeDefinition() == typeof(WikiQueryResult<,>))
                 {
                     var propExpression = ExpressionFinder.Single<MethodCallExpression>(
@@ -96,7 +111,11 @@ namespace LinqToWiki.Expressions
 
                     m_parameters.Add(propExpression.Method.Name, parameter);
 
+                    m_canUsePage = true;
+
                     var obj = Visit(node.Object);
+
+                    m_canUsePage = false;
 
                     if (methodName == "ToEnumerable")
                         return obj;
@@ -104,6 +123,7 @@ namespace LinqToWiki.Expressions
                     return Expression.Call(
                         typeof(Enumerable), methodName, new[] { obj.Type.GetGenericArguments().Single() }, obj);
                 }
+                // one of the LINQ methods
                 if (BaseTypes(declaringType).Contains(typeof(WikiQueryResult<,>)))
                 {
                     var obj = Visit(node.Object);
@@ -131,7 +151,10 @@ namespace LinqToWiki.Expressions
                 if (type == null)
                     yield break;
 
-                yield return type.GetGenericTypeDefinition();
+                if (type.IsGenericType)
+                    type = type.GetGenericTypeDefinition();
+
+                yield return type;
             }
         }
 
