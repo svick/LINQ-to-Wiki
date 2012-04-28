@@ -36,29 +36,24 @@ namespace LinqToWiki.Parameters
 
     public class PropQueryParameters : QueryParameters
     {
-        private PropQueryParameters(string propName, QueryTypeProperties queryTypeProperties)
+        public PropQueryParameters(string propName)
         {
             PropName = propName;
-            QueryTypeProperties = queryTypeProperties;
-        }
-
-        public PropQueryParameters(string propName, Type pageType)
-        {
-            PropName = propName;
-            QueryTypeProperties =
-                (QueryTypeProperties)pageType.GetField(propName + "Properties", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
         }
 
         public string PropName { get; private set; }
 
-        public QueryTypeProperties QueryTypeProperties { get; private set; }
-
         public PropQueryParameters WithProperties(IEnumerable<string> properties)
         {
-            var result = new PropQueryParameters(PropName, QueryTypeProperties);
+            var result = new PropQueryParameters(PropName);
             CopyTo(result);
             result.Properties = properties;
             return result;
+        }
+
+        public void CopyFrom(QueryParameters parameters)
+        {
+            parameters.CopyTo(this);
         }
     }
 }

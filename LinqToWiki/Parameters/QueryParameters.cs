@@ -35,7 +35,7 @@ namespace LinqToWiki.Parameters
         /// Copies properties of this instance to <see cref="target"/>.
         /// Copies only properties of <see cref="QueryParameters"/> and not the inherited classes.
         /// </summary>
-        protected void CopyTo(QueryParameters target)
+        internal void CopyTo(QueryParameters target)
         {
             target.Value = Value;
             target.Sort = Sort;

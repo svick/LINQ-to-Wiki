@@ -56,12 +56,15 @@
     <Compile Include="Downloader.cs" />
     <Compile Include="Expressions\EnumFixer.cs" />
     <Compile Include="Expressions\ExpressionExtensions.cs" />
+    <Compile Include="Expressions\ExpressionFinder.cs" />
     <Compile Include="Expressions\ExpressionParser.cs" />
+    <Compile Include="Expressions\ExpressionReplacer.cs" />
     <Compile Include="Expressions\PageExpressionParser.cs" />
     <Compile Include="Expressions\UsedPropertiesGatherer.cs" />
     <Compile Include="IPagesSource.cs" />
     <Compile Include="Namespace.cs" />
     <Compile Include="PageData.cs" />
+    <Compile Include="PageProperties.cs" />
     <Compile Include="Parameters\NameValueParameter.cs" />
     <Compile Include="Parameters\PageQueryParameters.cs" />
     <Compile Include="Parameters\QueryParameters.cs" />
@@ -73,6 +76,7 @@
     <Compile Include="QueryTypeProperties.cs" />
     <Compile Include="ValueParser.cs" />
     <Compile Include="WikiInfo.cs" />
+    <Compile Include="WikiQuery\IWikiQueryResult.cs" />
     <Compile Include="WikiQuery\WikiQuery.cs" />
     <Compile Include="WikiQuery\WikiQueryGenerator.cs" />
     <Compile Include="WikiQuery\WikiQueryPageResult.cs" />

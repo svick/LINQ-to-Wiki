@@ -15,7 +15,9 @@ namespace LinqToWiki
             m_wiki = wiki;
         }
 
-        public IEnumerable<TResult> ExecuteList<TResult>(PageQueryParameters parameters, Func<PageData, TResult> selector)
+        public IEnumerable<TResult> ExecuteList<TResult>(
+            PageQueryParameters parameters, Func<PageData, TResult> selector,
+            Dictionary<string, QueryTypeProperties> pageProperties)
         {
             var propParameters = new TupleList<string, string>();
 
@@ -26,7 +28,7 @@ namespace LinqToWiki
                 propNames.Add(propQueryParameters.PropName);
 
                 propParameters.AddRange(
-                    QueryProcessor.ProcessParameters(propQueryParameters.QueryTypeProperties, propQueryParameters, true));
+                    QueryProcessor.ProcessParameters(pageProperties[propQueryParameters.PropName], propQueryParameters, true));
             }
 
             var processedParameters = new[] { Tuple.Create("action", "query") }
@@ -37,7 +39,7 @@ namespace LinqToWiki
             var element = QueryProcessor.Download(m_wiki, processedParameters);
 
             return element.Element("query").Element("pages").Elements("page")
-                .Select(e => selector(new PageData(m_wiki, e)));
+                .Select(e => selector(new PageData(m_wiki, e, pageProperties)));
         }
     }
 }

@@ -63,7 +63,7 @@ namespace LinqToWiki
             return m_props.Values.SelectMany(p => p).Distinct();
         }
 
-        public abstract MulticastDelegate Parser { get; }
+        public abstract Func<XElement, WikiInfo, object> Parser { get; }
     }
 
     /// <summary>
@@ -99,9 +99,9 @@ namespace LinqToWiki
             return m_parser(element, wiki);
         }
 
-        public override MulticastDelegate Parser
+        public override Func<XElement, WikiInfo, object> Parser
         {
-            get { return m_parser; }
+            get { return (element, info) => m_parser(element, info); }
         }
     }
 }

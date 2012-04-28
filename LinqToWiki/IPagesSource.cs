@@ -28,12 +28,12 @@ namespace LinqToWiki
 
     public static class PagesSourceExtensions
     {
-        public static WikiQueryPageResult<TPage, TResult> Select<TPage, TResult>(
+        public static WikiQueryPageResult<TResult> Select<TPage, TResult>(
             this IPagesSource<TPage> pagesSource, Expression<Func<TPage, TResult>> selector)
         {
             Func<PageData, TResult> processedSelector;
             var parameters = PageExpressionParser.ParseSelect(selector, new PageQueryParameters(pagesSource.BaseParameters), out processedSelector);
-            return new WikiQueryPageResult<TPage, TResult>(pagesSource.QueryPageProcessor, parameters, processedSelector);
+            return new WikiQueryPageResult<TResult>(pagesSource.QueryPageProcessor, parameters, processedSelector, PageProperties<TPage>.Properties);
         }
     }
 }

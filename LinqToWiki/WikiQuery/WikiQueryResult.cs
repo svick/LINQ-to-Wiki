@@ -7,10 +7,15 @@ namespace LinqToWiki
     /// <summary>
     /// Represents a result of a query.
     /// </summary>
-    public class WikiQueryResult<TSource, TResult>
+    public class WikiQueryResult<TSource, TResult> : IWikiQueryResult
     {
         protected QueryProcessor<TSource> QueryProcessor { get; private set; }
         protected QueryParameters<TSource, TResult> Parameters { get; private set; }
+
+        QueryParameters IWikiQueryResult.Parameters
+        {
+            get { return Parameters; }
+        }
 
         public WikiQueryResult(QueryProcessor<TSource> queryProcessor, QueryParameters<TSource, TResult> parameters)
         {
