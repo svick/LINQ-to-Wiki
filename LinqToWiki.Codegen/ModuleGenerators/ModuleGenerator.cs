@@ -55,9 +55,11 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             return new TupleList<string, string> { { "action", module.Name } };
         }
 
-        protected override ExpressionSyntax GenerateMethodResult(ExpressionSyntax queryProcessor, ExpressionSyntax queryParameters)
+        protected override void GenerateMethodBody(ExpressionSyntax queryProcessor, ExpressionSyntax queryParameters, IList<StatementSyntax> statements)
         {
-            return SyntaxEx.Invocation(SyntaxEx.MemberAccess(queryProcessor, "ExecuteSingle"), queryParameters);
+            statements.Add(
+                SyntaxEx.Return(
+                    SyntaxEx.Invocation(SyntaxEx.MemberAccess(queryProcessor, "ExecuteSingle"), queryParameters)));
         }
 
         protected override TypeSyntax GenerateMethodResultType()

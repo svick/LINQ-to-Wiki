@@ -33,9 +33,20 @@ namespace LinqToWiki.Test
         private static void Props(Wiki wiki)
         {
             var source = wiki.CreateTitlesSource("User:Svick", "User talk:Svick/WikiProject cleanup listing")
-                .Select(p => new { p.info.title, p.info.touched, p.info.watched }).ToEnumerable();
+                .Select(
+                    p =>
+                    new
+                    {
+                        p.info.title,
+                        categories = p.categories().ToEnumerable()
+                    }).ToEnumerable();
 
-            Write(source);
+            foreach (var page in source)
+            {
+                Console.WriteLine(page.title);
+                foreach (var category in page.categories.Take(15))
+                    Console.WriteLine("\t{0} ({1})", category.title, category.sortkeyprefix);
+            }
         }
 
         private static void AllCategories(Wiki wiki)

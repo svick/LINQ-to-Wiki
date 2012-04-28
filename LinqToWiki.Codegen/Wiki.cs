@@ -216,8 +216,11 @@ namespace LinqToWiki.Codegen
                     AddListModule(module);
                 else
                 {
-                    if (propModules++ < 0)
+                    if (propModules++ < 1)
+                    {
+                        Console.WriteLine("Adding module {0}.", module.Name);
                         AddPropModule(module);
+                    }
                     else if (module.Name == "info")
                         AddInfoModule(module);
                 }

@@ -9,11 +9,16 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 {
     class ListModuleGenerator : ModuleGeneratorBase
     {
-        private string m_selectClassName;
-        private string m_whereClassName;
-        private string m_orderByClassName;
+        protected string SelectClassName { get; private set; }
+        protected string WhereClassName { get; private set; }
+        protected string OrderByClassName { get; private set; }
 
-        private FieldDeclarationSyntax m_selectProps;
+        protected virtual string MethodClassName
+        {
+            get { return Wiki.Names.QueryAction; }
+        }
+
+        protected FieldDeclarationSyntax SelectProps { get; private set; }
         private GenericNameSyntax m_queryType;
 
         public ListModuleGenerator(Wiki wiki)
@@ -22,9 +27,9 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
         protected override void GenerateInternal(Module module)
         {
-            m_selectClassName = ClassNameBase + "Select";
-            m_whereClassName = ClassNameBase + "Where";
-            m_orderByClassName = ClassNameBase + "OrderBy";
+            SelectClassName = ClassNameBase + "Select";
+            WhereClassName = ClassNameBase + "Where";
+            OrderByClassName = ClassNameBase + "OrderBy";
 
             var parameters = module.Parameters.ToList();
 
@@ -49,8 +54,8 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
             m_queryType =
                 orderByClass == null
-                    ? SyntaxEx.GenericName("WikiQuery", m_whereClassName, m_selectClassName)
-                    : SyntaxEx.GenericName("WikiQuerySortable", m_whereClassName, m_orderByClassName, m_selectClassName);
+                    ? SyntaxEx.GenericName("WikiQuery", WhereClassName, SelectClassName)
+                    : SyntaxEx.GenericName("WikiQuerySortable", WhereClassName, OrderByClassName, SelectClassName);
 
             SortType? sortType = null;
 
@@ -65,8 +70,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
                     sortType = SortType.Newer;
             }
 
-            GenerateMethod(
-                module, methodParameters, m_selectClassName, m_selectProps, Wiki.Names.QueryAction, false, sortType);
+            GenerateMethod(module, methodParameters, SelectClassName, SelectProps, MethodClassName, false, sortType);
         }
 
         private static IList<Parameter> RemoveAndReturnByNames(List<Parameter> parameters, params string[] names)
@@ -76,21 +80,17 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
         private ClassDeclarationSyntax GenerateSelect(IEnumerable<PropertyGroup> propertyGroups)
         {
-            var queryActionFile = Wiki.Files[Wiki.Names.QueryAction];
-            var queryActionClass = queryActionFile.SingleDescendant<ClassDeclarationSyntax>();
-
             propertyGroups = propertyGroups.Where(pg => pg.Name != null).ToArray();
 
             var propsField = CreatePropsField(propertyGroups);
 
-            m_selectProps = propsField;
+            SelectProps = propsField;
 
-            Wiki.Files[Wiki.Names.QueryAction] = queryActionFile.ReplaceNode(
-                queryActionClass, queryActionClass.WithAdditionalMembers(propsField));
+            AddMembersToClass(MethodClassName, propsField);
 
             var properties = propertyGroups.SelectMany(g => g.Properties).Distinct();
 
-            return GenerateClassForProperties(m_selectClassName, properties);
+            return GenerateClassForProperties(SelectClassName, properties);
         }
 
         private ClassDeclarationSyntax GenerateWhere(IEnumerable<Parameter> parameters)
@@ -98,7 +98,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             var propertyDeclarations =
                 parameters.Select(p => GenerateProperty(p.Name, p.Type, multi: p.Multi, description: p.Description));
 
-            return SyntaxEx.ClassDeclaration(m_whereClassName, propertyDeclarations)
+            return SyntaxEx.ClassDeclaration(WhereClassName, propertyDeclarations)
                 .WithPrivateConstructor();
         }
 
@@ -117,7 +117,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
                 propertyDeclarations =
                     ((EnumParameterType)sortParameter.Type).Values.Select(v => GenerateProperty(v, propertyTypes[v]));
 
-            return SyntaxEx.ClassDeclaration(m_orderByClassName, propertyDeclarations)
+            return SyntaxEx.ClassDeclaration(OrderByClassName, propertyDeclarations)
                 .WithPrivateConstructor();
         }
 
@@ -127,9 +127,9 @@ namespace LinqToWiki.Codegen.ModuleGenerators
                 new TupleList<string, string> { { module.QueryType.ToString().ToLowerInvariant(), module.Name } });
         }
 
-        protected override ExpressionSyntax GenerateMethodResult(ExpressionSyntax queryProcessor, ExpressionSyntax queryParameters)
+        protected override void GenerateMethodBody(ExpressionSyntax queryProcessor, ExpressionSyntax queryParameters, IList<StatementSyntax> statements)
         {
-            return SyntaxEx.ObjectCreation(m_queryType, queryProcessor, queryParameters);
+            statements.Add(SyntaxEx.Return(SyntaxEx.ObjectCreation(m_queryType, queryProcessor, queryParameters)));
         }
 
         protected override TypeSyntax GenerateMethodResultType()

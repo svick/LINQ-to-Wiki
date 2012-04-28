@@ -149,9 +149,6 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             Module module, IEnumerable<Parameter> methodParameters, string resultClassName,
             FieldDeclarationSyntax propsField, string fileName, bool nullableParameters, SortType? sortType)
         {
-            var containingFile = Wiki.Files[fileName];
-            var containingClass = containingFile.SingleDescendant<ClassDeclarationSyntax>();
-
             var propertiesField = CreatePropertiesField(module, resultClassName, propsField, sortType);
 
             ExpressionSyntax queryParameters = SyntaxEx.Invocation(
@@ -199,20 +196,17 @@ namespace LinqToWiki.Codegen.ModuleGenerators
                 documentationElements.Add(parameterDocumentation);
             }
 
-            var queryCreation = GenerateMethodResult(
+            GenerateMethodBody(
                 SyntaxEx.ObjectCreation(
                     SyntaxEx.GenericName("QueryProcessor", resultClassName),
                     Syntax.IdentifierName("m_wiki"),
-                    (NamedNode)propertiesField), (NamedNode)queryParametersLocal);
-
-            statements.Add(SyntaxEx.Return(queryCreation));
+                    (NamedNode)propertiesField), (NamedNode)queryParametersLocal, statements);
 
             var method = SyntaxEx.MethodDeclaration(
                 new[] { SyntaxKind.PublicKeyword }, GenerateMethodResultType(), ClassNameBase, parameters, statements)
                 .WithLeadingTrivia(Syntax.Trivia(SyntaxEx.DocumentationComment(documentationElements)));
 
-            Wiki.Files[fileName] = containingFile.ReplaceNode(
-                containingClass, containingClass.WithAdditionalMembers(propertiesField, method));
+            AddMembersToClass(fileName, propertiesField, method);
         }
 
         protected FieldDeclarationSyntax CreatePropertiesField(
@@ -241,7 +235,8 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
         protected abstract IEnumerable<Tuple<string, string>> GetBaseParameters(Module module);
 
-        protected abstract ExpressionSyntax GenerateMethodResult(ExpressionSyntax queryProcessor, ExpressionSyntax queryParameters);
+        protected abstract void GenerateMethodBody(
+            ExpressionSyntax queryProcessor, ExpressionSyntax queryParameters, IList<StatementSyntax> statements);
 
         protected abstract TypeSyntax GenerateMethodResultType();
 
@@ -268,6 +263,14 @@ namespace LinqToWiki.Codegen.ModuleGenerators
                     new[] { SyntaxKind.PrivateKeyword, SyntaxKind.StaticKeyword, SyntaxKind.ReadOnlyKeyword },
                     "IDictionary<string, string[]>", ClassNameBase + "Props", propsInitializer);
             return propsField;
+        }
+
+        protected void AddMembersToClass(string fileName, params MemberDeclarationSyntax[] members)
+        {
+            var file = Wiki.Files[fileName];
+            var @class = file.SingleDescendant<ClassDeclarationSyntax>();
+
+            Wiki.Files[fileName] = file.ReplaceNode(@class, @class.WithAdditionalMembers(members));
         }
     }
 }

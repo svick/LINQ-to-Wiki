@@ -38,17 +38,13 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
         protected override void GenerateMethod(Module module)
         {
-            var containingFile = Wiki.Files[Wiki.Names.Page];
-            var containingClass = containingFile.SingleDescendant<ClassDeclarationSyntax>();
-
             var propsField = CreatePropsField(GetPropertyGroups(module));
 
             var propertiesField = CreatePropertiesField(module, ResultClassName, propsField, null);
 
             var moduleProperty = CreateThrowingProperty(module);
 
-            Wiki.Files[Wiki.Names.Page] = containingFile.ReplaceNode(
-                containingClass, containingClass.WithAdditionalMembers(propsField, propertiesField, moduleProperty));
+            AddMembersToClass(Wiki.Names.Page, propsField, propertiesField, moduleProperty);
         }
 
         protected override IEnumerable<Tuple<string, string>> GetBaseParameters(Module module)
