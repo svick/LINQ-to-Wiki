@@ -87,13 +87,14 @@ namespace LinqToWiki.Test
                         p.info,
                         categories =
                         p.categories()
-                        .OrderByDescending(c => c)
-                        .Select(c => new { c.title, c.sortkeyprefix })
+                        .Where(c => c.show == categoriesshow.not_hidden)
+                        .Select(c => new { c.title , c.sortkeyprefix })
                         .ToEnumerable()
+                        .Take(1)
                     }
                 );
 
-            foreach (var page in source.ToList().Take(10))
+            foreach (var page in source.ToEnumerable().Take(10))
             {
                 Console.WriteLine(page.info.title);
                 foreach (var item in page.categories.Take(10))

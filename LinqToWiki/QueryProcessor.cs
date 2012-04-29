@@ -116,8 +116,15 @@ namespace LinqToWiki
             WikiInfo wiki, IEnumerable<Tuple<string, string>> processedParameters,
             Tuple<string, string> queryContinue = null)
         {
-            if (queryContinue != null)
-                processedParameters = processedParameters.Concat(new[] { queryContinue });
+            return Download(wiki, processedParameters, new[] { queryContinue });
+        }
+
+        public static XElement Download(
+            WikiInfo wiki, IEnumerable<Tuple<string, string>> processedParameters,
+            IEnumerable<Tuple<string, string>> queryContinues = null)
+        {
+            if (queryContinues != null)
+                processedParameters = processedParameters.Concat(queryContinues.Where(x => x != null));
 
             var downloaded = wiki.Downloader.Download(processedParameters);
 
@@ -211,17 +218,22 @@ namespace LinqToWiki
 
         public static Tuple<string, string> GetQueryContinue(XElement downloaded, string moduleName)
         {
-            if (moduleName == null)
-                return null;
+            Tuple<string, string> result;
+            GetQueryContinues(downloaded).TryGetValue(moduleName, out result);
+            return result;
+        }
 
+        public static Dictionary<string, Tuple<string, string>> GetQueryContinues(XElement downloaded)
+        {
             var queryContinueElement = downloaded.Element("query-continue");
 
             if (queryContinueElement == null)
-                return null;
+                return new Dictionary<string, Tuple<string, string>>();
 
-            var listContinueElement = queryContinueElement.Element(moduleName);
-            var listContinueAttribute = listContinueElement.Attributes().Single();
-            return Tuple.Create(listContinueAttribute.Name.LocalName, listContinueAttribute.Value);
+            var listContinueElements = queryContinueElement.Elements();
+            var listContinueAttributes = listContinueElements.Attributes();
+            return listContinueAttributes.ToDictionary(
+                a => a.Parent.Name.LocalName, a => Tuple.Create(a.Name.LocalName, a.Value));
         }
     }
 }

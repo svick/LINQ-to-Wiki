@@ -65,6 +65,7 @@
     <Compile Include="Namespace.cs" />
     <Compile Include="PageData.cs" />
     <Compile Include="PageProperties.cs" />
+    <Compile Include="PagingManager.cs" />
     <Compile Include="Parameters\NameValueParameter.cs" />
     <Compile Include="Parameters\PageQueryParameters.cs" />
     <Compile Include="Parameters\QueryParameters.cs" />

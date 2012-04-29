@@ -19,11 +19,56 @@ namespace LinqToWiki
             PageQueryParameters parameters, Func<PageData, TResult> selector,
             Dictionary<string, QueryTypeProperties> pageProperties)
         {
+            var processedParameters = ProcessParameters(parameters, pageProperties);
+
+            Tuple<string, string> primaryQueryContinue = null;
+            var generatorParameter = parameters.Value.SingleOrDefault(p => p.Name == "generator");
+            var generator = generatorParameter == null ? null : generatorParameter.Value;
+
+            do
+            {
+                var downloaded = QueryProcessor.Download(m_wiki, processedParameters, primaryQueryContinue);
+
+                var queryContinues = QueryProcessor.GetQueryContinues(downloaded);
+
+                Tuple<string, string> newPrimaryQueryContinue = null;
+
+                if (generator != null)
+                {
+                    newPrimaryQueryContinue = queryContinues[generator];
+
+                    queryContinues.Remove(generator);
+                }
+
+                var pagingManager = new PagingManager(m_wiki, generator, parameters, pageProperties, primaryQueryContinue, queryContinues);
+
+                var partPageData = downloaded.Element("query").Element("pages").Elements("page")
+                    .Select(e => new PageData(m_wiki, e, pageProperties, pagingManager)).ToArray();
+
+                pagingManager.SetPages(partPageData);
+
+                var part = partPageData.Select(selector);
+
+                foreach (var item in part)
+                    yield return item;
+
+                primaryQueryContinue = newPrimaryQueryContinue;
+            } while (primaryQueryContinue != null);
+        }
+
+        internal static Tuple<string, string>[] ProcessParameters(
+            PageQueryParameters parameters, Dictionary<string, QueryTypeProperties> pageProperties, bool withInfo = true)
+        {
             var propParameters = new TupleList<string, string>();
 
             var propNames = new List<string>();
 
-            foreach (var propQueryParameters in parameters.PropQueryParametersCollection)
+            var propQueryParametersCollection = parameters.PropQueryParametersCollection;
+
+            if (!withInfo)
+                propQueryParametersCollection = propQueryParametersCollection.Where(x => x.PropName != "info");
+
+            foreach (var propQueryParameters in propQueryParametersCollection)
             {
                 propNames.Add(propQueryParameters.PropName);
 
@@ -31,27 +76,11 @@ namespace LinqToWiki
                     QueryProcessor.ProcessParameters(pageProperties[propQueryParameters.PropName], propQueryParameters, true));
             }
 
-            var processedParameters = new[] { Tuple.Create("action", "query") }
+            return new[] { Tuple.Create("action", "query") }
                 .Concat(parameters.Value.Select(nvp => Tuple.Create(nvp.Name, nvp.Value)))
                 .Concat(new[] { Tuple.Create("prop", NameValueParameter.JoinValues(propNames)) })
-                .Concat(propParameters);
-
-            Tuple<string, string> queryContinue = null;
-            var generatorParameter = parameters.Value.SingleOrDefault(p => p.Name == "generator");
-            var generator = generatorParameter == null ? null : generatorParameter.Value;
-
-            do
-            {
-                var downloaded = QueryProcessor.Download(m_wiki, processedParameters, queryContinue);
-
-                var part = downloaded.Element("query").Element("pages").Elements("page")
-                    .Select(e => selector(new PageData(m_wiki, e, pageProperties)));
-
-                foreach (var item in part)
-                    yield return item;
-
-                queryContinue = QueryProcessor.GetQueryContinue(downloaded, generator);
-            } while (queryContinue != null);
+                .Concat(propParameters)
+                .ToArray();
         }
     }
 }
