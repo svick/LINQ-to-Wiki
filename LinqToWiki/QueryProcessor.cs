@@ -81,6 +81,16 @@ namespace LinqToWiki
         {
             return ProcessParameters(m_queryTypeProperties, parameters, list);
         }
+
+        public QueryPageProcessor GetPageProcessor()
+        {
+            return new QueryPageProcessor(m_wiki);
+        }
+
+        public IEnumerable<Tuple<string, string>> ProcessGeneratorParameters(QueryParameters parameters)
+        {
+            return ProcessParameters(m_queryTypeProperties, parameters, true, true);
+        }
     }
 
     public abstract class QueryProcessor
@@ -103,11 +113,23 @@ namespace LinqToWiki
             return new ApiErrorException((string)error.Attribute("code"), (string)error.Attribute("info"));
         }
 
-        public static IEnumerable<Tuple<string, string>> ProcessParameters(QueryTypeProperties queryTypeProperties, QueryParameters parameters, bool list)
+        public static IEnumerable<Tuple<string, string>> ProcessParameters(
+            QueryTypeProperties queryTypeProperties, QueryParameters parameters, bool list, bool generator = false)
         {
-            var parsedParameters = new TupleList<string, string>(queryTypeProperties.BaseParameters);
+            var parsedParameters = new TupleList<string, string>();
+
+            if (generator)
+            {
+                var generatorParameter = queryTypeProperties.BaseParameters.Single(p => p.Item1 != "action");
+                parsedParameters.Add("generator", generatorParameter.Item2);
+            }
+            else
+                parsedParameters.AddRange(queryTypeProperties.BaseParameters);
 
             string prefix = queryTypeProperties.Prefix;
+
+            if (generator)
+                prefix = 'g' + prefix;
 
             if (parameters.Value != null)
                 foreach (var value in parameters.Value)
@@ -154,7 +176,8 @@ namespace LinqToWiki
 
             if (list)
             {
-                parsedParameters.Add(prefix + "prop", NameValueParameter.JoinValues(selectedProps));
+                if (!generator)
+                    parsedParameters.Add(prefix + "prop", NameValueParameter.JoinValues(selectedProps));
 
                 parsedParameters.Add(prefix + "limit", "max");
             }

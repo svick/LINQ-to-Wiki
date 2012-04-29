@@ -635,6 +635,11 @@ namespace LinqToWiki.Codegen
 
         public static GenericNameSyntax GenericName(string name, params string[] typeArgumentNames)
         {
+            return GenericName(name, (IEnumerable<string>)typeArgumentNames);
+        }
+
+        public static GenericNameSyntax GenericName(string name, IEnumerable<string> typeArgumentNames)
+        {
             return Syntax.GenericName(
                 Syntax.Identifier(name),
                 Syntax.TypeArgumentList(

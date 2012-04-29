@@ -15,19 +15,41 @@ namespace LinqToWiki
         QueryPageProcessor QueryPageProcessor { get; }
     }
 
-    public abstract class SourceBase<TPage> : IPagesSource<TPage>
+    public class Source<TPage> : IPagesSource<TPage>
     {
-        protected SourceBase(WikiInfo wiki)
+        protected Source()
+        {}
+
+        public Source(IEnumerable<Tuple<string, string>> baseParameters, QueryPageProcessor queryPageProcessor)
+        {
+            BaseParameters = baseParameters;
+            QueryPageProcessor = queryPageProcessor;
+        }
+
+        protected IEnumerable<Tuple<string, string>> BaseParameters { get; set; }
+
+        IEnumerable<Tuple<string, string>> IPagesSource<TPage>.BaseParameters
+        {
+            get { return BaseParameters; }
+        }
+
+        protected QueryPageProcessor QueryPageProcessor { get; set; }
+
+        QueryPageProcessor IPagesSource<TPage>.QueryPageProcessor
+        {
+            get { return QueryPageProcessor; }
+        }
+    }
+
+    public abstract class ListSourceBase<TPage> : Source<TPage>
+    {
+        protected ListSourceBase(WikiInfo wiki)
         {
             QueryPageProcessor = new QueryPageProcessor(wiki);
         }
-
-        public IEnumerable<Tuple<string, string>> BaseParameters { get; protected set; }
-
-        public QueryPageProcessor QueryPageProcessor { get; private set; }
     }
 
-    public class TitlesSource<TPage> : SourceBase<TPage>
+    public class TitlesSource<TPage> : ListSourceBase<TPage>
     {
         public TitlesSource(WikiInfo wiki, IEnumerable<string> titles)
             : base(wiki)
@@ -36,7 +58,7 @@ namespace LinqToWiki
         }
     }
 
-    public class PageIdsSource<TPage> : SourceBase<TPage>
+    public class PageIdsSource<TPage> : ListSourceBase<TPage>
     {
         public PageIdsSource(WikiInfo wiki, IEnumerable<long> pageIds)
             : base(wiki)
@@ -52,7 +74,7 @@ namespace LinqToWiki
         }
     }
 
-    public class RevIdsSource<TPage> : SourceBase<TPage>
+    public class RevIdsSource<TPage> : ListSourceBase<TPage>
     {
         public RevIdsSource(WikiInfo wiki, IEnumerable<long> revIds)
             : base(wiki)

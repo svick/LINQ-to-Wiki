@@ -52,10 +52,22 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
             Wiki.Files.Add(ClassNameBase, codeUnit);
 
-            m_queryType =
-                orderByClass == null
-                    ? SyntaxEx.GenericName("WikiQuery", WhereClassName, SelectClassName)
-                    : SyntaxEx.GenericName("WikiQuerySortable", WhereClassName, OrderByClassName, SelectClassName);
+            string queryTypeName = "WikiQuery";
+            var queryTypeGenericParameters = new List<string> { WhereClassName, SelectClassName };
+
+            if (orderByClass != null)
+            {
+                queryTypeName += "Sortable";
+                queryTypeGenericParameters.Insert(1, OrderByClassName);
+            }
+
+            if (module.Generator)
+            {
+                queryTypeName += "Generator";
+                queryTypeGenericParameters.Insert(0, Wiki.Names.Page);
+            }
+
+            m_queryType = SyntaxEx.GenericName(queryTypeName, queryTypeGenericParameters);
 
             SortType? sortType = null;
 

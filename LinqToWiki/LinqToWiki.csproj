@@ -80,7 +80,6 @@
     <Compile Include="WikiQuery\WikiQuery.cs" />
     <Compile Include="WikiQuery\WikiQueryGenerator.cs" />
     <Compile Include="WikiQuery\WikiQueryPageResult.cs" />
-    <Compile Include="WikiQuery\WikiQueryPagesSource.cs" />
     <Compile Include="WikiQuery\WikiQueryResult.cs" />
   </ItemGroup>
   <ItemGroup />
