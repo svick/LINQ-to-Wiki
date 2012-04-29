@@ -1,4 +1,3 @@
-- working sample for C#
 - codegen
 - F# query
 - basic F# type provider
