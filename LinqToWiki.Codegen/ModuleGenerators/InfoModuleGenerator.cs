@@ -7,7 +7,7 @@ using Roslyn.Compilers.CSharp;
 
 namespace LinqToWiki.Codegen.ModuleGenerators
 {
-    public class InfoModuleGenerator : ModuleGenerator
+    class InfoModuleGenerator : ModuleGenerator
     {
         public InfoModuleGenerator(Wiki wiki)
             : base(wiki)

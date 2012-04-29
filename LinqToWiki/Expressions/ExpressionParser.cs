@@ -9,7 +9,7 @@ namespace LinqToWiki.Expressions
     /// <summary>
     /// Parses various expression kinds and returns them as a <see cref="QueryParameters{TSource,TResult}"/>.
     /// </summary>
-    public static class ExpressionParser
+    static class ExpressionParser
     {
         /// <summary>
         /// Parses a <c>where</c> expression.

@@ -6,7 +6,7 @@ using Roslyn.Compilers.CSharp;
 
 namespace LinqToWiki.Codegen.ModuleGenerators
 {
-    public abstract class ModuleGeneratorBase
+    abstract class ModuleGeneratorBase
     {
         protected Wiki Wiki { get; private set; }
         protected string ClassNameBase { get; private set; }

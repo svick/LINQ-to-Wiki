@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace LinqToWiki
 {
-    public static class PageProperties<TPage>
+    static class PageProperties<TPage>
     {
         private static readonly Dictionary<string, QueryTypeProperties> PropertiesField =
             typeof(TPage).GetFields(BindingFlags.NonPublic | BindingFlags.Static)

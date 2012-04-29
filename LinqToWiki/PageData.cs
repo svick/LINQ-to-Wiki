@@ -1,11 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 
 namespace LinqToWiki
 {
-    public class PageData
+    class PageData
     {
         private readonly WikiInfo m_wiki;
         private readonly XElement m_element;

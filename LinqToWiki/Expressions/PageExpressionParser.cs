@@ -7,7 +7,7 @@ using LinqToWiki.Parameters;
 
 namespace LinqToWiki.Expressions
 {
-    public static class PageExpressionParser
+    static class PageExpressionParser
     {
         public static PageQueryParameters ParseSelect<TSource, TResult>(
             Expression<Func<TSource, TResult>> expression, PageQueryParameters baseParameters,

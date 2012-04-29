@@ -15,7 +15,7 @@ namespace LinqToWiki
         private readonly Func<PageData, TResult> m_selector;
         private readonly Dictionary<string, QueryTypeProperties> m_pageProperties;
 
-        public WikiQueryPageResult(
+        internal WikiQueryPageResult(
             QueryPageProcessor queryProcessor, PageQueryParameters parameters, Func<PageData, TResult> selector,
             Dictionary<string, QueryTypeProperties> pageProperties)
         {

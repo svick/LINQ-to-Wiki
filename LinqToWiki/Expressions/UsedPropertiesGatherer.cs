@@ -6,7 +6,7 @@ namespace LinqToWiki.Expressions
     /// <summary>
     /// Gathers information about properties of an object used in an expression.
     /// </summary>
-    public class UsedPropertiesGatherer : ExpressionVisitor
+    class UsedPropertiesGatherer : ExpressionVisitor
     {
         private Expression m_needle;
         private HashSet<string> m_usedProperties;

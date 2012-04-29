@@ -15,7 +15,7 @@ namespace LinqToWiki
             m_wiki = wiki;
         }
 
-        public IEnumerable<TResult> ExecuteList<TResult>(
+        internal IEnumerable<TResult> ExecuteList<TResult>(
             PageQueryParameters parameters, Func<PageData, TResult> selector,
             Dictionary<string, QueryTypeProperties> pageProperties)
         {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace LinqToWiki.Codegen
 {
-    public static class ListExtensions
+    static class ListExtensions
     {
          public static IList<T> RemoveAndReturn<T>(this IList<T> list, Func<T, bool> predicate)
          {

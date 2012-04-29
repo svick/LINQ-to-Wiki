@@ -2,7 +2,7 @@
 
 namespace LinqToWiki.Codegen.ModuleGenerators
 {
-    internal static class ModuleGeneratorRoslynExtensions
+    static class ModuleGeneratorRoslynExtensions
     {
         public static ClassDeclarationSyntax WithPrivateConstructor(this ClassDeclarationSyntax selectClass)
         {

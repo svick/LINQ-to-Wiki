@@ -2,7 +2,7 @@
 
 namespace LinqToWiki.Expressions
 {
-    class ExpressionReplacer : ExpressionVisitor
+    public class ExpressionReplacer : ExpressionVisitor
     {
         private readonly Expression m_toReplace;
         private readonly Expression m_replaceWith;
