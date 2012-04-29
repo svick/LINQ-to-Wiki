@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            Props(RevIdsPages(wiki));
+            AnonymousTypeProps(TitlePages(wiki));
         }
 
         private static void Login(Wiki wiki, string name, string password)
@@ -45,7 +45,7 @@ namespace LinqToWiki.Test
             return wiki.CreateRevIdsSource(489663021, 489132906);
         }
 
-        private static void Props(IPagesSource<Page> pages)
+        private static void PageResultProps(IPagesSource<Page> pages)
         {
             var source = pages
                 .Select(
@@ -61,6 +61,32 @@ namespace LinqToWiki.Test
 
             Write(source);
         }
+
+        private static void AnonymousTypeProps(IPagesSource<Page> pages)
+        {
+            var source = pages
+                .Select(
+                    p =>
+                    new
+                    {
+                        p.info,
+                        categories =
+                        p.categories()
+                        .Where(c => c.show == categoriesshow.not_hidden)
+                        .OrderByDescending(c => c)
+                        .Select(c => new { c.title, c.sortkeyprefix })
+                        .ToEnumerable()
+                    }
+                );
+
+            foreach (var page in source.ToEnumerable())
+            {
+                Console.WriteLine(page.info.title);
+                foreach (var item in page.categories.Take(10))
+                    Console.WriteLine("  " + item);
+            }
+        }
+
 
         private static void AllCategories(Wiki wiki)
         {

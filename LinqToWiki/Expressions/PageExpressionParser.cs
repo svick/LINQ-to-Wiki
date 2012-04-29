@@ -93,6 +93,14 @@ namespace LinqToWiki.Expressions
                     var propExpression = ExpressionFinder.Single<MethodCallExpression>(
                         node.Object, e => e.Object == m_pageParameter && e.Method.DeclaringType == m_pageParameter.Type);
 
+                    var propName = propExpression.Method.Name;
+
+                    if (m_parameters.ContainsKey(propName))
+                        throw new InvalidOperationException(
+                            string.Format(
+                                "Each prop module can be use at most once in a single query, but you used the module '{0}' more than once.",
+                                propName));
+
                     var createQueryParametersMethod = typeof(QueryParameters).GetMethod("Create")
                         .MakeGenericMethod(propExpression.Type.GetGenericArguments().Last());
 
@@ -105,11 +113,11 @@ namespace LinqToWiki.Expressions
                     var processedQueryObject =
                         Expression.Lambda<Func<IWikiQueryResult>>(withQueryObject).Compile().Invoke();
 
-                    var parameter = new PropQueryParameters(propExpression.Method.Name);
+                    var parameter = new PropQueryParameters(propName);
 
                     parameter.CopyFrom(processedQueryObject.Parameters);
 
-                    m_parameters.Add(propExpression.Method.Name, parameter);
+                    m_parameters.Add(propName, parameter);
 
                     m_canUsePage = true;
 
