@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            Props(wiki);
+            Props(PageIdPages(wiki));
         }
 
         private static void Login(Wiki wiki, string name, string password)
@@ -30,9 +30,19 @@ namespace LinqToWiki.Test
                 throw new Exception(result.result.ToString());
         }
 
-        private static void Props(Wiki wiki)
+        private static IPagesSource<Page> TitlePages(Wiki wiki)
         {
-            var source = wiki.CreateTitlesSource("User:Svick", "User talk:Svick/WikiProject cleanup listing")
+            return wiki.CreateTitlesSource("User:Svick", "User talk:Svick/WikiProject cleanup listing");
+        }
+
+        private static IPagesSource<Page> PageIdPages(Wiki wiki)
+        {
+            return wiki.CreatePageIdsSource(21061255, 29516325);
+        }
+
+        private static void Props(IPagesSource<Page> pages)
+        {
+            var source = pages
                 .Select(
                     p =>
                     PageResult.Create(

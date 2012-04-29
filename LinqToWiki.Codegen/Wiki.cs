@@ -122,26 +122,7 @@ namespace LinqToWiki.Codegen
 
             var members = new List<MemberDeclarationSyntax> { wikiField, queryProperty, ctor };
 
-            var titlesParameterVersions =
-                new[]
-                {
-                    SyntaxEx.Parameter(SyntaxEx.GenericName("IEnumerable", "string"), "titles"),
-                    SyntaxEx.Parameter("string[]", "titles", modifiers: new[] { SyntaxKind.ParamsKeyword })
-                };
-
-            foreach (var titlesParameter in titlesParameterVersions)
-            {
-                var createTitlesReturn = SyntaxEx.Return(
-                    SyntaxEx.ObjectCreation(
-                        SyntaxEx.GenericName("TitlesSource", Names.Page), (NamedNode)wikiField,
-                        (NamedNode)titlesParameter));
-
-                var createTitlesSourceMethod = SyntaxEx.MethodDeclaration(
-                    new[] { SyntaxKind.PublicKeyword }, SyntaxEx.GenericName("IPagesSource", Names.Page),
-                    "CreateTitlesSource", new[] { titlesParameter }, createTitlesReturn);
-
-                members.Add(createTitlesSourceMethod);
-            }
+            members.AddRange(CreatePageSourceMethods(wikiField));
 
             var wikiClass = SyntaxEx.ClassDeclaration(Names.Wiki, members);
 
@@ -150,6 +131,42 @@ namespace LinqToWiki.Codegen
                 SyntaxEx.CompilationUnit(
                     SyntaxEx.NamespaceDeclaration(Namespace, wikiClass),
                     "System.Collections.Generic", "LinqToWiki.Collections", "LinqToWiki.Parameters"));
+        }
+
+        private static IEnumerable<MethodDeclarationSyntax> CreatePageSourceMethods(FieldDeclarationSyntax wikiField)
+        {
+            var pageSources =
+                new[]
+                {
+                    new { type = "string", name = "titles", sourceType = typeof(TitlesSource<>) },
+                    new { type = "long", name = "pageIds", sourceType = typeof(PageIdsSource<>) }
+                };
+
+            foreach (var pageSource in pageSources)
+            {
+                string sourceTypeName = pageSource.sourceType.Name;
+                sourceTypeName = sourceTypeName.Substring(0, sourceTypeName.IndexOf('`'));
+
+                var parameterVersions =
+                    new[]
+                    {
+                        SyntaxEx.Parameter(SyntaxEx.GenericName("IEnumerable", pageSource.type), pageSource.name),
+                        SyntaxEx.Parameter(
+                            pageSource.type + "[]", pageSource.name, modifiers: new[] { SyntaxKind.ParamsKeyword })
+                    };
+
+                foreach (var parameter in parameterVersions)
+                {
+                    var returnStatement = SyntaxEx.Return(
+                        SyntaxEx.ObjectCreation(
+                            SyntaxEx.GenericName(sourceTypeName, Names.Page),
+                            (NamedNode)wikiField, (NamedNode)parameter));
+
+                    yield return SyntaxEx.MethodDeclaration(
+                        new[] { SyntaxKind.PublicKeyword }, SyntaxEx.GenericName("IPagesSource", Names.Page),
+                        "Create" + sourceTypeName, new[] { parameter }, returnStatement);
+                }
+            }
         }
 
         private void CreateEnumsFile()
