@@ -49,7 +49,7 @@ namespace LinqToWiki.Expressions
 
         public override Expression Visit(Expression node)
         {
-            if (!m_canUsePage)
+            if (!m_canUsePage && node != null)
             {
                 var type = node.Type;
                 if (type.IsGenericType && BaseTypes(type).Contains(typeof(WikiQueryResult<,>)))

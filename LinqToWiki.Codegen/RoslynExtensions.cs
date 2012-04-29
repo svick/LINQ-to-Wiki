@@ -147,20 +147,66 @@ namespace LinqToWiki.Codegen
             return ClassDeclaration(className, (IEnumerable<MemberDeclarationSyntax>)members);
         }
 
+        public static ClassDeclarationSyntax ClassDeclaration(
+            bool isStatic, string className, params MemberDeclarationSyntax[] members)
+        {
+            return ClassDeclaration(isStatic, className, (IEnumerable<MemberDeclarationSyntax>)members);
+        }
+
+        public static ClassDeclarationSyntax ClassDeclaration(
+            bool isStatic, string className, IEnumerable<MemberDeclarationSyntax> members)
+        {
+            return ClassDeclaration(isStatic, className, null, members);
+        }
+
         public static ClassDeclarationSyntax ClassDeclaration(string className, IEnumerable<MemberDeclarationSyntax> members)
         {
             return ClassDeclaration(className, null, members);
         }
 
-        public static ClassDeclarationSyntax ClassDeclaration(string className, TypeSyntax baseType, IEnumerable<MemberDeclarationSyntax> members)
+        private static ClassDeclarationSyntax ClassDeclaration(
+            bool isStatic, string className, TypeSyntax baseType, IEnumerable<MemberDeclarationSyntax> members)
         {
+            return ClassDeclaration(isStatic, className, null, baseType, members);
+        }
+
+        public static ClassDeclarationSyntax ClassDeclaration(
+            string className, TypeSyntax baseType, IEnumerable<MemberDeclarationSyntax> members)
+        {
+            return ClassDeclaration(className, null, baseType, members);
+        }
+
+        public static ClassDeclarationSyntax ClassDeclaration(
+            string className, IEnumerable<TypeParameterSyntax> typeParameters, TypeSyntax baseType,
+            IEnumerable<MemberDeclarationSyntax> members)
+        {
+            return ClassDeclaration(false, className, typeParameters, baseType, members);
+        }
+
+        public static ClassDeclarationSyntax ClassDeclaration(
+            bool isStatic, string className, IEnumerable<TypeParameterSyntax> typeParameters, TypeSyntax baseType,
+            IEnumerable<MemberDeclarationSyntax> members)
+        {
+            var typeParameterListSyntax = typeParameters == null
+                                              ? null
+                                              : Syntax.TypeParameterList(parameters: typeParameters.ToSeparatedList());
             var baseTypeSyntax = baseType == null ? null : Syntax.BaseList(types: new[] { baseType }.ToSeparatedList());
 
+            var modifiers = isStatic
+                                ? new[] { SyntaxKind.PublicKeyword, SyntaxKind.StaticKeyword }
+                                : new[] { SyntaxKind.PublicKeyword, SyntaxKind.SealedKeyword };
+
             return Syntax.ClassDeclaration(
-                modifiers: TokenList(new[] {SyntaxKind.PublicKeyword, SyntaxKind.SealedKeyword }),
+                modifiers: TokenList(modifiers),
                 identifier: Syntax.Identifier(className),
+                typeParameterListOpt: typeParameterListSyntax,
                 baseListOpt: baseTypeSyntax,
                 members: members.ToSyntaxList());
+        }
+
+        public static TypeParameterSyntax TypeParameter(string typeParameterName)
+        {
+            return Syntax.TypeParameter(identifier: Syntax.Identifier(typeParameterName));
         }
 
         public static EnumDeclarationSyntax EnumDeclaration(string enumName, IEnumerable<string> members)
@@ -301,8 +347,16 @@ namespace LinqToWiki.Codegen
             IEnumerable<SyntaxKind> modifiers, string typeName, string propertyName,
             SyntaxKind? setModifier = null, SyntaxKind? getModifier = null)
         {
+            return AutoPropertyDeclaration(
+                modifiers, Syntax.ParseTypeName(typeName), propertyName, setModifier, getModifier);
+        }
+
+        public static PropertyDeclarationSyntax AutoPropertyDeclaration(
+            IEnumerable<SyntaxKind> modifiers, TypeSyntax type, string propertyName,
+            SyntaxKind? setModifier = null, SyntaxKind? getModifier = null)
+        {
             return Syntax.PropertyDeclaration(
-                modifiers: TokenList(modifiers), type: Syntax.ParseTypeName(typeName),
+                modifiers: TokenList(modifiers), type: type,
                 identifier: Syntax.Identifier(propertyName),
                 accessorList: Syntax.AccessorList(
                     accessors: Syntax.List(
@@ -360,18 +414,39 @@ namespace LinqToWiki.Codegen
             IEnumerable<SyntaxKind> modifiers, TypeSyntax returnType, string methodName,
             IEnumerable<ParameterSyntax> parameters, params StatementSyntax[] statements)
         {
+            return MethodDeclaration(modifiers, returnType, methodName, null, parameters, statements);
+        }
+
+        public static MethodDeclarationSyntax MethodDeclaration(
+            IEnumerable<SyntaxKind> modifiers, TypeSyntax returnType, string methodName,
+            IEnumerable<TypeParameterSyntax> typeParameters, IEnumerable<ParameterSyntax> parameters,
+            params StatementSyntax[] statements)
+        {
             return MethodDeclaration(
-                modifiers, returnType, methodName, parameters, (IEnumerable<StatementSyntax>)statements);
+                modifiers, returnType, methodName, typeParameters, parameters, (IEnumerable<StatementSyntax>)statements);
         }
 
         public static MethodDeclarationSyntax MethodDeclaration(
             IEnumerable<SyntaxKind> modifiers, TypeSyntax returnType, string methodName,
             IEnumerable<ParameterSyntax> parameters, IEnumerable<StatementSyntax> statements)
         {
+            return MethodDeclaration(modifiers, returnType, methodName, null, parameters, statements);
+        }
+
+        public static MethodDeclarationSyntax MethodDeclaration(
+            IEnumerable<SyntaxKind> modifiers, TypeSyntax returnType, string methodName,
+            IEnumerable<TypeParameterSyntax> typeParameters, IEnumerable<ParameterSyntax> parameters,
+            IEnumerable<StatementSyntax> statements)
+        {
+            var typeParameterListSyntax = typeParameters == null
+                                              ? null
+                                              : Syntax.TypeParameterList(parameters: typeParameters.ToSeparatedList());
+
             return Syntax.MethodDeclaration(
                 modifiers: TokenList(modifiers),
                 returnType: returnType,
                 identifier: Syntax.Identifier(methodName),
+                typeParameterListOpt: typeParameterListSyntax,
                 parameterList: Syntax.ParameterList(parameters: parameters.ToSeparatedList()),
                 bodyOpt: Syntax.Block(statements: statements.ToSyntaxList()));
         }

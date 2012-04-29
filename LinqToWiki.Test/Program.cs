@@ -35,22 +35,16 @@ namespace LinqToWiki.Test
             var source = wiki.CreateTitlesSource("User:Svick", "User talk:Svick/WikiProject cleanup listing")
                 .Select(
                     p =>
-                    new
-                    {
-                        p.info.title,
-                        categories = p.categories()
-                        .Where(c => c.show == categoriesshow.not_hidden)
-                        .OrderByDescending(c => c)
-                        .Select(c => new { c.title, c.sortkeyprefix })
-                        .ToEnumerable()
-                    }).ToEnumerable();
+                    PageResult.Create(
+                        p.info,
+                        p.categories()
+                            .Where(c => c.show == categoriesshow.not_hidden)
+                            .OrderByDescending(c => c)
+                            .Select(c => new { c.title, c.sortkeyprefix })
+                            .ToEnumerable())
+                );
 
-            foreach (var page in source)
-            {
-                Console.WriteLine(page.title);
-                foreach (var category in page.categories.Take(15))
-                    Console.WriteLine("\t{0} ({1})", category.title, category.sortkeyprefix);
-            }
+            Write(source);
         }
 
         private static void AllCategories(Wiki wiki)
@@ -317,6 +311,16 @@ namespace LinqToWiki.Test
                          select null;
 
             Write(result);
+        }
+
+        private static void Write<T>(WikiQueryPageResult<PageResult<T>> source)
+        {
+            foreach (var page in source.ToEnumerable())
+            {
+                Console.WriteLine(page.Info.title);
+                foreach (var item in page.Data.Take(10))
+                    Console.WriteLine("  " + item);
+            }
         }
 
         private static void Write<TSource, TResult>(WikiQueryResult<TSource, TResult> results)

@@ -24,6 +24,7 @@ namespace LinqToWiki.Codegen
             public const string QueryAction = "QueryAction";
             public const string Enums = "Enums";
             public const string Page = "Page";
+            public const string PageResult = "PageResult";
         }
 
         private readonly QueryProcessor<ParamInfo> m_processor;
@@ -159,6 +160,54 @@ namespace LinqToWiki.Codegen
                     SyntaxEx.NamespaceDeclaration(Namespace), "System", "System.ComponentModel", "System.Globalization"));
         }
 
+        private void CreatePageResultClass()
+        {
+            var infoResultClassName = Files["info"].SingleDescendant<ClassDeclarationSyntax>().Identifier.ValueText;
+            var typeParameterName = "TData";
+            var dataPropertyType = SyntaxEx.GenericName("IEnumerable", typeParameterName);
+
+            var infoProperty = SyntaxEx.AutoPropertyDeclaration(
+                new[] { SyntaxKind.PublicKeyword }, infoResultClassName, "Info", SyntaxKind.PrivateKeyword);
+
+            var dataProperty = SyntaxEx.AutoPropertyDeclaration(
+                new[] { SyntaxKind.PublicKeyword }, dataPropertyType, "Data", SyntaxKind.PrivateKeyword);
+
+            var infoParameter = SyntaxEx.Parameter(infoResultClassName, "info");
+            var dataParameter = SyntaxEx.Parameter(dataPropertyType, "data");
+
+            var ctorBody =
+                new StatementSyntax[]
+                {
+                    SyntaxEx.Assignment(infoProperty, infoParameter),
+                    SyntaxEx.Assignment(dataProperty, dataParameter)
+                };
+
+            var ctor = SyntaxEx.ConstructorDeclaration(
+                new[] { SyntaxKind.PublicKeyword }, Names.PageResult, new[] { infoParameter, dataParameter }, ctorBody);
+
+            var pageResultClass = SyntaxEx.ClassDeclaration(
+                Names.PageResult, new[] { SyntaxEx.TypeParameter(typeParameterName) }, null,
+                new MemberDeclarationSyntax[] { infoProperty, dataProperty, ctor });
+
+            var pageResultType = SyntaxEx.GenericName(Names.PageResult, typeParameterName);
+
+            var createMethodBody = SyntaxEx.Return(
+                SyntaxEx.ObjectCreation(pageResultType, (NamedNode)infoParameter, (NamedNode)dataParameter));
+
+            var createMethod = SyntaxEx.MethodDeclaration(
+                new[] { SyntaxKind.PublicKeyword, SyntaxKind.StaticKeyword }, pageResultType, "Create",
+                new[] { SyntaxEx.TypeParameter(typeParameterName) }, new[] { infoParameter, dataParameter },
+                createMethodBody);
+
+            var pageResultHelperClass = SyntaxEx.ClassDeclaration(true, Names.PageResult, createMethod);
+
+            Files.Add(
+                Names.PageResult,
+                SyntaxEx.CompilationUnit(
+                    SyntaxEx.NamespaceDeclaration(Namespace, pageResultClass, pageResultHelperClass),
+                    "System.Collections.Generic"));
+        }
+
         private void RetrieveModuleNames()
         {
             var module = m_processor
@@ -222,11 +271,13 @@ namespace LinqToWiki.Codegen
                         AddPropModule(module);
                     }
                     else if (module.Name == "info")
+                    {
                         AddInfoModule(module);
+                        CreatePageResultClass();
+                    }
                 }
             }
         }
-
 
         public void AddModules(IEnumerable<string> moduleNames)
         {
