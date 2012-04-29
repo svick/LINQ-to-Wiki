@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            AnonymousTypeProps(CategoryMemebersSource(wiki));
+            AnonymousTypeProps(AllPagesSource(wiki));
         }
 
         private static void Login(Wiki wiki, string name, string password)
@@ -43,6 +43,11 @@ namespace LinqToWiki.Test
         private static IPagesSource<Page> RevIdsPages(Wiki wiki)
         {
             return wiki.CreateRevIdsSource(489663021, 489132906);
+        }
+
+        private static IPagesSource<Page> AllPagesSource(Wiki wiki)
+        {
+            return wiki.Query.allpages().Pages;
         }
 
         private static IPagesSource<Page> CategoryMemebersSource(Wiki wiki)

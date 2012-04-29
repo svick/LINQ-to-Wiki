@@ -26,8 +26,34 @@ namespace LinqToWiki
         /// </summary>
         public IEnumerable<TResult> ExecuteList<TResult>(QueryParameters<T, TResult> parameters)
         {
-            var downloaded = Download(ProcessParameters(parameters, true));
+            var processedParameters = ProcessParameters(parameters, true).ToArray();
 
+            Tuple<string, string> queryContinue = null;
+
+            do
+            {
+                var downloaded = Download(processedParameters, queryContinue);
+
+                var part = GetListItems(parameters.Selector, downloaded);
+
+                foreach (var item in part)
+                    yield return item;
+
+                var queryContinueElement = downloaded.Element("query-continue");
+
+                if (queryContinueElement == null)
+                    queryContinue = null;
+                else
+                {
+                    var listContinueElement = queryContinueElement.Elements().Single();
+                    var listContinueAttribute = listContinueElement.Attributes().Single();
+                    queryContinue = Tuple.Create(listContinueAttribute.Name.LocalName, listContinueAttribute.Value);
+                }
+            } while (queryContinue != null);
+        }
+
+        private IEnumerable<TResult> GetListItems<TResult>(Func<T, TResult> selector, XElement downloaded)
+        {
             switch (m_queryTypeProperties.QueryType)
             {
             case QueryType.List:
@@ -36,8 +62,7 @@ namespace LinqToWiki
                 var resultsElement = moduleElement.Element("results") ?? moduleElement;
                 return resultsElement
                     .Elements()
-                    .Select(x => parameters.Selector(m_queryTypeProperties.Parse(x, m_wiki)));
-            case QueryType.Prop:
+                    .Select(x => selector(m_queryTypeProperties.Parse(x, m_wiki)));
             case null:
                 throw new NotImplementedException();
             }
@@ -72,9 +97,10 @@ namespace LinqToWiki
             throw new NotSupportedException();
         }
 
-        private XElement Download(IEnumerable<Tuple<string, string>> processedParameters)
+        private XElement Download(
+            IEnumerable<Tuple<string, string>> processedParameters, Tuple<string, string> queryContinue = null)
         {
-            return Download(m_wiki, processedParameters);
+            return Download(m_wiki, processedParameters, queryContinue);
         }
 
         private IEnumerable<Tuple<string, string>> ProcessParameters(QueryParameters parameters, bool list)
@@ -95,8 +121,13 @@ namespace LinqToWiki
 
     public abstract class QueryProcessor
     {
-        public static XElement Download(WikiInfo wiki, IEnumerable<Tuple<string, string>> processedParameters)
+        public static XElement Download(
+            WikiInfo wiki, IEnumerable<Tuple<string, string>> processedParameters,
+            Tuple<string, string> queryContinue = null)
         {
+            if (queryContinue != null)
+                processedParameters = processedParameters.Concat(new[] { queryContinue });
+
             var downloaded = wiki.Downloader.Download(processedParameters);
 
             var root = downloaded.Root;
