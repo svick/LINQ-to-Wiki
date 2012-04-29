@@ -35,7 +35,7 @@ namespace LinqToWiki
 
                 if (generator != null)
                 {
-                    newPrimaryQueryContinue = queryContinues[generator];
+                    queryContinues.TryGetValue(generator, out newPrimaryQueryContinue);
 
                     queryContinues.Remove(generator);
                 }

@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            AnonymousTypeProps(AllPagesSource(wiki));
+            AnonymousTypeProps(CategoryMembersSource(wiki));
         }
 
         private static void Login(Wiki wiki, string name, string password)
@@ -52,7 +52,7 @@ namespace LinqToWiki.Test
                 .Pages;
         }
 
-        private static PagesSource<Page> CategoryMemebersSource(Wiki wiki)
+        private static PagesSource<Page> CategoryMembersSource(Wiki wiki)
         {
             return (from cm in wiki.Query.categorymembers()
                     where cm.title == "Category:Query languages"
