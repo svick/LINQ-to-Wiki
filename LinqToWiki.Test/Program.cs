@@ -47,7 +47,9 @@ namespace LinqToWiki.Test
 
         private static IPagesSource<Page> AllPagesSource(Wiki wiki)
         {
-            return wiki.Query.allpages().Pages;
+            return wiki.Query.allpages()
+                .Where(p => p.filterredir == allpagesfilterredir.nonredirects)
+                .Pages;
         }
 
         private static IPagesSource<Page> CategoryMemebersSource(Wiki wiki)
@@ -85,14 +87,13 @@ namespace LinqToWiki.Test
                         p.info,
                         categories =
                         p.categories()
-                        .Where(c => c.show == categoriesshow.not_hidden)
                         .OrderByDescending(c => c)
                         .Select(c => new { c.title, c.sortkeyprefix })
                         .ToEnumerable()
                     }
                 );
 
-            foreach (var page in source.ToEnumerable().Take(10))
+            foreach (var page in source.ToList().Take(10))
             {
                 Console.WriteLine(page.info.title);
                 foreach (var item in page.categories.Take(10))

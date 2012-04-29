@@ -36,10 +36,22 @@ namespace LinqToWiki
                 .Concat(new[] { Tuple.Create("prop", NameValueParameter.JoinValues(propNames)) })
                 .Concat(propParameters);
 
-            var element = QueryProcessor.Download(m_wiki, processedParameters);
+            Tuple<string, string> queryContinue = null;
+            var generatorParameter = parameters.Value.SingleOrDefault(p => p.Name == "generator");
+            var generator = generatorParameter == null ? null : generatorParameter.Value;
 
-            return element.Element("query").Element("pages").Elements("page")
-                .Select(e => selector(new PageData(m_wiki, e, pageProperties)));
+            do
+            {
+                var downloaded = QueryProcessor.Download(m_wiki, processedParameters, queryContinue);
+
+                var part = downloaded.Element("query").Element("pages").Elements("page")
+                    .Select(e => selector(new PageData(m_wiki, e, pageProperties)));
+
+                foreach (var item in part)
+                    yield return item;
+
+                queryContinue = QueryProcessor.GetQueryContinue(downloaded, generator);
+            } while (queryContinue != null);
         }
     }
 }

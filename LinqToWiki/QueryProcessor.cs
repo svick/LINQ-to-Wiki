@@ -39,16 +39,7 @@ namespace LinqToWiki
                 foreach (var item in part)
                     yield return item;
 
-                var queryContinueElement = downloaded.Element("query-continue");
-
-                if (queryContinueElement == null)
-                    queryContinue = null;
-                else
-                {
-                    var listContinueElement = queryContinueElement.Elements().Single();
-                    var listContinueAttribute = listContinueElement.Attributes().Single();
-                    queryContinue = Tuple.Create(listContinueAttribute.Name.LocalName, listContinueAttribute.Value);
-                }
+                queryContinue = GetQueryContinue(downloaded, m_queryTypeProperties.ModuleName);
             } while (queryContinue != null);
         }
 
@@ -216,6 +207,21 @@ namespace LinqToWiki
             // TODO: add paging, maxlag
 
             return parsedParameters;
+        }
+
+        public static Tuple<string, string> GetQueryContinue(XElement downloaded, string moduleName)
+        {
+            if (moduleName == null)
+                return null;
+
+            var queryContinueElement = downloaded.Element("query-continue");
+
+            if (queryContinueElement == null)
+                return null;
+
+            var listContinueElement = queryContinueElement.Element(moduleName);
+            var listContinueAttribute = listContinueElement.Attributes().Single();
+            return Tuple.Create(listContinueAttribute.Name.LocalName, listContinueAttribute.Value);
         }
     }
 }
