@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            Props(PageIdPages(wiki));
+            Props(RevIdsPages(wiki));
         }
 
         private static void Login(Wiki wiki, string name, string password)
@@ -38,6 +38,11 @@ namespace LinqToWiki.Test
         private static IPagesSource<Page> PageIdPages(Wiki wiki)
         {
             return wiki.CreatePageIdsSource(21061255, 29516325);
+        }
+
+        private static IPagesSource<Page> RevIdsPages(Wiki wiki)
+        {
+            return wiki.CreateRevIdsSource(489663021, 489132906);
         }
 
         private static void Props(IPagesSource<Page> pages)

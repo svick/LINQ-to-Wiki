@@ -139,7 +139,8 @@ namespace LinqToWiki.Codegen
                 new[]
                 {
                     new { type = "string", name = "titles", sourceType = typeof(TitlesSource<>) },
-                    new { type = "long", name = "pageIds", sourceType = typeof(PageIdsSource<>) }
+                    new { type = "long", name = "pageIds", sourceType = typeof(PageIdsSource<>) },
+                    new { type = "long", name = "revIds", sourceType = typeof(RevIdsSource<>) }
                 };
 
             foreach (var pageSource in pageSources)

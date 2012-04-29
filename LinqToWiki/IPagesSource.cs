@@ -15,24 +15,32 @@ namespace LinqToWiki
         QueryPageProcessor QueryPageProcessor { get; }
     }
 
-    public class TitlesSource<TPage> : IPagesSource<TPage>
+    public abstract class SourceBase<TPage> : IPagesSource<TPage>
     {
-        public TitlesSource(WikiInfo wiki, IEnumerable<string> titles)
+        protected SourceBase(WikiInfo wiki)
         {
             QueryPageProcessor = new QueryPageProcessor(wiki);
-            BaseParameters = new TupleList<string, string> { { "titles", NameValueParameter.JoinValues(titles) } };
         }
 
-        public IEnumerable<Tuple<string, string>> BaseParameters { get; private set; }
+        public IEnumerable<Tuple<string, string>> BaseParameters { get; protected set; }
 
         public QueryPageProcessor QueryPageProcessor { get; private set; }
     }
 
-    public class PageIdsSource<TPage> : IPagesSource<TPage>
+    public class TitlesSource<TPage> : SourceBase<TPage>
+    {
+        public TitlesSource(WikiInfo wiki, IEnumerable<string> titles)
+            : base(wiki)
+        {
+            BaseParameters = new TupleList<string, string> { { "titles", NameValueParameter.JoinValues(titles) } };
+        }
+    }
+
+    public class PageIdsSource<TPage> : SourceBase<TPage>
     {
         public PageIdsSource(WikiInfo wiki, IEnumerable<long> pageIds)
+            : base(wiki)
         {
-            QueryPageProcessor = new QueryPageProcessor(wiki);
             BaseParameters =
                 new TupleList<string, string>
                 {
@@ -42,10 +50,22 @@ namespace LinqToWiki
                     }
                 };
         }
+    }
 
-        public IEnumerable<Tuple<string, string>> BaseParameters { get; private set; }
-
-        public QueryPageProcessor QueryPageProcessor { get; private set; }
+    public class RevIdsSource<TPage> : SourceBase<TPage>
+    {
+        public RevIdsSource(WikiInfo wiki, IEnumerable<long> revIds)
+            : base(wiki)
+        {
+            BaseParameters =
+                new TupleList<string, string>
+                {
+                    {
+                        "revids",
+                        NameValueParameter.JoinValues(revIds.Select(id => id.ToString(CultureInfo.InvariantCulture)))
+                    }
+                };
+        }
     }
 
     public static class PagesSourceExtensions
