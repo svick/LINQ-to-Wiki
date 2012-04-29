@@ -34,11 +34,11 @@ namespace LinqToWiki
             return new WikiQuerySortableGenerator<TPage, TWhere, TOrderBy, TSelect>(QueryProcessor, ExpressionParser.ParseIdentitySelect(selector, Parameters));
         }
 
-        public Source<TPage> Pages
+        public PagesSource<TPage> Pages
         {
             get
             {
-                return new Source<TPage>(
+                return new PagesSource<TPage>(
                     QueryProcessor.ProcessGeneratorParameters(Parameters), QueryProcessor.GetPageProcessor());
             }
         }
@@ -63,11 +63,11 @@ namespace LinqToWiki
             return new WikiQueryGenerator<TPage, TWhere, TSelect>(QueryProcessor, ExpressionParser.ParseIdentitySelect(selector, Parameters));
         }
 
-        public Source<TPage> Pages
+        public PagesSource<TPage> Pages
         {
             get
             {
-                return new Source<TPage>(
+                return new PagesSource<TPage>(
                     QueryProcessor.ProcessGeneratorParameters(Parameters), QueryProcessor.GetPageProcessor());
             }
         }

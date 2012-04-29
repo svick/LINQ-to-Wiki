@@ -30,29 +30,29 @@ namespace LinqToWiki.Test
                 throw new Exception(result.result.ToString());
         }
 
-        private static IPagesSource<Page> TitlePages(Wiki wiki)
+        private static PagesSource<Page> TitlePages(Wiki wiki)
         {
             return wiki.CreateTitlesSource("User:Svick", "User talk:Svick/WikiProject cleanup listing");
         }
 
-        private static IPagesSource<Page> PageIdPages(Wiki wiki)
+        private static PagesSource<Page> PageIdPages(Wiki wiki)
         {
             return wiki.CreatePageIdsSource(21061255, 29516325);
         }
 
-        private static IPagesSource<Page> RevIdsPages(Wiki wiki)
+        private static PagesSource<Page> RevIdsPages(Wiki wiki)
         {
             return wiki.CreateRevIdsSource(489663021, 489132906);
         }
 
-        private static IPagesSource<Page> AllPagesSource(Wiki wiki)
+        private static PagesSource<Page> AllPagesSource(Wiki wiki)
         {
             return wiki.Query.allpages()
                 .Where(p => p.filterredir == allpagesfilterredir.nonredirects)
                 .Pages;
         }
 
-        private static IPagesSource<Page> CategoryMemebersSource(Wiki wiki)
+        private static PagesSource<Page> CategoryMemebersSource(Wiki wiki)
         {
             return (from cm in wiki.Query.categorymembers()
                     where cm.title == "Category:Query languages"
@@ -60,7 +60,7 @@ namespace LinqToWiki.Test
                     select cm).Pages;
         }
 
-        private static void PageResultProps(IPagesSource<Page> pages)
+        private static void PageResultProps(PagesSource<Page> pages)
         {
             var source = pages
                 .Select(
@@ -77,7 +77,7 @@ namespace LinqToWiki.Test
             Write(source);
         }
 
-        private static void AnonymousTypeProps(IPagesSource<Page> pages)
+        private static void AnonymousTypeProps(PagesSource<Page> pages)
         {
             var source = pages
                 .Select(

@@ -164,7 +164,7 @@ namespace LinqToWiki.Codegen
                             (NamedNode)wikiField, (NamedNode)parameter));
 
                     yield return SyntaxEx.MethodDeclaration(
-                        new[] { SyntaxKind.PublicKeyword }, SyntaxEx.GenericName("IPagesSource", Names.Page),
+                        new[] { SyntaxKind.PublicKeyword }, SyntaxEx.GenericName("PagesSource", Names.Page),
                         "Create" + sourceTypeName, new[] { parameter }, returnStatement);
                 }
             }

@@ -9,18 +9,18 @@ using LinqToWiki.Parameters;
 
 namespace LinqToWiki
 {
-    public interface IPagesSource<TPage>
+    interface IPagesSource
     {
         IEnumerable<Tuple<string, string>> BaseParameters { get; }
         QueryPageProcessor QueryPageProcessor { get; }
     }
 
-    public class Source<TPage> : IPagesSource<TPage>
+    public class PagesSource<TPage> : IPagesSource
     {
-        protected Source()
+        protected PagesSource()
         {}
 
-        public Source(IEnumerable<Tuple<string, string>> baseParameters, QueryPageProcessor queryPageProcessor)
+        public PagesSource(IEnumerable<Tuple<string, string>> baseParameters, QueryPageProcessor queryPageProcessor)
         {
             BaseParameters = baseParameters;
             QueryPageProcessor = queryPageProcessor;
@@ -28,20 +28,20 @@ namespace LinqToWiki
 
         protected IEnumerable<Tuple<string, string>> BaseParameters { get; set; }
 
-        IEnumerable<Tuple<string, string>> IPagesSource<TPage>.BaseParameters
+        IEnumerable<Tuple<string, string>> IPagesSource.BaseParameters
         {
             get { return BaseParameters; }
         }
 
         protected QueryPageProcessor QueryPageProcessor { get; set; }
 
-        QueryPageProcessor IPagesSource<TPage>.QueryPageProcessor
+        QueryPageProcessor IPagesSource.QueryPageProcessor
         {
             get { return QueryPageProcessor; }
         }
     }
 
-    public abstract class ListSourceBase<TPage> : Source<TPage>
+    public abstract class ListSourceBase<TPage> : PagesSource<TPage>
     {
         protected ListSourceBase(WikiInfo wiki)
         {
@@ -93,11 +93,13 @@ namespace LinqToWiki
     public static class PagesSourceExtensions
     {
         public static WikiQueryPageResult<TResult> Select<TPage, TResult>(
-            this IPagesSource<TPage> pagesSource, Expression<Func<TPage, TResult>> selector)
+            this PagesSource<TPage> pagesSource, Expression<Func<TPage, TResult>> selector)
         {
+            var source = (IPagesSource)pagesSource;
+
             Func<PageData, TResult> processedSelector;
-            var parameters = PageExpressionParser.ParseSelect(selector, new PageQueryParameters(pagesSource.BaseParameters), out processedSelector);
-            return new WikiQueryPageResult<TResult>(pagesSource.QueryPageProcessor, parameters, processedSelector, PageProperties<TPage>.Properties);
+            var parameters = PageExpressionParser.ParseSelect(selector, new PageQueryParameters(source.BaseParameters), out processedSelector);
+            return new WikiQueryPageResult<TResult>(source.QueryPageProcessor, parameters, processedSelector, PageProperties<TPage>.Properties);
         }
     }
 }
