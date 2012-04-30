@@ -47,7 +47,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             var orderByClass = GenerateOrderBy(sortParameters, module.PropertyGroups.SelectMany(g => g.Properties));
 
             var codeUnit = SyntaxEx.CompilationUnit(
-                SyntaxEx.NamespaceDeclaration(Wiki.Namespace, selectClass, whereClass, orderByClass),
+                SyntaxEx.NamespaceDeclaration(Wiki.EntitiesNamespace, selectClass, whereClass, orderByClass),
                 "System", "LinqToWiki.Collections", "System.Globalization", "System.Xml.Linq");
 
             Wiki.Files.Add(ClassNameBase, codeUnit);

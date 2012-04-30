@@ -37,6 +37,7 @@ namespace LinqToWiki.Codegen
         private int m_modulesFinished;
 
         internal string Namespace { get; private set; }
+        internal string EntitiesNamespace { get; private set; }
 
         internal TupleList<string, CompilationUnitSyntax> Files { get; private set; }
 
@@ -51,6 +52,7 @@ namespace LinqToWiki.Codegen
             TypeManager = new TypeManager(this);
 
             Namespace = ns ?? "LinqToWiki";
+            EntitiesNamespace = Namespace + ".Entities";
 
             m_processor = new QueryProcessor<ParamInfo>(
                 new WikiInfo(baseUri, apiPath),
@@ -83,7 +85,8 @@ namespace LinqToWiki.Codegen
             Files.Add(
                 Names.QueryAction, SyntaxEx.CompilationUnit(
                     SyntaxEx.NamespaceDeclaration(Namespace, queryActionClass),
-                    "System", "System.Collections.Generic", "LinqToWiki.Collections", "LinqToWiki.Parameters"));
+                    "System", "System.Collections.Generic", "LinqToWiki.Collections", "LinqToWiki.Parameters",
+                    EntitiesNamespace));
         }
 
         private void CreatePageClass()
@@ -94,7 +97,7 @@ namespace LinqToWiki.Codegen
                 Names.Page,
                 SyntaxEx.CompilationUnit(
                     SyntaxEx.NamespaceDeclaration(Namespace, pageClass),
-                    "System", "System.Collections.Generic", "LinqToWiki.Collections"));
+                    "System", "System.Collections.Generic", "LinqToWiki.Collections", EntitiesNamespace));
         }
 
         private void CreateWikiClass()
@@ -130,7 +133,7 @@ namespace LinqToWiki.Codegen
                 Names.Wiki,
                 SyntaxEx.CompilationUnit(
                     SyntaxEx.NamespaceDeclaration(Namespace, wikiClass),
-                    "System.Collections.Generic", "LinqToWiki.Collections", "LinqToWiki.Parameters"));
+                    "System.Collections.Generic", "LinqToWiki.Collections", "LinqToWiki.Parameters", EntitiesNamespace));
         }
 
         private static IEnumerable<MethodDeclarationSyntax> CreatePageSourceMethods(FieldDeclarationSyntax wikiField)
@@ -223,7 +226,7 @@ namespace LinqToWiki.Codegen
                 Names.PageResult,
                 SyntaxEx.CompilationUnit(
                     SyntaxEx.NamespaceDeclaration(Namespace, pageResultClass, pageResultHelperClass),
-                    "System.Collections.Generic"));
+                    "System.Collections.Generic", EntitiesNamespace));
         }
 
         private void RetrieveModuleNames()

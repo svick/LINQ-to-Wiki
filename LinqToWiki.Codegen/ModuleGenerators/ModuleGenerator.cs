@@ -22,7 +22,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             var resultType = GenerateResultClass(GetPropertyGroups(module));
 
             var codeUnit = SyntaxEx.CompilationUnit(
-                SyntaxEx.NamespaceDeclaration(Wiki.Namespace, resultType),
+                SyntaxEx.NamespaceDeclaration(Wiki.EntitiesNamespace, resultType),
                 "System", "System.Globalization", "System.Xml.Linq");
 
             Wiki.Files.Add(ClassNameBase, codeUnit);
