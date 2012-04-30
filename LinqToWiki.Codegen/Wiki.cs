@@ -298,7 +298,7 @@ namespace LinqToWiki.Codegen
                     {
                         // TODO
                     }
-                    else if (propModules++ < 6)
+                    else if (propModules++ < 7)
                     {
                         Console.WriteLine("Adding module {0}.", module.Name);
                         AddPropModule(module);
