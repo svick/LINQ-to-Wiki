@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            AnonymousTypeProps(CategoryMembersSource(wiki));
+            AnonymousTypeProps(TitlePages(wiki));
         }
 
         private static void Login(Wiki wiki, string name, string password)
@@ -32,7 +32,8 @@ namespace LinqToWiki.Test
 
         private static PagesSource<Page> TitlePages(Wiki wiki)
         {
-            return wiki.CreateTitlesSource("User:Svick", "User talk:Svick/WikiProject cleanup listing");
+            return wiki.CreateTitlesSource(
+                "User:Svick", "User talk:Svick/WikiProject cleanup listing", "Nonfoobar", "", "Special:Version");
         }
 
         private static PagesSource<Page> PageIdPages(Wiki wiki)

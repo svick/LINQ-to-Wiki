@@ -20,9 +20,12 @@ namespace LinqToWiki.Codegen.ModuleGenerators
                 Properties =
                     new[]
                     {
-                        new Property { Name = "pageid", Type = new SimpleParameterType("integer") },
-                        new Property { Name = "ns", Type = new SimpleParameterType("namespace") },
-                        new Property { Name = "title", Type = new SimpleParameterType("string") }
+                        new Property { Name = "pageid", Type = new SimpleParameterType("integer"), Nullable = true },
+                        new Property { Name = "ns", Type = new SimpleParameterType("namespace"), Nullable = true },
+                        new Property { Name = "title", Type = new SimpleParameterType("string"), Nullable = true },
+                        new Property { Name = "missing", Type = new SimpleParameterType("boolean") },
+                        new Property { Name = "invalid", Type = new SimpleParameterType("boolean") },
+                        new Property { Name = "special", Type = new SimpleParameterType("boolean") }
                     }
             };
 
