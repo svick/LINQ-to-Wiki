@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            LangLinks(CategoryMembersSource(wiki));
+            Links(CategoryMembersSource(wiki));
         }
 
         private static void Login(Wiki wiki, string name, string password)
@@ -186,6 +186,14 @@ namespace LinqToWiki.Test
                         p.info,
                         p.langlinks().Where(l => l.url).ToEnumerable()))
                 .ToEnumerable();
+
+            Write(source);
+        }
+
+        private static void Links(PagesSource<Page> pages)
+        {
+            var source = pages
+                .Select(p => PageResult.Create(p.info, p.links().Select(l => l.title).ToEnumerable()));
 
             Write(source);
         }
