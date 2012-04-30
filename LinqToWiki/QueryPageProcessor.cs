@@ -42,7 +42,12 @@ namespace LinqToWiki
 
                 var pagingManager = new PagingManager(m_wiki, generator, parameters, pageProperties, primaryQueryContinue, queryContinues);
 
-                var partPageData = downloaded.Element("query").Element("pages").Elements("page")
+                var queryElement = downloaded.Element("query");
+
+                if (queryElement == null)
+                    yield break;
+
+                var partPageData = queryElement.Element("pages").Elements("page")
                     .Select(e => new PageData(m_wiki, e, pageProperties, pagingManager)).ToArray();
 
                 pagingManager.SetPages(partPageData);

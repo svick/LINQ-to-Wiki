@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            DuplicateFiles(AllPagesSource(wiki));
+            ExtLinks(AllPagesSource(wiki));
         }
 
         private static void Login(Wiki wiki, string name, string password)
@@ -50,7 +50,8 @@ namespace LinqToWiki.Test
         {
             return wiki.Query.allpages()
                 .Where(p => p.filterredir == allpagesfilterredir.nonredirects)
-                .Where(p =>p.ns == Namespace.File)
+                .Where(p =>p.ns == Namespace.Project)
+                .Where(p => p.prefix == "WikiProject")
                 .Pages;
         }
 
@@ -125,6 +126,21 @@ namespace LinqToWiki.Test
             }
         }
 
+        private static void ExtLinks(PagesSource<Page> pages)
+        {
+            var source = pages
+                .Select(
+                    p =>
+                    PageResult.Create(
+                        p.info,
+                        p.extlinks()
+                            .Where(l => l.query == "toolserver.org")
+                            .Select(l => l.value)
+                            .ToEnumerable())
+                );
+
+            Write(source);
+        }
 
         private static void AllCategories(Wiki wiki)
         {
@@ -394,7 +410,7 @@ namespace LinqToWiki.Test
 
         private static void Write<T>(WikiQueryPageResult<PageResult<T>> source)
         {
-            foreach (var page in source.ToEnumerable())
+            foreach (var page in source.ToEnumerable().Take(10))
             {
                 Console.WriteLine(page.Info.title);
                 foreach (var item in page.Data.Take(10))
