@@ -23,12 +23,17 @@ namespace LinqToWiki
 
             m_info = m_pageProperties["info"].Parser(element, wiki);
 
-            PageId = ValueParser.ParseInt64(element.Attribute("pageid").Value);
+            var pageIdAttribute = element.Attribute("pageid");
 
-            AddData(element);
+            if (pageIdAttribute != null)
+            {
+                PageId = ValueParser.ParseInt64(pageIdAttribute.Value);
+
+                AddData(element);
+            }
         }
 
-        internal long PageId { get; private set; }
+        internal long? PageId { get; private set; }
 
         internal void AddData(XElement element)
         {

@@ -30,7 +30,7 @@ namespace LinqToWiki
 
         public void SetPages(IEnumerable<PageData> pages)
         {
-            m_pages = pages.ToDictionary(p => p.PageId);
+            m_pages = pages.Where(p => p.PageId != null).ToDictionary(p => p.PageId.Value);
         }
 
         public bool HasMore(string name)
