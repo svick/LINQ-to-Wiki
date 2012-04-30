@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            Images(AllPagesSource(wiki));
+            IwLinks(CategoryMembersSource(wiki));
         }
 
         private static void Login(Wiki wiki, string name, string password)
@@ -57,7 +57,7 @@ namespace LinqToWiki.Test
         {
             return (from cm in wiki.Query.categorymembers()
                     where cm.title == "Category:Query languages"
-                          && cm.type == categorymemberstype.subcat
+                          && cm.type == categorymemberstype.page
                     select cm).Pages;
         }
 
@@ -164,6 +164,17 @@ namespace LinqToWiki.Test
                         p.info,
                         p.images().ToEnumerable())
                 );
+
+            Write(source);
+        }
+
+        private static void IwLinks(PagesSource<Page> pages)
+        {
+            var source = pages
+                .Select(p => PageResult.Create(p.info, p.iwlinks().ToEnumerable()))
+                .ToEnumerable()
+                .Where(p => p.Data.Any());
+                
 
             Write(source);
         }
@@ -436,7 +447,12 @@ namespace LinqToWiki.Test
 
         private static void Write<T>(WikiQueryPageResult<PageResult<T>> source)
         {
-            foreach (var page in source.ToEnumerable().Take(10))
+            Write(source.ToEnumerable());
+        }
+
+        private static void Write<T>(IEnumerable<PageResult<T>> source)
+        {
+            foreach (var page in source.Take(10))
             {
                 Console.WriteLine(page.Info.title);
                 foreach (var item in page.Data.Take(10))
