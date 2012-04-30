@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            AnonymousTypeProps(TitlePages(wiki));
+            DuplicateFiles(AllPagesSource(wiki));
         }
 
         private static void Login(Wiki wiki, string name, string password)
@@ -50,6 +50,7 @@ namespace LinqToWiki.Test
         {
             return wiki.Query.allpages()
                 .Where(p => p.filterredir == allpagesfilterredir.nonredirects)
+                .Where(p =>p.ns == Namespace.File)
                 .Pages;
         }
 
@@ -78,7 +79,7 @@ namespace LinqToWiki.Test
             Write(source);
         }
 
-        private static void AnonymousTypeProps(PagesSource<Page> pages)
+        private static void Categories(PagesSource<Page> pages)
         {
             var source = pages
                 .Select(
@@ -102,6 +103,28 @@ namespace LinqToWiki.Test
                     Console.WriteLine("  " + item);
             }
         }
+
+        private static void DuplicateFiles(PagesSource<Page> pages)
+        {
+            var source = pages
+                .Select(
+                    p =>
+                    new
+                    {
+                        p.info.title,
+                        duplicatefiles = p.duplicatefiles().Select(d => d.name)
+                        .ToEnumerable(),
+                    }
+                );
+
+            foreach (var page in source.ToEnumerable().Where(i => i.duplicatefiles.Any()).Take(5))
+            {
+                Console.WriteLine(page.title);
+                foreach (var item in page.duplicatefiles.Take(10))
+                    Console.WriteLine("  " + item);
+            }
+        }
+
 
         private static void AllCategories(Wiki wiki)
         {
