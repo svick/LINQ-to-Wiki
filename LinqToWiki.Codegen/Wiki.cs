@@ -349,7 +349,10 @@ namespace LinqToWiki.Codegen
 
             var compiler = new CSharpCodeProvider();
 
-            return compiler.CompileAssemblyFromSource(
+            // TODO: use actual Temp directory
+            var files = WriteToFiles(@"C:\Temp\generated");
+
+            return compiler.CompileAssemblyFromFile(
                 new CompilerParameters(
                     new[]
                     {
@@ -358,21 +361,30 @@ namespace LinqToWiki.Codegen
                         typeof(System.Xml.IXmlLineInfo).Assembly.Location,
                         typeof(WikiInfo).Assembly.Location
                     }, name + ".dll")
-                { TreatWarningsAsErrors = true, CompilerOptions = string.Format("/doc:{0}.xml /nowarn:1591", name) },
-                Files.Select(f => f.Item2.Format().ToString()).ToArray());
+                {
+                    TreatWarningsAsErrors = true,
+                    CompilerOptions = string.Format("/doc:{0}.xml /nowarn:1591", name),
+                    IncludeDebugInformation = true
+                },
+                files.ToArray());
         }
 
-        public void WriteToFiles(string directoryPath)
+        public IEnumerable<string> WriteToFiles(string directoryPath)
         {
             if (m_modulesFinished == 0)
                 throw new InvalidOperationException("No modules were successfully finished, nothing to write out.");
+
+            var result = new List<string>();
 
             Directory.CreateDirectory(directoryPath);
             foreach (var file in Files)
             {
                 var path = Path.Combine(directoryPath, file.Item1 + Extension);
                 File.WriteAllText(path, file.Item2.Format().ToString());
+                result.Add(path);
             }
+
+            return result;
         }
 
         public override string ToString()

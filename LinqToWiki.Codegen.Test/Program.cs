@@ -16,8 +16,6 @@ namespace LinqToWiki.Codegen.Test
 
             foreach (CompilerError error in result.Errors)
                 Console.WriteLine(error);
-
-            wiki.WriteToFiles(@"C:\Temp\generated");
         }
     }
 }
