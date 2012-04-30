@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            ImageInfo(AllPagesSource(wiki));
+            Images(AllPagesSource(wiki));
         }
 
         private static void Login(Wiki wiki, string name, string password)
@@ -50,7 +50,6 @@ namespace LinqToWiki.Test
         {
             return wiki.Query.allpages()
                 .Where(p => p.filterredir == allpagesfilterredir.nonredirects)
-                .Where(p =>p.ns == Namespace.File)
                 .Pages;
         }
 
@@ -151,6 +150,19 @@ namespace LinqToWiki.Test
                         p.imageinfo()
                             .Select(i => new { i.timestamp, i.comment })
                             .ToEnumerable())
+                );
+
+            Write(source);
+        }
+
+        private static void Images(PagesSource<Page> pages)
+        {
+            var source = pages
+                .Select(
+                    p =>
+                    PageResult.Create(
+                        p.info,
+                        p.images().ToEnumerable())
                 );
 
             Write(source);
