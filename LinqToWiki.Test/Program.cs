@@ -10,13 +10,13 @@ namespace LinqToWiki.Test
         {
             Downloader.LogDownloading = true;
 
-            /*/
+            /**/
             var wiki = new Wiki();
             /*/
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            EmailUser(wiki);
+            ExpandTemplates(wiki);
         }
 
         private static void Block(Wiki wiki)
@@ -54,6 +54,12 @@ namespace LinqToWiki.Test
             var token = wiki.CreateTitlesSource(user).Select(t => t.info.emailtoken).ToEnumerable().Single();
             var result = wiki.emailuser(user, "Hello", "Mail from LinqToWiki", token);
             Console.WriteLine(result);
+        }
+
+        private static void ExpandTemplates(Wiki wiki)
+        {
+            var result = wiki.expandtemplates("{{start date and age|1988|5|20|df=yes}}");
+            Console.WriteLine(result.value);
         }
 
         private static void Login(Wiki wiki, string name, string password)
