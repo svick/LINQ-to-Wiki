@@ -10,13 +10,13 @@ namespace LinqToWiki.Test
         {
             Downloader.LogDownloading = true;
 
-            /**/
+            /*/
             var wiki = new Wiki();
             /*/
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            ExpandTemplates(wiki);
+            FileRevert(wiki);
         }
 
         private static void Block(Wiki wiki)
@@ -60,6 +60,19 @@ namespace LinqToWiki.Test
         {
             var result = wiki.expandtemplates("{{start date and age|1988|5|20|df=yes}}");
             Console.WriteLine(result.value);
+        }
+
+        private static void FileRevert(Wiki wiki)
+        {
+            var fileName = "TOR1.jpeg";
+            var info = wiki.CreateTitlesSource("File:" + fileName)
+                .Select(f => new { token = f.info.edittoken, archiveNames = f.imageinfo().Select(i => i.archivename).ToEnumerable()})
+                .ToEnumerable().Single();
+            var archiveName = info.archiveNames.ElementAt(1);
+
+            var result = wiki.filerevert(fileName, archiveName, "I don't like this version of the image.", info.token);
+
+            Console.WriteLine(result);
         }
 
         private static void Login(Wiki wiki, string name, string password)

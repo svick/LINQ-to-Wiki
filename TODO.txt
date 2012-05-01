@@ -9,3 +9,4 @@
 * optionally turn off getting namespaces every time (or maybe cache them?)
 * figure out what to do with tokens
 * figure out what to do with warnings (maybe WarningsAsExceptions switch)
+* compress requests?
