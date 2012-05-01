@@ -317,15 +317,8 @@ namespace LinqToWiki.Codegen
         {
             var modules = GetModules(moduleNames);
 
-            int processedModules = 0;
             foreach (var module in modules)
-            {
-                if (processedModules++ < 27)
-                {
-                    Console.WriteLine("Adding {0}.", module.Name);
-                    AddModule(module);
-                }
-            }
+                AddModule(module);
         }
 
         public void AddAllQueryModules()

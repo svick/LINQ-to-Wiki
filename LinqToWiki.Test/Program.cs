@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            Upload(wiki);
+            Watch(wiki);
         }
 
         private static void Block(Wiki wiki)
@@ -178,6 +178,13 @@ namespace LinqToWiki.Test
                 url: "http://upload.wikimedia.org/wikipedia/commons/4/4e/Hymensoporum_flavum_flowers.jpg",
                 token: token);
 
+            Console.WriteLine(result);
+        }
+
+        private static void Watch(Wiki wiki)
+        {
+            var token = wiki.tokens(tokenstype.watch).watchtoken;
+            var result = wiki.watch("Test", false, token);
             Console.WriteLine(result);
         }
 

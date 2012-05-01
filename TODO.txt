@@ -4,6 +4,7 @@
 * categoryinfo
 * TODOs in code and NotImplementedExceptions
 * proper CLI applications
+* methods from LinqToWiki.Test to LinqToWiki.Samples
 * props from file
 * XML documentation
 * optionally turn off getting namespaces every time (or maybe cache them?)
