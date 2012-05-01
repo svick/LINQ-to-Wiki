@@ -317,7 +317,7 @@ namespace LinqToWiki.Codegen
             int processedModules = 0;
             foreach (var module in modules)
             {
-                if (module.Name == "login" || processedModules++ < 11)
+                if (module.Name == "login" || processedModules++ < 12)
                 {
                     Console.WriteLine("Adding {0}.", module.Name);
                     AddModule(module);

@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            Import(wiki);
+            Logout(wiki);
         }
 
         private static void Block(Wiki wiki)
@@ -97,6 +97,11 @@ namespace LinqToWiki.Test
 
             if (result.result != loginresult.Success)
                 throw new Exception(result.result.ToString());
+        }
+
+        private static void Logout(Wiki wiki)
+        {
+            wiki.logout();
         }
 
         private static PagesSource<Page> TitlePages(Wiki wiki)

@@ -12,6 +12,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
         protected string ResultClassName { get; private set; }
 
         private bool m_listResult;
+        private bool m_voidResult;
 
         public ModuleGenerator(Wiki wiki)
             : base(wiki)
@@ -23,11 +24,19 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
             var resultType = GenerateResultClass(GetPropertyGroups(module));
 
-            var codeUnit = SyntaxEx.CompilationUnit(
-                SyntaxEx.NamespaceDeclaration(Wiki.EntitiesNamespace, resultType),
-                "System", "System.Globalization", "System.Xml.Linq");
+            if (resultType == null)
+            {
+                ResultClassName = "object";
+                m_voidResult = true;
+            }
+            else
+            {
+                var codeUnit = SyntaxEx.CompilationUnit(
+                    SyntaxEx.NamespaceDeclaration(Wiki.EntitiesNamespace, resultType),
+                    "System", "System.Globalization", "System.Xml.Linq");
 
-            Wiki.Files.Add(ClassNameBase, codeUnit);
+                Wiki.Files.Add(ClassNameBase, codeUnit);
+            }
 
             GenerateMethod(module);
         }
@@ -48,8 +57,11 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
             var propertyGroup =
                 m_listResult
-                    ? propertyGroups.Single(g => g.Name == string.Empty)
-                    : propertyGroups.Single(g => g.Name == null);
+                    ? propertyGroups.SingleOrDefault(g => g.Name == string.Empty)
+                    : propertyGroups.SingleOrDefault(g => g.Name == null);
+
+            if (propertyGroup == null)
+                return null;
 
             return GenerateClassForProperties(ResultClassName, propertyGroup.Properties);
         }
@@ -61,15 +73,22 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
         protected override void GenerateMethodBody(ExpressionSyntax queryProcessor, ExpressionSyntax queryParameters, IList<StatementSyntax> statements)
         {
-            statements.Add(
-                SyntaxEx.Return(
-                    SyntaxEx.Invocation(
-                        SyntaxEx.MemberAccess(queryProcessor, m_listResult ? "ExecuteList" : "ExecuteSingle"),
-                        queryParameters)));
+            var invocation = SyntaxEx.Invocation(
+                SyntaxEx.MemberAccess(queryProcessor, m_listResult ? "ExecuteList" : "ExecuteSingle"), queryParameters);
+
+            var statement =
+                m_voidResult
+                    ? (StatementSyntax)Syntax.ExpressionStatement(invocation)
+                    : SyntaxEx.Return(invocation);
+
+            statements.Add(statement);
         }
 
         protected override TypeSyntax GenerateMethodResultType()
         {
+            if (m_voidResult)
+                return SyntaxEx.ParseTypeName("void");
+
             var resultType = SyntaxEx.ParseTypeName(ResultClassName);
 
             if (m_listResult)

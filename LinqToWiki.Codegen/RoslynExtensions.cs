@@ -752,6 +752,12 @@ namespace LinqToWiki.Codegen
             var nameSyntax = name == null ? null : Syntax.NameEquals(Syntax.Identifier(name));
             return Syntax.AttributeArgument(expression: expression, nameEqualsOpt: nameSyntax);
         }
+
+        public static SimpleLambdaExpressionSyntax LambdaExpression(string parameterName, SyntaxNode body)
+        {
+            return Syntax.SimpleLambdaExpression(
+                Syntax.Parameter(identifier: Syntax.Identifier(parameterName)), body: body);
+        }
     }
 
     public class NamedNode

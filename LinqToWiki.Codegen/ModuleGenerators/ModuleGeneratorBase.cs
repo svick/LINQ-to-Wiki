@@ -235,7 +235,9 @@ namespace LinqToWiki.Codegen.ModuleGenerators
                     : SyntaxEx.MemberAccess("SortType", sortType.ToString()),
                 CreateTupleListExpression(GetBaseParameters(module)),
                 propsField == null ? (ExpressionSyntax)SyntaxEx.NullLiteral() : (NamedNode)propsField,
-                SyntaxEx.MemberAccess(resultClassName, "Parse"));
+                resultClassName == "object"
+                    ? (ExpressionSyntax)SyntaxEx.LambdaExpression("_", SyntaxEx.NullLiteral())
+                    : SyntaxEx.MemberAccess(resultClassName, "Parse"));
 
             return SyntaxEx.FieldDeclaration(
                 new[] { SyntaxKind.PrivateKeyword, SyntaxKind.StaticKeyword, SyntaxKind.ReadOnlyKeyword },
