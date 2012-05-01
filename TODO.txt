@@ -1,8 +1,8 @@
 * prop modules
 * modules
 * submit MediaWiki modifications for review
+* revisions module
 * categoryinfo
-* handle revisions.First() in a special way
 * TODOs in code
 * proper CLI applications
 * props from file

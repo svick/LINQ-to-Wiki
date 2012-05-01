@@ -298,8 +298,11 @@ namespace LinqToWiki.Codegen
                     {
                         // TODO
                     }
-                    else if (propModules++ < 8)
+                    else if (propModules++ < 9)
                     {
+                        // TODO revisons
+                        if (module.Name == "revisions")
+                            continue;
                         Console.WriteLine("Adding module {0}.", module.Name);
                         AddPropModule(module);
                     }
