@@ -298,10 +298,12 @@ namespace LinqToWiki.Codegen
                     {
                         // TODO
                     }
-                    else if (propModules++ < 9)
+                    else if (propModules++ < 10)
                     {
                         // TODO revisons
                         if (module.Name == "revisions")
+                            continue;
+                        if (module.Name == "stashimageinfo")
                             continue;
                         Console.WriteLine("Adding module {0}.", module.Name);
                         AddPropModule(module);
