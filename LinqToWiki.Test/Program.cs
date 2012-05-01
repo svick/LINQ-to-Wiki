@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            Move(wiki);
+            Patrol(wiki);
         }
 
         private static void Block(Wiki wiki)
@@ -111,6 +111,21 @@ namespace LinqToWiki.Test
                 .ToEnumerable().Single();
 
             var result = wiki.move(from: "Test2", to: "Test", token: token);
+            Console.WriteLine(result);
+        }
+
+        private static void Patrol(Wiki wiki)
+        {
+            var recentChange = wiki.Query.recentchanges()
+                .Where(rc => rc.show == recentchangesshow.not_patrolled)
+                .Where(rc => rc.token == recentchangestoken.patrol)
+                .ToEnumerable()
+                .First();
+
+            Console.WriteLine(recentChange);
+
+            var result = wiki.patrol(recentChange.rcid, recentChange.patroltoken);
+
             Console.WriteLine(result);
         }
 
