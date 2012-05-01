@@ -19,21 +19,25 @@ namespace LinqToWiki.Codegen
             m_wiki = wiki;
         }
 
-        public string GetTypeName(Parameter parameter, string moduleName, bool nullable)
+        public string GetTypeName(
+            Parameter parameter, string moduleName, bool nullable, bool useItemOrCollection = true)
         {
-            return GetTypeName(parameter.Type, parameter.Name, moduleName, parameter.Multi, nullable);
+            return GetTypeName(parameter.Type, parameter.Name, moduleName, parameter.Multi, nullable, useItemOrCollection);
         }
 
-        public string GetTypeName(ParameterType parameterType, string propertyName, string moduleName, bool multi, bool nullable = false)
+        public string GetTypeName(
+            ParameterType parameterType, string propertyName, string moduleName, bool multi, bool nullable = false,
+            bool useItemOrCollection = true)
         {
             var simpleType = parameterType as SimpleParameterType;
             if (simpleType != null)
-                return GetSimpleTypeName(simpleType, propertyName, multi, nullable);
+                return GetSimpleTypeName(simpleType, propertyName, multi, nullable, useItemOrCollection);
 
             return GetEnumTypeName((EnumParameterType)parameterType, propertyName, moduleName, multi, nullable);
         }
 
-        private static string GetSimpleTypeName(SimpleParameterType simpleType, string propertyName, bool multi, bool nullable)
+        private static string GetSimpleTypeName(
+            SimpleParameterType simpleType, string propertyName, bool multi, bool nullable, bool useItemOrCollection)
         {
             string result;
 
@@ -60,7 +64,7 @@ namespace LinqToWiki.Codegen
             }
 
             if (multi)
-                result = string.Format("ItemOrCollection<{0}>", result);
+                result = string.Format(useItemOrCollection ? "ItemOrCollection<{0}>" : "IEnumerable<{0}>", result);
             else if (nullable && simpleType.Name != "string" && simpleType.Name != "namespace")
                 result += '?';
 
@@ -186,7 +190,7 @@ namespace LinqToWiki.Codegen
             var convertToMethod =
                 SyntaxEx.MethodDeclaration(
                     new[] { SyntaxKind.PublicKeyword, SyntaxKind.OverrideKeyword }, "object", "ConvertTo",
-                    new[] { contextParameter, cultureParameter, valueParameter, destinationTypeParameter }, 
+                    new[] { contextParameter, cultureParameter, valueParameter, destinationTypeParameter },
                     castedValueLocal, condition, baseCall);
 
             var classDeclaration = SyntaxEx.ClassDeclaration(

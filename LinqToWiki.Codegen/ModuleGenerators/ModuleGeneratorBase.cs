@@ -173,7 +173,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             foreach (var methodParameter in methodParameters)
             {
                 var nullable = nullableParameters && !methodParameter.Required;
-                var typeName = Wiki.TypeManager.GetTypeName(methodParameter, ClassNameBase, nullable);
+                var typeName = Wiki.TypeManager.GetTypeName(methodParameter, ClassNameBase, nullable, false);
                 var parameterName = GetPropertyName(methodParameter.Name);
                 var parameter = SyntaxEx.Parameter(typeName, parameterName, nullable ? SyntaxEx.NullLiteral() : null);
 

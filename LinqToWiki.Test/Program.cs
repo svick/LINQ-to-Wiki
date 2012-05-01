@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            Patrol(wiki);
+            Protect(wiki);
         }
 
         private static void Block(Wiki wiki)
@@ -126,6 +126,16 @@ namespace LinqToWiki.Test
 
             var result = wiki.patrol(recentChange.rcid, recentChange.patroltoken);
 
+            Console.WriteLine(result);
+        }
+
+        private static void Protect(Wiki wiki)
+        {
+            var token = wiki.CreateTitlesSource("Test")
+                .Select(f => f.info.protecttoken)
+                .ToEnumerable().Single();
+
+            var result = wiki.protect(new[] { "edit=autoconfirmed", "move=sysop" }, "Test", token: token);
             Console.WriteLine(result);
         }
 
