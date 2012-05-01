@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            Purge(wiki);
+            Rollback(wiki);
         }
 
         private static void Block(Wiki wiki)
@@ -143,6 +143,13 @@ namespace LinqToWiki.Test
         {
             var result = wiki.purge(new[] { "Test", "Test2", "Test3" }, forcelinkupdate: true);
             Write(result);
+        }
+
+        private static void Rollback(Wiki wiki)
+        {
+            // TODO: requires prop=revisions for token
+            var result = wiki.rollback("Test", "127.0.0.1");
+            Console.WriteLine(result);
         }
 
         private static PagesSource<Page> TitlePages(Wiki wiki)

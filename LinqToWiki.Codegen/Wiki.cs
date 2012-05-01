@@ -320,7 +320,7 @@ namespace LinqToWiki.Codegen
             int processedModules = 0;
             foreach (var module in modules)
             {
-                if (processedModules++ < 20)
+                if (processedModules++ < 22)
                 {
                     Console.WriteLine("Adding {0}.", module.Name);
                     AddModule(module);
