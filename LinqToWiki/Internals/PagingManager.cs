@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LinqToWiki.Parameters;
 
-namespace LinqToWiki
+namespace LinqToWiki.Internals
 {
     class PagingManager
     {

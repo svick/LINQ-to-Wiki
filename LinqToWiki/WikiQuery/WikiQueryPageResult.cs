@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using LinqToWiki.Internals;
 using LinqToWiki.Parameters;
 
 namespace LinqToWiki

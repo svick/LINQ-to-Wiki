@@ -1,4 +1,4 @@
-namespace LinqToWiki
+﻿namespace LinqToWiki.Internals
 {
     public enum QueryType
     {

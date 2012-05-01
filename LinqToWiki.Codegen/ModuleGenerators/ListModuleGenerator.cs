@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LinqToWiki.Codegen.ModuleInfo;
 using LinqToWiki.Collections;
+using LinqToWiki.Internals;
 using Roslyn.Compilers.CSharp;
 
 namespace LinqToWiki.Codegen.ModuleGenerators
@@ -48,7 +49,8 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
             var codeUnit = SyntaxEx.CompilationUnit(
                 SyntaxEx.NamespaceDeclaration(Wiki.EntitiesNamespace, selectClass, whereClass, orderByClass),
-                "System", "LinqToWiki.Collections", "System.Globalization", "System.Xml.Linq");
+                "System", "System.Globalization", "System.Xml.Linq", "LinqToWiki", "LinqToWiki.Collections",
+                "LinqToWiki.Internals");
 
             Wiki.Files.Add(ClassNameBase, codeUnit);
 

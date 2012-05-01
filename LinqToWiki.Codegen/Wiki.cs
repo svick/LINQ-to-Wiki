@@ -7,6 +7,7 @@ using System.Text;
 using LinqToWiki.Codegen.ModuleGenerators;
 using LinqToWiki.Codegen.ModuleInfo;
 using LinqToWiki.Collections;
+using LinqToWiki.Internals;
 using LinqToWiki.Parameters;
 using Microsoft.CSharp;
 using Roslyn.Compilers.CSharp;
@@ -85,8 +86,8 @@ namespace LinqToWiki.Codegen
             Files.Add(
                 Names.QueryAction, SyntaxEx.CompilationUnit(
                     SyntaxEx.NamespaceDeclaration(Namespace, queryActionClass),
-                    "System", "System.Collections.Generic", "LinqToWiki.Collections", "LinqToWiki.Parameters",
-                    EntitiesNamespace));
+                    "System", "System.Collections.Generic", "LinqToWiki", "LinqToWiki.Collections",
+                    "LinqToWiki.Parameters", "LinqToWiki.Internals", EntitiesNamespace));
         }
 
         private void CreatePageClass()
@@ -97,7 +98,8 @@ namespace LinqToWiki.Codegen
                 Names.Page,
                 SyntaxEx.CompilationUnit(
                     SyntaxEx.NamespaceDeclaration(Namespace, pageClass),
-                    "System", "System.Collections.Generic", "LinqToWiki.Collections", EntitiesNamespace));
+                    "System", "System.Collections.Generic", "LinqToWiki", "LinqToWiki.Collections",
+                    "LinqToWiki.Internals", EntitiesNamespace));
         }
 
         private void CreateWikiClass()
@@ -133,7 +135,8 @@ namespace LinqToWiki.Codegen
                 Names.Wiki,
                 SyntaxEx.CompilationUnit(
                     SyntaxEx.NamespaceDeclaration(Namespace, wikiClass),
-                    "System.Collections.Generic", "LinqToWiki.Collections", "LinqToWiki.Parameters", EntitiesNamespace));
+                    "System.Collections.Generic", "LinqToWiki", "LinqToWiki.Collections", "LinqToWiki.Internals",
+                    "LinqToWiki.Parameters", EntitiesNamespace));
         }
 
         private static IEnumerable<MethodDeclarationSyntax> CreatePageSourceMethods(FieldDeclarationSyntax wikiField)

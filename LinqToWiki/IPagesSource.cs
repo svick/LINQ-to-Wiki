@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using LinqToWiki.Collections;
 using LinqToWiki.Expressions;
+using LinqToWiki.Internals;
 using LinqToWiki.Parameters;
 
 namespace LinqToWiki

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Linq.Expressions;
 using IQToolkit;
+using LinqToWiki.Internals;
 using LinqToWiki.Parameters;
 
 namespace LinqToWiki.Expressions

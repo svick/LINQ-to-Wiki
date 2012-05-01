@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reflection;
 
-namespace LinqToWiki
+namespace LinqToWiki.Internals
 {
     static class PageProperties<TPage>
     {

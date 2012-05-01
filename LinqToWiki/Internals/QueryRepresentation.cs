@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 
-namespace LinqToWiki
+namespace LinqToWiki.Internals
 {
     public static class QueryRepresentation
     {
@@ -51,7 +51,7 @@ namespace LinqToWiki
             return string.Join("|", values.Select(converter.ConvertToString));
         }
 
-        private static string ToQueryString(IEnumerable<object> collection)
+        public static string ToQueryString(this IEnumerable<object> collection)
         {
             return string.Join("|", collection.Select(ToQueryStringDynamic));
         }

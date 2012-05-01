@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-namespace LinqToWiki
+namespace LinqToWiki.Internals
 {
     public static class ValueParser
     {

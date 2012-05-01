@@ -4,7 +4,7 @@ using System.Linq;
 using LinqToWiki.Collections;
 using LinqToWiki.Parameters;
 
-namespace LinqToWiki
+namespace LinqToWiki.Internals
 {
     public class QueryPageProcessor
     {

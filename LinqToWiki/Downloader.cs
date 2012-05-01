@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Xml.Linq;
 using System.Linq;
+using LinqToWiki.Internals;
 
 namespace LinqToWiki
 {

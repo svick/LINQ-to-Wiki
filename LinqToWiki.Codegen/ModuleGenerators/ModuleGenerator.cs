@@ -33,7 +33,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             {
                 var codeUnit = SyntaxEx.CompilationUnit(
                     SyntaxEx.NamespaceDeclaration(Wiki.EntitiesNamespace, resultType),
-                    "System", "System.Globalization", "System.Xml.Linq");
+                    "System", "System.Globalization", "System.Xml.Linq", "LinqToWiki", "LinqToWiki.Internals");
 
                 Wiki.Files.Add(ClassNameBase, codeUnit);
             }

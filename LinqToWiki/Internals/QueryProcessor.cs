@@ -5,7 +5,7 @@ using System.Xml.Linq;
 using LinqToWiki.Collections;
 using LinqToWiki.Parameters;
 
-namespace LinqToWiki
+namespace LinqToWiki.Internals
 {
     /// <summary>
     /// Processes query parameters and parses the result of the query.

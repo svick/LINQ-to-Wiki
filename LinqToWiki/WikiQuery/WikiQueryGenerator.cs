@@ -1,6 +1,7 @@
 using System;
 using System.Linq.Expressions;
 using LinqToWiki.Expressions;
+using LinqToWiki.Internals;
 using LinqToWiki.Parameters;
 
 namespace LinqToWiki

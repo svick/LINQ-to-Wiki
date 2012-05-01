@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using LinqToWiki.Collections;
 using LinqToWiki.Parameters;
 
-namespace LinqToWiki
+namespace LinqToWiki.Internals
 {
     /// <summary>
     /// Contains information about a certain wiki necessary to access its API.
