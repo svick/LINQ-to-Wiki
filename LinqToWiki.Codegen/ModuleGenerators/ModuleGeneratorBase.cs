@@ -166,6 +166,8 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
             statements.Add(queryParametersLocal);
 
+            methodParameters = methodParameters.Where(p => !p.Deprecated);
+
             foreach (var methodParameter in methodParameters)
             {
                 var nullable = nullableParameters && !methodParameter.Required;

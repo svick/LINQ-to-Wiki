@@ -10,13 +10,13 @@ namespace LinqToWiki.Test
         {
             Downloader.LogDownloading = true;
 
-            /**/
+            /*/
             var wiki = new Wiki();
             /*/
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            Compare(wiki);
+            Delete(wiki);
         }
 
         private static void Block(Wiki wiki)
@@ -29,6 +29,13 @@ namespace LinqToWiki.Test
         {
             var result = wiki.compare(fromrev: 486474789, torev: 487063697);
             Console.WriteLine(result.value);
+        }
+
+        private static void Delete(Wiki wiki)
+        {
+            string title = "Test";
+            var token = wiki.CreateTitlesSource(title).Select(t => t.info.deletetoken).ToEnumerable().Single();
+            wiki.delete(title, token: token);
         }
 
         private static void Login(Wiki wiki, string name, string password)

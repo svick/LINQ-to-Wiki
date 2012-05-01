@@ -17,6 +17,8 @@ namespace LinqToWiki.Codegen.ModuleInfo
 
         public bool Multi { get; private set; }
 
+        public bool Deprecated { get; private set; }
+
         public static Parameter Parse(XElement element)
         {
             return new Parameter
@@ -25,7 +27,8 @@ namespace LinqToWiki.Codegen.ModuleInfo
                        Description = (string)element.Attribute("description"),
                        Type = ParameterType.Parse(element),
                        Required = element.Attribute("required") != null,
-                       Multi = element.Attribute("multi") != null
+                       Multi = element.Attribute("multi") != null,
+                       Deprecated = element.Attribute("deprecated") != null
                    };
         }
 
