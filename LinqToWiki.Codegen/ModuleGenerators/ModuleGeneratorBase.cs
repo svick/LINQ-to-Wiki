@@ -168,19 +168,25 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
             foreach (var methodParameter in methodParameters)
             {
+                var nullable = nullableParameters && !methodParameter.Required;
+                var typeName = Wiki.TypeManager.GetTypeName(methodParameter, ClassNameBase, nullable);
                 var parameter = SyntaxEx.Parameter(
-                    Wiki.TypeManager.GetTypeName(methodParameter, ClassNameBase, nullableParameters),
-                    methodParameter.Name, nullableParameters ? SyntaxEx.NullLiteral() : null);
+                    typeName, methodParameter.Name, nullable ? SyntaxEx.NullLiteral() : null);
 
                 parameters.Add(parameter);
+
+                ExpressionSyntax valueExpression = (NamedNode)parameter;
+
+                if (nullable && typeName.EndsWith("?"))
+                    valueExpression = SyntaxEx.MemberAccess(valueExpression, "Value");
 
                 var queryParametersAssignment = SyntaxEx.Assignment(
                     queryParametersLocal, SyntaxEx.Invocation(
                         SyntaxEx.MemberAccess(queryParametersLocal, "AddSingleValue"),
                         SyntaxEx.Literal(methodParameter.Name),
-                        SyntaxEx.Invocation(SyntaxEx.MemberAccess(parameter, "ToQueryString"))));
+                        SyntaxEx.Invocation(SyntaxEx.MemberAccess(valueExpression, "ToQueryString"))));
                 
-                if (nullableParameters)
+                if (nullable)
                 {
                     var assignmentWithCheck = SyntaxEx.If(
                         SyntaxEx.NotEquals((NamedNode)parameter, SyntaxEx.NullLiteral()), queryParametersAssignment);

@@ -314,8 +314,15 @@ namespace LinqToWiki.Codegen
         {
             var modules = GetModules(moduleNames);
 
-            foreach (var module in modules.Where(p => p.Name == "login"))
-                AddModule(module);
+            int processedModules = 0;
+            foreach (var module in modules)
+            {
+                if (module.Name == "login" || processedModules++ < 1)
+                {
+                    Console.WriteLine("Adding {0}.", module.Name);
+                    AddModule(module);
+                }
+            }
         }
 
         public void AddAllQueryModules()
