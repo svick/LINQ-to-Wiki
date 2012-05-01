@@ -199,7 +199,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
                     statements.Add(queryParametersAssignment);
 
                 var parameterDocumentation = SyntaxEx.DocumentationParameter(
-                    methodParameter.Name, methodParameter.Description);
+                    methodParameter.Name, new System.Xml.Linq.XText(methodParameter.Description).ToString());
 
                 documentationElements.Add(parameterDocumentation);
             }

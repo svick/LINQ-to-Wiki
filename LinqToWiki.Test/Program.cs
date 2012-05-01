@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            Delete(wiki);
+            Edit(wiki);
         }
 
         private static void Block(Wiki wiki)
@@ -36,6 +36,16 @@ namespace LinqToWiki.Test
             string title = "Test";
             var token = wiki.CreateTitlesSource(title).Select(t => t.info.deletetoken).ToEnumerable().Single();
             wiki.delete(title, token: token);
+        }
+
+        private static void Edit(Wiki wiki)
+        {
+            string title = "Talk:Test2";
+            var token = wiki.CreateTitlesSource(title).Select(t => t.info.edittoken).ToEnumerable().Single();
+            var result = wiki.edit(
+                title: title, section: "new", sectiontitle: "Hello", text: "Hello world! ~~~~",
+                summary: "greeting the world", token: token);
+            Console.WriteLine(result);
         }
 
         private static void Login(Wiki wiki, string name, string password)
