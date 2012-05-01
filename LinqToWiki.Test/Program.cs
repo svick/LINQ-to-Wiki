@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            Tokens(wiki);
+            Unblock(wiki);
         }
 
         private static void Block(Wiki wiki)
@@ -149,6 +149,13 @@ namespace LinqToWiki.Test
                 tokenstype.block | tokenstype.delete | tokenstype.protect | tokenstype.watch | tokenstype.unblock
                 | tokenstype.move | tokenstype.patrol | tokenstype.import | tokenstype.edit);
             Console.WriteLine(tokens);
+        }
+
+        private static void Unblock(Wiki wiki)
+        {
+            var token = wiki.tokens(tokenstype.unblock).unblocktoken;
+            var result = wiki.unblock(user: "Test", token: token, reason: "I don't hate you anymore.");
+            Console.WriteLine(result);
         }
 
         private static PagesSource<Page> TitlePages(Wiki wiki)
