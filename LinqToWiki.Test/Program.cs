@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            FileRevert(wiki);
+            Import(wiki);
         }
 
         private static void Block(Wiki wiki)
@@ -73,6 +73,19 @@ namespace LinqToWiki.Test
             var result = wiki.filerevert(fileName, archiveName, "I don't like this version of the image.", info.token);
 
             Console.WriteLine(result);
+        }
+
+        private static void Import(Wiki wiki)
+        {
+            var token = wiki.CreatePageIdsSource(1)
+                .Select(f => f.info.importtoken)
+                .ToEnumerable().Single();
+
+            var result = wiki.import(
+                token, "imported some pages", interwikisource: importinterwikisource.wikipedia,
+                interwikipage: "User:Svick/Sandbox", templates: true);
+
+            Write(result);
         }
 
         private static void Login(Wiki wiki, string name, string password)

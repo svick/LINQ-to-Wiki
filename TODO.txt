@@ -2,7 +2,7 @@
 * submit MediaWiki modifications for review
 * revisions module
 * categoryinfo
-* TODOs in code
+* TODOs in code and NotImplementedExceptions
 * proper CLI applications
 * props from file
 * XML documentation
@@ -10,3 +10,4 @@
 * figure out what to do with tokens
 * figure out what to do with warnings (maybe WarningsAsExceptions switch)
 * compress requests?
+* consider using multipart/formdata when necessary

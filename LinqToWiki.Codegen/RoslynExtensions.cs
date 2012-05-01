@@ -640,10 +640,18 @@ namespace LinqToWiki.Codegen
 
         public static GenericNameSyntax GenericName(string name, IEnumerable<string> typeArgumentNames)
         {
+            return GenericName(name, typeArgumentNames.Select(Syntax.IdentifierName));
+        }
+
+        public static GenericNameSyntax GenericName(string name, params TypeSyntax[] typeArguments)
+        {
+            return GenericName(name, (IEnumerable<TypeSyntax>)typeArguments);
+        }
+
+        public static GenericNameSyntax GenericName(string name, IEnumerable<TypeSyntax> typeArguments)
+        {
             return Syntax.GenericName(
-                Syntax.Identifier(name),
-                Syntax.TypeArgumentList(
-                    arguments: typeArgumentNames.Select(Syntax.IdentifierName).ToSeparatedList<TypeSyntax>()));
+                Syntax.Identifier(name), Syntax.TypeArgumentList(arguments: typeArguments.ToSeparatedList()));
         }
 
         public static XmlElementSyntax DocumentationSummary(string summary)

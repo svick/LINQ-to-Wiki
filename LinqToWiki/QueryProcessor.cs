@@ -45,20 +45,24 @@ namespace LinqToWiki
 
         private IEnumerable<TResult> GetListItems<TResult>(Func<T, TResult> selector, XElement downloaded)
         {
+            XElement resultsElement;
             switch (m_queryTypeProperties.QueryType)
             {
             case QueryType.List:
             case QueryType.Meta:
                 var moduleElement = downloaded.Element("query").Element(m_queryTypeProperties.ModuleName);
-                var resultsElement = moduleElement.Element("results") ?? moduleElement;
-                return resultsElement
-                    .Elements()
-                    .Select(x => selector(m_queryTypeProperties.Parse(x, m_wiki)));
+                resultsElement = moduleElement.Element("results") ?? moduleElement;
+                break;
             case null:
-                throw new NotImplementedException();
+                resultsElement = downloaded.Element(m_queryTypeProperties.ModuleName);
+                break;
+            default:
+                throw new NotSupportedException();
             }
 
-            throw new NotSupportedException();
+            return resultsElement
+                .Elements()
+                .Select(x => selector(m_queryTypeProperties.Parse(x, m_wiki)));
         }
 
         /// <summary>

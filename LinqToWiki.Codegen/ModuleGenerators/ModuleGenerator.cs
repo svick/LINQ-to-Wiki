@@ -11,6 +11,8 @@ namespace LinqToWiki.Codegen.ModuleGenerators
     {
         protected string ResultClassName { get; private set; }
 
+        private bool m_listResult;
+
         public ModuleGenerator(Wiki wiki)
             : base(wiki)
         {}
@@ -42,12 +44,14 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
         protected virtual ClassDeclarationSyntax GenerateResultClass(IEnumerable<PropertyGroup> propertyGroups)
         {
-            if (propertyGroups.Any(g => g.Name != null))
-                throw new NotSupportedException();
+            m_listResult = propertyGroups.Any(g => g.Name != null);
 
-            var rootPropertyGroup = propertyGroups.Single(g => g.Name == null);
+            var propertyGroup =
+                m_listResult
+                    ? propertyGroups.Single(g => g.Name == string.Empty)
+                    : propertyGroups.Single(g => g.Name == null);
 
-            return GenerateClassForProperties(ResultClassName, rootPropertyGroup.Properties);
+            return GenerateClassForProperties(ResultClassName, propertyGroup.Properties);
         }
 
         protected override IEnumerable<Tuple<string, string>> GetBaseParameters(Module module)
@@ -59,12 +63,19 @@ namespace LinqToWiki.Codegen.ModuleGenerators
         {
             statements.Add(
                 SyntaxEx.Return(
-                    SyntaxEx.Invocation(SyntaxEx.MemberAccess(queryProcessor, "ExecuteSingle"), queryParameters)));
+                    SyntaxEx.Invocation(
+                        SyntaxEx.MemberAccess(queryProcessor, m_listResult ? "ExecuteList" : "ExecuteSingle"),
+                        queryParameters)));
         }
 
         protected override TypeSyntax GenerateMethodResultType()
         {
-            return SyntaxEx.ParseTypeName(ResultClassName);
+            var resultType = SyntaxEx.ParseTypeName(ResultClassName);
+
+            if (m_listResult)
+                resultType = SyntaxEx.GenericName("IEnumerable", resultType);
+
+            return resultType;
         }
     }
 }

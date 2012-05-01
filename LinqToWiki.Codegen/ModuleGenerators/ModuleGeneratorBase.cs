@@ -173,8 +173,8 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             {
                 var nullable = nullableParameters && !methodParameter.Required;
                 var typeName = Wiki.TypeManager.GetTypeName(methodParameter, ClassNameBase, nullable);
-                var parameter = SyntaxEx.Parameter(
-                    typeName, methodParameter.Name, nullable ? SyntaxEx.NullLiteral() : null);
+                var parameterName = GetPropertyName(methodParameter.Name);
+                var parameter = SyntaxEx.Parameter(typeName, parameterName, nullable ? SyntaxEx.NullLiteral() : null);
 
                 parameters.Add(parameter);
 
@@ -200,7 +200,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
                     statements.Add(queryParametersAssignment);
 
                 var parameterDocumentation = SyntaxEx.DocumentationParameter(
-                    methodParameter.Name, new System.Xml.Linq.XText(methodParameter.Description).ToString());
+                    parameterName, new System.Xml.Linq.XText(methodParameter.Description).ToString());
 
                 documentationElements.Add(parameterDocumentation);
             }
