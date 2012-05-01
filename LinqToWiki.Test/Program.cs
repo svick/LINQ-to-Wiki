@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            Links(CategoryMembersSource(wiki));
+            Templates(AllPagesSource(wiki));
         }
 
         private static void Login(Wiki wiki, string name, string password)
@@ -194,6 +194,23 @@ namespace LinqToWiki.Test
         {
             var source = pages
                 .Select(p => PageResult.Create(p.info, p.links().Select(l => l.title).ToEnumerable()));
+
+            Write(source);
+        }
+
+        private static void Templates(PagesSource<Page> pages)
+        {
+            var source = pages
+                .Select(
+                    p =>
+                    PageResult.Create(
+                        p.info,
+                        p.templates()
+                            .Where(t => t.ns == new[] { Namespace.Project, Namespace.User, Namespace.Article })
+                            .Select(t => t.title)
+                            .ToEnumerable()))
+                .ToEnumerable()
+                .Where(p => p.Data.Any());
 
             Write(source);
         }

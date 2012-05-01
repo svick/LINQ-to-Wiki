@@ -1,4 +1,3 @@
-* prop modules
 * modules
 * submit MediaWiki modifications for review
 * revisions module

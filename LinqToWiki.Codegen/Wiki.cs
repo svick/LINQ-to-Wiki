@@ -278,8 +278,6 @@ namespace LinqToWiki.Codegen
         {
             var modules = GetQueryModules(moduleNames);
 
-            int propModules = 0;
-
             foreach (var module in modules)
             {
                 if (module.QueryType == QueryType.List || module.QueryType == QueryType.Meta)
@@ -298,14 +296,14 @@ namespace LinqToWiki.Codegen
                     {
                         // TODO
                     }
-                    else if (propModules++ < 10)
+                    else
                     {
                         // TODO revisons
                         if (module.Name == "revisions")
                             continue;
                         if (module.Name == "stashimageinfo")
                             continue;
-                        Console.WriteLine("Adding module {0}.", module.Name);
+
                         AddPropModule(module);
                     }
                 }
