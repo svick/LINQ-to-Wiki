@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            Rollback(wiki);
+            Tokens(wiki);
         }
 
         private static void Block(Wiki wiki)
@@ -33,26 +33,23 @@ namespace LinqToWiki.Test
 
         private static void Delete(Wiki wiki)
         {
-            string title = "Test";
-            var token = wiki.CreateTitlesSource(title).Select(t => t.info.deletetoken).ToEnumerable().Single();
-            wiki.delete(title, token: token);
+            string token = wiki.tokens(tokenstype.delete).deletetoken;
+            wiki.delete("Test", token: token);
         }
 
         private static void Edit(Wiki wiki)
         {
-            string title = "Talk:Test2";
-            var token = wiki.CreateTitlesSource(title).Select(t => t.info.edittoken).ToEnumerable().Single();
+            var token = wiki.tokens(tokenstype.edit).edittoken;
             var result = wiki.edit(
-                title: title, section: "new", sectiontitle: "Hello", text: "Hello world! ~~~~",
+                title: "Talk:Test2", section: "new", sectiontitle: "Hello", text: "Hello world! ~~~~",
                 summary: "greeting the world", token: token);
             Console.WriteLine(result);
         }
 
         private static void EmailUser(Wiki wiki)
         {
-            var user = "User:Svick";
-            var token = wiki.CreateTitlesSource(user).Select(t => t.info.emailtoken).ToEnumerable().Single();
-            var result = wiki.emailuser(user, "Hello", "Mail from LinqToWiki", token);
+            var token = wiki.tokens(tokenstype.email).emailtoken;
+            var result = wiki.emailuser("User:Svick", "Hello", "Mail from LinqToWiki", token);
             Console.WriteLine(result);
         }
 
@@ -77,9 +74,7 @@ namespace LinqToWiki.Test
 
         private static void Import(Wiki wiki)
         {
-            var token = wiki.CreatePageIdsSource(1)
-                .Select(f => f.info.importtoken)
-                .ToEnumerable().Single();
+            var token = wiki.tokens(tokenstype.import).importtoken;
 
             var result = wiki.import(
                 token, "imported some pages", interwikisource: importinterwikisource.wikipedia,
@@ -106,9 +101,7 @@ namespace LinqToWiki.Test
 
         private static void Move(Wiki wiki)
         {
-            var token = wiki.CreateTitlesSource("Test")
-                .Select(f => f.info.movetoken)
-                .ToEnumerable().Single();
+            var token = wiki.tokens(tokenstype.move).movetoken;
 
             var result = wiki.move(from: "Test2", to: "Test", token: token);
             Console.WriteLine(result);
@@ -131,9 +124,7 @@ namespace LinqToWiki.Test
 
         private static void Protect(Wiki wiki)
         {
-            var token = wiki.CreateTitlesSource("Test")
-                .Select(f => f.info.protecttoken)
-                .ToEnumerable().Single();
+            var token = wiki.tokens(tokenstype.protect).protecttoken;
 
             var result = wiki.protect(new[] { "edit=autoconfirmed", "move=sysop" }, "Test", token: token);
             Console.WriteLine(result);
@@ -150,6 +141,14 @@ namespace LinqToWiki.Test
             // TODO: requires prop=revisions for token
             var result = wiki.rollback("Test", "127.0.0.1");
             Console.WriteLine(result);
+        }
+
+        private static void Tokens(Wiki wiki)
+        {
+            var tokens = wiki.tokens(
+                tokenstype.block | tokenstype.delete | tokenstype.protect | tokenstype.watch | tokenstype.unblock
+                | tokenstype.move | tokenstype.patrol | tokenstype.import | tokenstype.edit);
+            Console.WriteLine(tokens);
         }
 
         private static PagesSource<Page> TitlePages(Wiki wiki)

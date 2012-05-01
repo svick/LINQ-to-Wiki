@@ -1,5 +1,5 @@
 * modules
-* submit MediaWiki modifications for review
+* submit MediaWiki modifications for review (check indentation and whitespace first)
 * revisions module
 * categoryinfo
 * TODOs in code and NotImplementedExceptions
@@ -11,3 +11,4 @@
 * figure out what to do with warnings (maybe WarningsAsExceptions switch)
 * compress requests?
 * consider using multipart/formdata when necessary
+* TitlesSource with more than `limit` pages
