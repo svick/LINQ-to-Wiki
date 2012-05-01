@@ -51,9 +51,9 @@ namespace LinqToWiki.Internals
             return string.Join("|", values.Select(converter.ConvertToString));
         }
 
-        public static string ToQueryString(this IEnumerable<object> collection)
+        public static string ToQueryString<T>(this IEnumerable<T> collection)
         {
-            return string.Join("|", collection.Select(ToQueryStringDynamic));
+            return string.Join("|", collection.Select(x => ToQueryStringDynamic(x)));
         }
 
         private static string ToQueryString(object obj)
