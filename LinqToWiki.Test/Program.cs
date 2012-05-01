@@ -10,19 +10,25 @@ namespace LinqToWiki.Test
         {
             Downloader.LogDownloading = true;
 
-            /*/
+            /**/
             var wiki = new Wiki();
             /*/
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            Block(wiki);
+            Compare(wiki);
         }
 
         private static void Block(Wiki wiki)
         {
             var token = wiki.block("Test", gettoken: true).blocktoken;
             wiki.block("Test", token);
+        }
+
+        private static void Compare(Wiki wiki)
+        {
+            var result = wiki.compare(fromrev: 486474789, torev: 487063697);
+            Console.WriteLine(result.value);
         }
 
         private static void Login(Wiki wiki, string name, string password)
