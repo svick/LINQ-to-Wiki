@@ -177,12 +177,23 @@ namespace LinqToWiki.Expressions
 
             var parameters = visitor.m_parameters;
 
-            // TODO: handle tokens in a special way
-
             if (gatherer.UsedDirectly)
                 parameters.Add("info", new PropQueryParameters("info"));
             else if (gatherer.UsedProperties.Any(p => !NonInfoProperties.Contains(p)))
-                parameters.Add("info", new PropQueryParameters("info").WithProperties(gatherer.UsedProperties));
+            {
+                var propQueryParameters = new PropQueryParameters("info").WithProperties(gatherer.UsedProperties);
+
+                var tokens = gatherer.UsedProperties
+                    .Where(p => p.EndsWith("token"))
+                    .Select(p => p.Substring(0, p.Length - "token".Length))
+                    .ToArray();
+
+                if (tokens.Any())
+                    propQueryParameters = propQueryParameters.AddSingleValue(
+                        "token", NameValueParameter.JoinValues(tokens));
+
+                parameters.Add("info", propQueryParameters);
+            }
 
             processedExpression =
                 Expression.Lambda<Func<PageData, TResult>>(body, visitor.m_pageDataParameter).Compile();

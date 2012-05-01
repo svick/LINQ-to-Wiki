@@ -6,3 +6,5 @@
 * proper CLI applications
 * props from file
 * XML documentation
+* optionally turn off getting namespaces every time (or maybe cache them?)
+* figure out what to do with tokens

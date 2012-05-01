@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LinqToWiki.Parameters
 {
@@ -54,5 +55,26 @@ namespace LinqToWiki.Parameters
         {
             parameters.CopyTo(this);
         }
+
+        /// <summary>
+        /// Adds a single name-value pair to the current query and returns the result.
+        /// The parameter <see cref="value"/> can actually represent multiple values.
+        /// </summary>
+        public PropQueryParameters AddSingleValue(string name, string value)
+        {
+            if (value == null)
+                return this;
+
+            if (Value != null && Value.Any(v => v.Name == name))
+                throw new InvalidOperationException(
+                    string.Format("Tried adding value with the name '{0}' that is already present.", name));
+
+            var result = new PropQueryParameters(PropName);
+            CopyTo(result);
+
+            result.Value = new NameValueParameter(Value, name, value);
+            return result;
+        }
+
     }
 }
