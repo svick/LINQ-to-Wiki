@@ -166,7 +166,8 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
             statements.Add(queryParametersLocal);
 
-            methodParameters = methodParameters.Where(p => !p.Deprecated);
+            methodParameters = methodParameters.Where(p => !p.Deprecated)
+                .OrderByDescending(p => p.Required);
 
             foreach (var methodParameter in methodParameters)
             {

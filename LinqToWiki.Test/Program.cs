@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            Edit(wiki);
+            EmailUser(wiki);
         }
 
         private static void Block(Wiki wiki)
@@ -45,6 +45,14 @@ namespace LinqToWiki.Test
             var result = wiki.edit(
                 title: title, section: "new", sectiontitle: "Hello", text: "Hello world! ~~~~",
                 summary: "greeting the world", token: token);
+            Console.WriteLine(result);
+        }
+
+        private static void EmailUser(Wiki wiki)
+        {
+            var user = "User:Svick";
+            var token = wiki.CreateTitlesSource(user).Select(t => t.info.emailtoken).ToEnumerable().Single();
+            var result = wiki.emailuser(user, "Hello", "Mail from LinqToWiki", token);
             Console.WriteLine(result);
         }
 
