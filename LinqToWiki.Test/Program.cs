@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            Unblock(wiki);
+            Undelete(wiki);
         }
 
         private static void Block(Wiki wiki)
@@ -155,6 +155,18 @@ namespace LinqToWiki.Test
         {
             var token = wiki.tokens(tokenstype.unblock).unblocktoken;
             var result = wiki.unblock(user: "Test", token: token, reason: "I don't hate you anymore.");
+            Console.WriteLine(result);
+        }
+
+        private static void Undelete(Wiki wiki)
+        {
+            var title = "Ke smazání";
+            var deletedPage = wiki.Query.deletedrevs()
+                .Where(p => p.ns == Namespace.Article)
+                .ToEnumerable()
+                .Single(p => p.title == title);
+
+            var result = wiki.undelete(title, deletedPage.token, "Just because");
             Console.WriteLine(result);
         }
 
@@ -453,7 +465,7 @@ namespace LinqToWiki.Test
         {
             var result = (from dr in wiki.Query.deletedrevs()
                           where dr.user == "Svick"
-                          select dr.title)
+                          select dr)
                 .ToEnumerable();
 
             Write(result);

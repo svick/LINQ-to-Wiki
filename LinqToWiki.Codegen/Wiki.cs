@@ -135,8 +135,8 @@ namespace LinqToWiki.Codegen
                 Names.Wiki,
                 SyntaxEx.CompilationUnit(
                     SyntaxEx.NamespaceDeclaration(Namespace, wikiClass),
-                    "System.Collections.Generic", "LinqToWiki", "LinqToWiki.Collections", "LinqToWiki.Internals",
-                    "LinqToWiki.Parameters", EntitiesNamespace));
+                    "System", "System.Collections.Generic", "LinqToWiki", "LinqToWiki.Collections",
+                    "LinqToWiki.Internals", "LinqToWiki.Parameters", EntitiesNamespace));
         }
 
         private static IEnumerable<MethodDeclarationSyntax> CreatePageSourceMethods(FieldDeclarationSyntax wikiField)
@@ -320,7 +320,7 @@ namespace LinqToWiki.Codegen
             int processedModules = 0;
             foreach (var module in modules)
             {
-                if (processedModules++ < 25)
+                if (processedModules++ < 26)
                 {
                     Console.WriteLine("Adding {0}.", module.Name);
                     AddModule(module);
