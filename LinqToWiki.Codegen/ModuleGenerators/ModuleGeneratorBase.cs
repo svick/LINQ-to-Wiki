@@ -142,7 +142,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             if (name == "new")
                 return identifier ? "@new" : "new";
 
-            return name;
+            return name.Replace('-', '_');
         }
 
         protected void GenerateMethod(

@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            Logout(wiki);
+            Move(wiki);
         }
 
         private static void Block(Wiki wiki)
@@ -102,6 +102,16 @@ namespace LinqToWiki.Test
         private static void Logout(Wiki wiki)
         {
             wiki.logout();
+        }
+
+        private static void Move(Wiki wiki)
+        {
+            var token = wiki.CreateTitlesSource("Test")
+                .Select(f => f.info.movetoken)
+                .ToEnumerable().Single();
+
+            var result = wiki.move(from: "Test2", to: "Test", token: token);
+            Console.WriteLine(result);
         }
 
         private static PagesSource<Page> TitlePages(Wiki wiki)
