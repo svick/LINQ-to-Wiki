@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            Undelete(wiki);
+            Upload(wiki);
         }
 
         private static void Block(Wiki wiki)
@@ -167,6 +167,17 @@ namespace LinqToWiki.Test
                 .Single(p => p.title == title);
 
             var result = wiki.undelete(title, deletedPage.token, "Just because");
+            Console.WriteLine(result);
+        }
+
+        private static void Upload(Wiki wiki)
+        {
+            var token = wiki.tokens(tokenstype.edit).edittoken;
+            var result = wiki.upload(
+                "Flower.jpeg",
+                url: "http://upload.wikimedia.org/wikipedia/commons/4/4e/Hymensoporum_flavum_flowers.jpg",
+                token: token);
+
             Console.WriteLine(result);
         }
 
