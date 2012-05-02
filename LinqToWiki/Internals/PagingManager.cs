@@ -9,20 +9,23 @@ namespace LinqToWiki.Internals
     {
         private readonly WikiInfo m_wiki;
         private readonly string m_generator;
-        private readonly PageQueryParameters m_parameters;
+        private readonly IEnumerable<PropQueryParameters> m_propQueryParametersCollection;
+        private readonly IEnumerable<Tuple<string, string>> m_currentParameters;
         private readonly Dictionary<string, QueryTypeProperties> m_pageProperties;
         private readonly Tuple<string, string> m_primaryQueryContinue;
         private Dictionary<string, Tuple<string, string>> m_secondaryQueryContinues;
         private Dictionary<long, PageData> m_pages;
 
         public PagingManager(
-            WikiInfo wiki, string generator, PageQueryParameters parameters,
-            Dictionary<string, QueryTypeProperties> pageProperties, Tuple<string, string> primaryQueryContinue,
+            WikiInfo wiki, string generator, IEnumerable<PropQueryParameters> propQueryParametersCollection,
+            IEnumerable<Tuple<string, string>> currentParameters, Dictionary<string, QueryTypeProperties> pageProperties,
+            Tuple<string, string> primaryQueryContinue,
             Dictionary<string, Tuple<string, string>> secondaryQueryContinues)
         {
             m_wiki = wiki;
             m_generator = generator;
-            m_parameters = parameters;
+            m_propQueryParametersCollection = propQueryParametersCollection;
+            m_currentParameters = currentParameters;
             m_pageProperties = pageProperties;
             m_primaryQueryContinue = primaryQueryContinue;
             m_secondaryQueryContinues = secondaryQueryContinues;
@@ -41,7 +44,10 @@ namespace LinqToWiki.Internals
         public void GetMore()
         {
             var downloaded = QueryProcessor.Download(
-                m_wiki, QueryPageProcessor.ProcessParameters(m_parameters, m_pageProperties, false),
+                m_wiki,
+                QueryPageProcessor.ProcessParameters(
+                    m_propQueryParametersCollection, m_currentParameters,
+                    m_pageProperties, false),
                 new[] { m_primaryQueryContinue }.Concat(m_secondaryQueryContinues.Values));
 
             var queryContinues = QueryProcessor.GetQueryContinues(downloaded);

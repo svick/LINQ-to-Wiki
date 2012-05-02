@@ -19,14 +19,21 @@ namespace LinqToWiki.Internals
             PageQueryParameters parameters, Func<PageData, TResult> selector,
             Dictionary<string, QueryTypeProperties> pageProperties)
         {
-            var processedParameters = ProcessParameters(parameters, pageProperties);
-
             Tuple<string, string> primaryQueryContinue = null;
-            var generatorParameter = parameters.Value.SingleOrDefault(p => p.Name == "generator");
-            var generator = generatorParameter == null ? null : generatorParameter.Value;
+
+            var revisions = parameters.PropQueryParametersCollection.SingleOrDefault(p => p.PropName == "revisions");
+
+            int limit = revisions == null || revisions.OnlyFirst ? -1 : 1;
+            var pagesCollection = parameters.PagesCollection;
 
             do
             {
+                var currentParameters = pagesCollection.GetNextPage(limit).ToArray();
+                var processedParameters = ProcessParameters(
+                    parameters.PropQueryParametersCollection, currentParameters, pageProperties);
+                var generatorParameter = currentParameters.SingleOrDefault(p => p.Item1 == "generator");
+                var generator = generatorParameter == null ? null : generatorParameter.Item2;
+
                 var downloaded = QueryProcessor.Download(m_wiki, processedParameters, primaryQueryContinue);
 
                 var queryContinues = QueryProcessor.GetQueryContinues(downloaded);
@@ -40,12 +47,14 @@ namespace LinqToWiki.Internals
                     queryContinues.Remove(generator);
                 }
 
-                var pagingManager = new PagingManager(m_wiki, generator, parameters, pageProperties, primaryQueryContinue, queryContinues);
+                var pagingManager = new PagingManager(
+                    m_wiki, generator, parameters.PropQueryParametersCollection, currentParameters, pageProperties,
+                    primaryQueryContinue, queryContinues);
 
                 var queryElement = downloaded.Element("query");
 
                 if (queryElement == null)
-                    yield break;
+                    yield return default(TResult);
 
                 var partPageData = queryElement.Element("pages").Elements("page")
                     .Select(e => new PageData(m_wiki, e, pageProperties, pagingManager)).ToArray();
@@ -58,17 +67,17 @@ namespace LinqToWiki.Internals
                     yield return item;
 
                 primaryQueryContinue = newPrimaryQueryContinue;
-            } while (primaryQueryContinue != null);
+            } while (pagesCollection.HasMorePages(primaryQueryContinue));
         }
 
         internal static Tuple<string, string>[] ProcessParameters(
-            PageQueryParameters parameters, Dictionary<string, QueryTypeProperties> pageProperties, bool withInfo = true)
+            IEnumerable<PropQueryParameters> propQueryParametersCollection,
+            IEnumerable<Tuple<string, string>> currentParameters, Dictionary<string, QueryTypeProperties> pageProperties,
+            bool withInfo = true)
         {
             var propParameters = new TupleList<string, string>();
 
             var propNames = new List<string>();
-
-            var propQueryParametersCollection = parameters.PropQueryParametersCollection;
 
             if (!withInfo)
                 propQueryParametersCollection = propQueryParametersCollection.Where(x => x.PropName != "info");
@@ -78,11 +87,13 @@ namespace LinqToWiki.Internals
                 propNames.Add(propQueryParameters.PropName);
 
                 propParameters.AddRange(
-                    QueryProcessor.ProcessParameters(pageProperties[propQueryParameters.PropName], propQueryParameters, true));
+                    QueryProcessor.ProcessParameters(
+                        pageProperties[propQueryParameters.PropName], propQueryParameters, true,
+                        limit: propQueryParameters.OnlyFirst ? 0 : -1));
             }
 
             return new[] { Tuple.Create("action", "query") }
-                .Concat(parameters.Value.Select(nvp => Tuple.Create(nvp.Name, nvp.Value)))
+                .Concat(currentParameters.Select(x => Tuple.Create(x.Item1, x.Item2)))
                 .Concat(new[] { Tuple.Create("prop", NameValueParameter.JoinValues(propNames)) })
                 .Concat(propParameters)
                 .ToArray();

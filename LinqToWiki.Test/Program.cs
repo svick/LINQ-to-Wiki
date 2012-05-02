@@ -10,13 +10,25 @@ namespace LinqToWiki.Test
         {
             Downloader.LogDownloading = true;
 
-            /*/
+            /**/
             var wiki = new Wiki();
             /*/
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            Watch(wiki);
+            Revisions(TitlePages(wiki));
+        }
+
+        private static void Revisions(PagesSource<Page> pages)
+        {
+            var source = pages.Select(p => PageResult.Create(p.info, p.revisions().ToEnumerable()))
+                .ToEnumerable();
+            Write(source);
+
+            var pageTexts= pages.Select(p => p.revisions().Select(r => r.value).FirstOrDefault())
+                .ToEnumerable()
+                .Take(3);
+            Write(pageTexts);
         }
 
         private static void Block(Wiki wiki)
@@ -191,7 +203,7 @@ namespace LinqToWiki.Test
         private static PagesSource<Page> TitlePages(Wiki wiki)
         {
             return wiki.CreateTitlesSource(
-                "User:Svick", "User talk:Svick/WikiProject cleanup listing", "Nonfoobar", "", "Special:Version");
+                "User:Svick", "User talk:Svick/WikiProject cleanup listing", "Nonfoobar", "Special:Version");
         }
 
         private static PagesSource<Page> PageIdPages(Wiki wiki)

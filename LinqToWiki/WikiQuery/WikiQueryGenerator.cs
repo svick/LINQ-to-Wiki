@@ -39,7 +39,7 @@ namespace LinqToWiki
         {
             get
             {
-                return new PagesSource<TPage>(
+                return new GeneratorPagesSource<TPage>(
                     QueryProcessor.ProcessGeneratorParameters(Parameters), QueryProcessor.GetPageProcessor());
             }
         }
@@ -68,7 +68,7 @@ namespace LinqToWiki
         {
             get
             {
-                return new PagesSource<TPage>(
+                return new GeneratorPagesSource<TPage>(
                     QueryProcessor.ProcessGeneratorParameters(Parameters), QueryProcessor.GetPageProcessor());
             }
         }

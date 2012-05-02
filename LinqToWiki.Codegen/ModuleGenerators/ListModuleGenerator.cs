@@ -43,7 +43,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
             var whereParameters = parameters;
 
-            var selectClass = GenerateSelect(module.PropertyGroups);
+            var selectClass = GenerateSelect(module.PropertyGroups, module.Name == "revisions");
             var whereClass = GenerateWhere(whereParameters);
             var orderByClass = GenerateOrderBy(sortParameters, module.PropertyGroups.SelectMany(g => g.Properties));
 
@@ -92,7 +92,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             return parameters.RemoveAndReturn(p => names.Contains(p.Name));
         }
 
-        private ClassDeclarationSyntax GenerateSelect(IEnumerable<PropertyGroup> propertyGroups)
+        private ClassDeclarationSyntax GenerateSelect(IEnumerable<PropertyGroup> propertyGroups, bool first)
         {
             propertyGroups = propertyGroups.Where(pg => pg.Name != null).ToArray();
 
@@ -104,7 +104,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
             var properties = propertyGroups.SelectMany(g => g.Properties).Distinct();
 
-            return GenerateClassForProperties(SelectClassName, properties);
+            return GenerateClassForProperties(SelectClassName, properties, first ? "IFirst" : null);
         }
 
         private ClassDeclarationSyntax GenerateWhere(IEnumerable<Parameter> parameters)

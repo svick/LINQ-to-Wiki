@@ -9,16 +9,15 @@ namespace LinqToWiki.Parameters
         private PageQueryParameters()
         {}
 
-        public PageQueryParameters(IEnumerable<Tuple<string, string>> baseParameters)
+        public PageQueryParameters(IPagesCollection pagesCollection)
         {
-            foreach (var baseParameter in baseParameters)
-                Value = new NameValueParameter(Value, baseParameter.Item1, baseParameter.Item2);
+            PagesCollection = pagesCollection;
         }
 
         /// <summary>
-        /// Linked list of general parameters.
+        /// Collection of primary pages.
         /// </summary>
-        public NameValueParameter Value { get; private set; }
+        public IPagesCollection PagesCollection { get; private set; }
 
         /// <summary>
         /// Parameters for each prop.
@@ -30,7 +29,8 @@ namespace LinqToWiki.Parameters
             if (PropQueryParametersCollection != null)
                 throw new InvalidOperationException();
 
-            return new PageQueryParameters { Value = Value, PropQueryParametersCollection = parametersCollection };
+            return new PageQueryParameters
+                   { PagesCollection = PagesCollection, PropQueryParametersCollection = parametersCollection };
         }
     }
 
@@ -43,11 +43,21 @@ namespace LinqToWiki.Parameters
 
         public string PropName { get; private set; }
 
+        public bool OnlyFirst { get; private set; }
+
         public PropQueryParameters WithProperties(IEnumerable<string> properties)
         {
             var result = new PropQueryParameters(PropName);
             CopyTo(result);
             result.Properties = properties;
+            return result;
+        }
+
+        public PropQueryParameters WithOnlyFirst()
+        {
+            var result = new PropQueryParameters(PropName);
+            CopyTo(result);
+            result.OnlyFirst = true;
             return result;
         }
 

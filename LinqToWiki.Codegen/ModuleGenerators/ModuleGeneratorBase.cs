@@ -31,14 +31,16 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
         protected abstract void GenerateInternal(Module module);
 
-        protected ClassDeclarationSyntax GenerateClassForProperties(string className, IEnumerable<Property> properties)
+        protected ClassDeclarationSyntax GenerateClassForProperties(string className, IEnumerable<Property> properties, string baseType = null)
         {
             var propertiesArray = properties.ToArray();
 
             return SyntaxEx.ClassDeclaration(
-                className, propertiesArray.Select(p => GenerateProperty(p.Name, p.Type, p.Nullable)))
+                className, baseType == null ? null : SyntaxEx.ParseTypeName(baseType),
+                propertiesArray.Select(p => GenerateProperty(p.Name, p.Type, p.Nullable)))
                 .WithPrivateConstructor()
-                .WithAdditionalMembers(GenerateParseMethod(className, propertiesArray), GenerateToStringMethod(propertiesArray));
+                .WithAdditionalMembers(
+                    GenerateParseMethod(className, propertiesArray), GenerateToStringMethod(propertiesArray));
         }
 
         private MethodDeclarationSyntax GenerateParseMethod(string className, IEnumerable<Property> properties)

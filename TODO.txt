@@ -1,6 +1,4 @@
-* modules
-* submit MediaWiki modifications for review (check indentation and whitespace first)
-* revisions module
+* overlong TitlesSource
 * categoryinfo
 * TODOs in code and NotImplementedExceptions
 * proper CLI applications
@@ -13,3 +11,4 @@
 * compress requests?
 * consider using multipart/formdata when necessary
 * TitlesSource with more than `limit` pages
+* Take()?

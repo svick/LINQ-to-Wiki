@@ -301,9 +301,6 @@ namespace LinqToWiki.Codegen
                     }
                     else
                     {
-                        // TODO revisons
-                        if (module.Name == "revisions")
-                            continue;
                         if (module.Name == "stashimageinfo")
                             continue;
 

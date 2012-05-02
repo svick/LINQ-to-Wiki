@@ -86,66 +86,72 @@ namespace LinqToWiki.Expressions
                     Expression.Constant(methodName));
             }
 
-            if (declaringType.IsGenericType)
+            // ToEnumerable, ToList or FirstOrDefault
+            var toEnumerableOrToList = (declaringType.IsGenericType && declaringType.GetGenericTypeDefinition() == typeof(WikiQueryResult<,>));
+            var first = declaringType == typeof(WikiQueryFirstExtension);
+            if (toEnumerableOrToList || first)
             {
-                // ToEnumerable or ToList
-                if (declaringType.GetGenericTypeDefinition() == typeof(WikiQueryResult<,>))
-                {
-                    var propExpression = ExpressionFinder.Single<MethodCallExpression>(
-                        node.Object, e => e.Object == m_pageParameter && e.Method.DeclaringType == m_pageParameter.Type);
+                var instance = first ? node.Arguments.Single() : node.Object;
+                var propExpression = ExpressionFinder.Single<MethodCallExpression>(
+                    instance, e => e.Object == m_pageParameter && e.Method.DeclaringType == m_pageParameter.Type);
 
-                    var propName = propExpression.Method.Name;
+                var propName = propExpression.Method.Name;
 
-                    if (m_parameters.ContainsKey(propName))
-                        throw new InvalidOperationException(
-                            string.Format(
-                                "Each prop module can be use at most once in a single query, but you used the module '{0}' more than once.",
-                                propName));
+                if (m_parameters.ContainsKey(propName))
+                    throw new InvalidOperationException(
+                        string.Format(
+                            "Each prop module can be use at most once in a single query, but you used the module '{0}' more than once.",
+                            propName));
 
-                    var createQueryParametersMethod = typeof(QueryParameters).GetMethod("Create")
-                        .MakeGenericMethod(propExpression.Type.GetGenericArguments().Last());
+                var createQueryParametersMethod = typeof(QueryParameters).GetMethod("Create")
+                    .MakeGenericMethod(propExpression.Type.GetGenericArguments().Last());
 
-                    var queryObject = Activator.CreateInstance(
-                        propExpression.Type, new[] { null, createQueryParametersMethod.Invoke(null, null) });
+                var queryObject = Activator.CreateInstance(
+                    propExpression.Type, new[] { null, createQueryParametersMethod.Invoke(null, null) });
 
-                    var withQueryObject = ExpressionReplacer.Replace(
-                        node.Object, propExpression, Expression.Constant(queryObject));
+                var withQueryObject = ExpressionReplacer.Replace(
+                    instance, propExpression, Expression.Constant(queryObject));
 
-                    var processedQueryObject =
-                        Expression.Lambda<Func<IWikiQueryResult>>(withQueryObject).Compile().Invoke();
+                var processedQueryObject =
+                    Expression.Lambda<Func<IWikiQueryResult>>(withQueryObject).Compile().Invoke();
 
-                    var parameter = new PropQueryParameters(propName);
+                var parameter = new PropQueryParameters(propName);
 
-                    parameter.CopyFrom(processedQueryObject.Parameters);
+                parameter.CopyFrom(processedQueryObject.Parameters);
 
-                    m_parameters.Add(propName, parameter);
+                if (first)
+                    parameter = parameter.WithOnlyFirst();
 
-                    m_canUsePage = true;
+                m_parameters.Add(propName, parameter);
 
-                    var obj = Visit(node.Object);
+                m_canUsePage = true;
 
-                    m_canUsePage = false;
+                var obj = Visit(instance);
 
-                    if (methodName == "ToEnumerable")
-                        return obj;
+                m_canUsePage = false;
 
-                    return Expression.Call(
-                        typeof(Enumerable), methodName, new[] { obj.Type.GetGenericArguments().Single() }, obj);
-                }
-                // one of the LINQ methods
-                if (BaseTypes(declaringType).Contains(typeof(WikiQueryResult<,>)))
-                {
-                    var obj = Visit(node.Object);
+                if (methodName == "ToEnumerable")
+                    return obj;
 
-                    if (methodName != "Select")
-                        return obj;
+                if (first)
+                    methodName = "SingleOrDefault";
 
-                    var argument = ((UnaryExpression)node.Arguments.Single()).Operand;
-                    var genericArguments = argument.Type.GetGenericArguments();
+                return Expression.Call(
+                    typeof(Enumerable), methodName, new[] { obj.Type.GetGenericArguments().Single() }, obj);
+            }
+            // one of the LINQ methods
+            if (BaseTypes(declaringType).Contains(typeof(WikiQueryResult<,>)))
+            {
+                var obj = Visit(node.Object);
 
-                    return Expression.Call(
-                        typeof(Enumerable), methodName, new[] { genericArguments[0], genericArguments[1] }, obj, argument);
-                }
+                if (methodName != "Select")
+                    return obj;
+
+                var argument = ((UnaryExpression)node.Arguments.Single()).Operand;
+                var genericArguments = argument.Type.GetGenericArguments();
+
+                return Expression.Call(
+                    typeof(Enumerable), methodName, new[] { genericArguments[0], genericArguments[1] }, obj, argument);
             }
 
             return base.VisitMethodCall(node);

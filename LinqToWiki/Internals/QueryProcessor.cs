@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Xml.Linq;
 using LinqToWiki.Collections;
@@ -108,9 +109,9 @@ namespace LinqToWiki.Internals
             return new QueryPageProcessor(m_wiki);
         }
 
-        public IEnumerable<Tuple<string, string>> ProcessGeneratorParameters(QueryParameters parameters)
+        public Func<int, IEnumerable<Tuple<string, string>>> ProcessGeneratorParameters(QueryParameters parameters)
         {
-            return ProcessParameters(m_queryTypeProperties, parameters, true, true);
+            return limit => ProcessParameters(m_queryTypeProperties, parameters, true, true, limit);
         }
     }
 
@@ -147,7 +148,8 @@ namespace LinqToWiki.Internals
         }
 
         public static IEnumerable<Tuple<string, string>> ProcessParameters(
-            QueryTypeProperties queryTypeProperties, QueryParameters parameters, bool list, bool generator = false)
+            QueryTypeProperties queryTypeProperties, QueryParameters parameters,
+            bool list, bool generator = false, int limit = -1)
         {
             var parsedParameters = new TupleList<string, string>();
 
@@ -212,10 +214,12 @@ namespace LinqToWiki.Internals
                 if (!generator)
                     parsedParameters.Add(prefix + "prop", NameValueParameter.JoinValues(selectedProps));
 
-                parsedParameters.Add(prefix + "limit", "max");
+                if (limit != 0)
+                    parsedParameters.Add(
+                        prefix + "limit", limit == -1 ? "max" : limit.ToString(CultureInfo.InvariantCulture));
             }
 
-            // TODO: add paging, maxlag
+            // TODO: add maxlag
 
             return parsedParameters;
         }
