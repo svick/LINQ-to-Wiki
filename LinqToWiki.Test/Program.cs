@@ -446,7 +446,8 @@ namespace LinqToWiki.Test
 
         private static void Backlinks(Wiki wiki)
         {
-            var result = (from bl in wiki.Query.backlinks("User:Svick")
+            var result = (from bl in wiki.Query.backlinks()
+                          where bl.title == "User:Svick"
                           where bl.ns == Namespace.Project
                           select bl.title)
                 .ToEnumerable().Take(10);
@@ -491,7 +492,8 @@ namespace LinqToWiki.Test
 
         private static void EmbeddedIn(Wiki wiki)
         {
-            var result = (from ei in wiki.Query.embeddedin("Template:WikiProject cleanup listing")
+            var result = (from ei in wiki.Query.embeddedin()
+                          where ei.title == "Template:WikiProject cleanup listing"
                           where ei.filterredir == embeddedinfilterredir.nonredirects
                           select new { ei.title, ei.redirect })
                 .ToEnumerable().Take(10);
@@ -511,7 +513,8 @@ namespace LinqToWiki.Test
 
         private static void ImageUsage(Wiki wiki)
         {
-            var result = wiki.Query.imageusage("File:Indiafilm.svg")
+            var result = wiki.Query.imageusage()
+                .Where(iu => iu.title == "File:Indiafilm.svg")
                 .ToEnumerable().Take(10);
 
             Write(result);
