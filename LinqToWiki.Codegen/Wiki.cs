@@ -92,7 +92,8 @@ namespace LinqToWiki.Codegen
 
         private void CreatePageClass()
         {
-            var pageClass = SyntaxEx.ClassDeclaration(Names.Page);
+            var pageClass = SyntaxEx.ClassDeclaration(SyntaxKind.AbstractKeyword, Names.Page)
+                .WithPrivateConstructor();
 
             Files.Add(
                 Names.Page,
@@ -223,7 +224,7 @@ namespace LinqToWiki.Codegen
                 new[] { SyntaxEx.TypeParameter(typeParameterName) }, new[] { infoParameter, dataParameter },
                 createMethodBody);
 
-            var pageResultHelperClass = SyntaxEx.ClassDeclaration(true, Names.PageResult, createMethod);
+            var pageResultHelperClass = SyntaxEx.ClassDeclaration(SyntaxKind.StaticKeyword, Names.PageResult, createMethod);
 
             Files.Add(
                 Names.PageResult,
@@ -297,7 +298,7 @@ namespace LinqToWiki.Codegen
                     }
                     else if (module.PropertyGroups.Any(g => g.Name == null))
                     {
-                        // TODO
+                        AddSinglePropModule(module);
                     }
                     else
                     {
@@ -336,6 +337,11 @@ namespace LinqToWiki.Codegen
         private void AddPropModule(Module module)
         {
             new PropModuleGenerator(this).Generate(module);
+        }
+
+        private void AddSinglePropModule(Module module)
+        {
+            new SinglePropModuleGenerator(this).Generate(module);
         }
 
         private void AddInfoModule(Module module)

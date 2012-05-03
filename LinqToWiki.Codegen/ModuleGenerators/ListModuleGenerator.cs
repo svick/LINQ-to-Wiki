@@ -141,9 +141,11 @@ namespace LinqToWiki.Codegen.ModuleGenerators
                 new TupleList<string, string> { { module.QueryType.ToString().ToLowerInvariant(), module.Name } });
         }
 
-        protected override void GenerateMethodBody(ExpressionSyntax queryProcessor, ExpressionSyntax queryParameters, IList<StatementSyntax> statements)
+        protected override IList<StatementSyntax> GenerateMethodBody(
+            ExpressionSyntax queryProcessor, ExpressionSyntax queryParameters, IList<StatementSyntax> statements)
         {
             statements.Add(SyntaxEx.Return(SyntaxEx.ObjectCreation(m_queryType, queryProcessor, queryParameters)));
+            return statements;
         }
 
         protected override TypeSyntax GenerateMethodResultType()

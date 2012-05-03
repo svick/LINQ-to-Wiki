@@ -49,6 +49,7 @@
     <Compile Include="ModuleGenerators\ModuleGeneratorBase.cs" />
     <Compile Include="ModuleGenerators\ModuleGeneratorRoslynExtensions.cs" />
     <Compile Include="ModuleGenerators\PropModuleGenerator.cs" />
+    <Compile Include="ModuleGenerators\SinglePropModuleGenerator.cs" />
     <Compile Include="ModuleInfo\EnumParameterType.cs" />
     <Compile Include="ModuleInfo\Parameter.cs" />
     <Compile Include="ModuleInfo\ParameterType.cs" />

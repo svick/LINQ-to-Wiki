@@ -7,7 +7,7 @@ using Roslyn.Compilers.CSharp;
 
 namespace LinqToWiki.Codegen.ModuleGenerators
 {
-    class InfoModuleGenerator : ModuleGenerator
+    class InfoModuleGenerator : SinglePropModuleGenerator
     {
         public InfoModuleGenerator(Wiki wiki)
             : base(wiki)
@@ -37,32 +37,6 @@ namespace LinqToWiki.Codegen.ModuleGenerators
         protected override ClassDeclarationSyntax GenerateResultClass(IEnumerable<PropertyGroup> propertyGroups)
         {
             return GenerateClassForProperties(ResultClassName, propertyGroups.SelectMany(g => g.Properties));
-        }
-
-        protected override void GenerateMethod(Module module)
-        {
-            var propsField = CreatePropsField(GetPropertyGroups(module));
-
-            var propertiesField = CreatePropertiesField(module, ResultClassName, propsField, null);
-
-            var moduleProperty = CreateThrowingProperty(module);
-
-            AddMembersToClass(Wiki.Names.Page, propsField, propertiesField, moduleProperty);
-        }
-
-        protected override IEnumerable<Tuple<string, string>> GetBaseParameters(Module module)
-        {
-            return new TupleList<string, string>();
-        }
-
-        private PropertyDeclarationSyntax CreateThrowingProperty(Module module)
-        {
-            var summary = SyntaxEx.DocumentationSummary(module.Description);
-
-            return SyntaxEx.PropertyDeclaration(
-                new[] { SyntaxKind.PublicKeyword }, GenerateMethodResultType(), ClassNameBase,
-                new StatementSyntax[] { SyntaxEx.Throw(SyntaxEx.ObjectCreation("NotSupportedException")) })
-                .WithLeadingTrivia(Syntax.Trivia(SyntaxEx.DocumentationComment(summary)));
         }
     }
 }

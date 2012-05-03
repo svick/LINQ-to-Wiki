@@ -63,8 +63,22 @@ namespace LinqToWiki.Expressions
 
         protected override Expression VisitMember(MemberExpression node)
         {
-            if (node.Expression == m_pageParameter && node.Member.Name == "info")
-                return m_pageDataGetInfoCall;
+            if (node.Expression == m_pageParameter)
+            {
+                var memberName = node.Member.Name;
+                if (memberName == "info")
+                    return m_pageDataGetInfoCall;
+
+                if (!m_parameters.ContainsKey(memberName))
+                    m_parameters.Add(memberName, new PropQueryParameters(memberName));
+
+                return Expression.Call(
+                    typeof(Enumerable), "SingleOrDefault", new[] { node.Type },
+                    Expression.Call(
+                        m_pageDataParameter,
+                        PageDataGetDataMethod.MakeGenericMethod(node.Type),
+                        Expression.Constant(memberName)));
+            }
 
             return base.VisitMember(node);
         }

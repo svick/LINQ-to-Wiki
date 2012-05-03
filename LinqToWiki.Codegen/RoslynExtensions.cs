@@ -148,15 +148,15 @@ namespace LinqToWiki.Codegen
         }
 
         public static ClassDeclarationSyntax ClassDeclaration(
-            bool isStatic, string className, params MemberDeclarationSyntax[] members)
+            SyntaxKind classType, string className, params MemberDeclarationSyntax[] members)
         {
-            return ClassDeclaration(isStatic, className, (IEnumerable<MemberDeclarationSyntax>)members);
+            return ClassDeclaration(classType, className, (IEnumerable<MemberDeclarationSyntax>)members);
         }
 
         public static ClassDeclarationSyntax ClassDeclaration(
-            bool isStatic, string className, IEnumerable<MemberDeclarationSyntax> members)
+            SyntaxKind classType, string className, IEnumerable<MemberDeclarationSyntax> members)
         {
-            return ClassDeclaration(isStatic, className, null, members);
+            return ClassDeclaration(classType, className, null, members);
         }
 
         public static ClassDeclarationSyntax ClassDeclaration(string className, IEnumerable<MemberDeclarationSyntax> members)
@@ -165,9 +165,9 @@ namespace LinqToWiki.Codegen
         }
 
         private static ClassDeclarationSyntax ClassDeclaration(
-            bool isStatic, string className, TypeSyntax baseType, IEnumerable<MemberDeclarationSyntax> members)
+            SyntaxKind classType, string className, TypeSyntax baseType, IEnumerable<MemberDeclarationSyntax> members)
         {
-            return ClassDeclaration(isStatic, className, null, baseType, members);
+            return ClassDeclaration(classType, className, null, baseType, members);
         }
 
         public static ClassDeclarationSyntax ClassDeclaration(
@@ -180,11 +180,11 @@ namespace LinqToWiki.Codegen
             string className, IEnumerable<TypeParameterSyntax> typeParameters, TypeSyntax baseType,
             IEnumerable<MemberDeclarationSyntax> members)
         {
-            return ClassDeclaration(false, className, typeParameters, baseType, members);
+            return ClassDeclaration(SyntaxKind.SealedKeyword, className, typeParameters, baseType, members);
         }
 
         public static ClassDeclarationSyntax ClassDeclaration(
-            bool isStatic, string className, IEnumerable<TypeParameterSyntax> typeParameters, TypeSyntax baseType,
+            SyntaxKind classType, string className, IEnumerable<TypeParameterSyntax> typeParameters, TypeSyntax baseType,
             IEnumerable<MemberDeclarationSyntax> members)
         {
             var typeParameterListSyntax = typeParameters == null
@@ -192,9 +192,7 @@ namespace LinqToWiki.Codegen
                                               : Syntax.TypeParameterList(parameters: typeParameters.ToSeparatedList());
             var baseTypeSyntax = baseType == null ? null : Syntax.BaseList(types: new[] { baseType }.ToSeparatedList());
 
-            var modifiers = isStatic
-                                ? new[] { SyntaxKind.PublicKeyword, SyntaxKind.StaticKeyword }
-                                : new[] { SyntaxKind.PublicKeyword, SyntaxKind.SealedKeyword };
+            var modifiers = new[] { SyntaxKind.PublicKeyword, classType };
 
             return Syntax.ClassDeclaration(
                 modifiers: TokenList(modifiers),
@@ -353,21 +351,26 @@ namespace LinqToWiki.Codegen
 
         public static PropertyDeclarationSyntax AutoPropertyDeclaration(
             IEnumerable<SyntaxKind> modifiers, TypeSyntax type, string propertyName,
-            SyntaxKind? setModifier = null, SyntaxKind? getModifier = null)
+            SyntaxKind? setModifier = null, SyntaxKind? getModifier = null, bool isAbstarct = false)
         {
+            var accesors = new List<AccessorDeclarationSyntax>();
+            if (!(isAbstarct && getModifier == SyntaxKind.PrivateKeyword))
+                accesors.Add(
+                    Syntax.AccessorDeclaration(
+                        SyntaxKind.GetAccessorDeclaration,
+                        modifiers: TokenList(getModifier),
+                        semicolonTokenOpt: Syntax.Token(SyntaxKind.SemicolonToken)));
+            if (!(isAbstarct && setModifier == SyntaxKind.PrivateKeyword))
+                accesors.Add(
+                    Syntax.AccessorDeclaration(
+                        SyntaxKind.SetAccessorDeclaration,
+                        modifiers: TokenList(setModifier),
+                        semicolonTokenOpt: Syntax.Token(SyntaxKind.SemicolonToken)));
+
             return Syntax.PropertyDeclaration(
                 modifiers: TokenList(modifiers), type: type,
                 identifier: Syntax.Identifier(propertyName),
-                accessorList: Syntax.AccessorList(
-                    accessors: Syntax.List(
-                        Syntax.AccessorDeclaration(
-                            SyntaxKind.GetAccessorDeclaration,
-                            modifiers: TokenList(getModifier),
-                            semicolonTokenOpt: Syntax.Token(SyntaxKind.SemicolonToken)),
-                        Syntax.AccessorDeclaration(
-                            SyntaxKind.SetAccessorDeclaration,
-                            modifiers: TokenList(setModifier),
-                            semicolonTokenOpt: Syntax.Token(SyntaxKind.SemicolonToken)))));
+                accessorList: Syntax.AccessorList(accessors: accesors.ToSyntaxList()));
         }
 
         public static PropertyDeclarationSyntax PropertyDeclaration(
@@ -441,6 +444,8 @@ namespace LinqToWiki.Codegen
             var typeParameterListSyntax = typeParameters == null
                                               ? null
                                               : Syntax.TypeParameterList(parameters: typeParameters.ToSeparatedList());
+            var statmentsSyntax = statements == null ? null : Syntax.Block(statements: statements.ToSyntaxList());
+            var semicolonToken = statements == null ? Syntax.Token(SyntaxKind.SemicolonToken) : default(SyntaxToken);
 
             return Syntax.MethodDeclaration(
                 modifiers: TokenList(modifiers),
@@ -448,7 +453,8 @@ namespace LinqToWiki.Codegen
                 identifier: Syntax.Identifier(methodName),
                 typeParameterListOpt: typeParameterListSyntax,
                 parameterList: Syntax.ParameterList(parameters: parameters.ToSeparatedList()),
-                bodyOpt: Syntax.Block(statements: statements.ToSyntaxList()));
+                bodyOpt: statmentsSyntax,
+                semicolonTokenOpt:semicolonToken);
         }
 
         public static ObjectCreationExpressionSyntax ObjectCreation(

@@ -55,7 +55,6 @@ namespace LinqToWiki.Internals
 
                 if (queryElement != null)
                 {
-
                     var partPageData = queryElement.Element("pages").Elements("page")
                         .Select(e => new PageData(m_wiki, e, pageProperties, pagingManager)).ToArray();
 

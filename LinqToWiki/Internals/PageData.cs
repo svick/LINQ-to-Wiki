@@ -45,7 +45,10 @@ namespace LinqToWiki.Internals
 
                 var dataList = GetOrCreateDataList(name);
 
-                dataList.AddRange(dataElement.Elements().Select(e => parser(e, m_wiki)));
+                if (dataElement.HasAttributes)
+                    dataList.Add(parser(dataElement, m_wiki));
+                else
+                    dataList.AddRange(dataElement.Elements().Select(e => parser(e, m_wiki)));
             }
         }
 

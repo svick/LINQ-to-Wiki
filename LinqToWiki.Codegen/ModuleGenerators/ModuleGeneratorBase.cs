@@ -165,7 +165,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             documentationElements.Add(summary);
 
             var parameters = new List<ParameterSyntax>();
-            var statements = new List<StatementSyntax>();
+            IList<StatementSyntax> statements = new List<StatementSyntax>();
 
             statements.Add(queryParametersLocal);
 
@@ -208,14 +208,18 @@ namespace LinqToWiki.Codegen.ModuleGenerators
                 documentationElements.Add(parameterDocumentation);
             }
 
-            GenerateMethodBody(
+            statements = GenerateMethodBody(
                 SyntaxEx.ObjectCreation(
                     SyntaxEx.GenericName("QueryProcessor", resultClassName),
                     Syntax.IdentifierName("m_wiki"),
                     (NamedNode)propertiesField), (NamedNode)queryParametersLocal, statements);
 
+            var modifiers = new List<SyntaxKind> { SyntaxKind.PublicKeyword };
+            if (statements == null)
+                modifiers.Add(SyntaxKind.AbstractKeyword);
+
             var method = SyntaxEx.MethodDeclaration(
-                new[] { SyntaxKind.PublicKeyword }, GenerateMethodResultType(), ClassNameBase, parameters, statements)
+                modifiers, GenerateMethodResultType(), ClassNameBase, parameters, statements)
                 .WithLeadingTrivia(Syntax.Trivia(SyntaxEx.DocumentationComment(documentationElements)));
 
             AddMembersToClass(fileName, propertiesField, method);
@@ -249,8 +253,8 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
         protected abstract IEnumerable<Tuple<string, string>> GetBaseParameters(Module module);
 
-        protected abstract void GenerateMethodBody(
-            ExpressionSyntax queryProcessor, ExpressionSyntax queryParameters, IList<StatementSyntax> statements);
+        protected abstract IList<StatementSyntax> GenerateMethodBody(
+            ExpressionSyntax queryProcessor, ExpressionSyntax queryParameters, IList<StatementSyntax> commonStatements);
 
         protected abstract TypeSyntax GenerateMethodResultType();
 

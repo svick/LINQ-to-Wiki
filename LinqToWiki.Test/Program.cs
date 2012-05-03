@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            AllPages(wiki);
+            CategoryInfo(CategoryMembersSource(wiki));
         }
 
         private static void BigTitlesSource(Wiki wiki)
@@ -244,7 +244,7 @@ namespace LinqToWiki.Test
         {
             return (from cm in wiki.Query.categorymembers()
                     where cm.title == "Category:Query languages"
-                          && cm.type == categorymemberstype.page
+                          && cm.type == categorymemberstype.subcat
                     select cm).Pages;
         }
 
@@ -288,6 +288,14 @@ namespace LinqToWiki.Test
                 foreach (var item in page.categories.Take(10))
                     Console.WriteLine("  " + item);
             }
+        }
+
+        private static void CategoryInfo(PagesSource<Page> pages)
+        {
+            var source = pages.Select(p => new { p.info.title, p.categoryinfo.pages, p.categoryinfo.hidden })
+                .ToEnumerable();
+
+            Write(source);
         }
 
         private static void DuplicateFiles(PagesSource<Page> pages)

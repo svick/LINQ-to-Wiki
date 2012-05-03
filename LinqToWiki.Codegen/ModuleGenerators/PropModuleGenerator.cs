@@ -22,10 +22,10 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             return new TupleList<string, string>();
         }
 
-        protected override void GenerateMethodBody(ExpressionSyntax queryProcessor, ExpressionSyntax queryParameters, IList<StatementSyntax> statements)
+        protected override IList<StatementSyntax> GenerateMethodBody(
+            ExpressionSyntax queryProcessor, ExpressionSyntax queryParameters, IList<StatementSyntax> statements)
         {
-            statements.Clear();
-            statements.Add(SyntaxEx.Throw(SyntaxEx.ObjectCreation("NotSupportedException")));
+            return null;
         }
     }
 }
