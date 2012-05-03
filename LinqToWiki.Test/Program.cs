@@ -16,7 +16,7 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            BigTitlesSource(wiki);
+            AllPages(wiki);
         }
 
         private static void BigTitlesSource(Wiki wiki)
@@ -454,6 +454,7 @@ namespace LinqToWiki.Test
         private static void AllPages(Wiki wiki)
         {
             var result = (from page in wiki.Query.allpages()
+                          where page.@from == "S"
                           where page.prtype == allpagesprtype.edit
                           where page.prlevel == allpagesprlevel.none
                           select page.title)

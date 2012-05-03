@@ -1,4 +1,3 @@
-* look at paging in allpages
 * categoryinfo
 * TODOs in code and NotImplementedExceptions
 * proper CLI applications
