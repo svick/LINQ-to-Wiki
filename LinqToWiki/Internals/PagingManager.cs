@@ -52,7 +52,8 @@ namespace LinqToWiki.Internals
 
             var queryContinues = QueryProcessor.GetQueryContinues(downloaded);
 
-            queryContinues.Remove(m_generator);
+            if (m_generator != null)
+                queryContinues.Remove(m_generator);
 
             var pageElements = downloaded.Element("query").Element("pages").Elements("page");
 

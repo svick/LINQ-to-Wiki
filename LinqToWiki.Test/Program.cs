@@ -168,15 +168,15 @@ namespace LinqToWiki.Test
         private static void Rollback(Wiki wiki)
         {
             var title = "Test";
-            var token =
+            var tokens =
                 wiki.CreateTitlesSource(title).Select(
                     p =>
                     p.revisions()
                         .Where(r => r.token == revisionstoken.rollback)
                         .Select(r => r.rollbacktoken).
                         ToEnumerable())
-                    .ToEnumerable().Single().ToArray();
-            var result = wiki.rollback(title, "127.0.0.1", token.First());
+                    .ToEnumerable().Single();
+            var result = wiki.rollback(title, "127.0.0.1", tokens.First());
             Console.WriteLine(result);
         }
 
