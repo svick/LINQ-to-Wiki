@@ -8,7 +8,6 @@ using LinqToWiki.Codegen.ModuleGenerators;
 using LinqToWiki.Codegen.ModuleInfo;
 using LinqToWiki.Collections;
 using LinqToWiki.Internals;
-using LinqToWiki.Parameters;
 using Microsoft.CSharp;
 using Roslyn.Compilers.CSharp;
 
@@ -16,8 +15,6 @@ namespace LinqToWiki.Codegen
 {
     public class Wiki
     {
-        // TODO: split processing parameters
-
         internal static class Names
         {
             public const string Wiki = "Wiki";
@@ -28,12 +25,9 @@ namespace LinqToWiki.Codegen
             public const string PageResult = "PageResult";
         }
 
-        private readonly QueryProcessor<ParamInfo> m_processor;
-
         private const string Extension = ".cs";
 
-        private string[] m_moduleNames;
-        private string[] m_queryModuleNames;
+        private readonly ModulesSource m_modulesSource;
 
         private int m_modulesFinished;
 
@@ -55,13 +49,7 @@ namespace LinqToWiki.Codegen
             Namespace = ns ?? "LinqToWiki";
             EntitiesNamespace = Namespace + ".Entities";
 
-            m_processor = new QueryProcessor<ParamInfo>(
-                new WikiInfo(baseUri, apiPath),
-                new QueryTypeProperties<ParamInfo>(
-                    "paraminfo", "", null, null,
-                    new TupleList<string, string> { { "action", "paraminfo" } },
-                    null,
-                    ParamInfo.Parse));
+            m_modulesSource = new ModulesSource(new WikiInfo(baseUri, apiPath));
 
             CreatePageClass();
             CreateWikiClass();
@@ -233,46 +221,6 @@ namespace LinqToWiki.Codegen
                     "System.Collections.Generic", EntitiesNamespace));
         }
 
-        private void RetrieveModuleNames()
-        {
-            var module = m_processor
-                .ExecuteSingle(QueryParameters.Create<ParamInfo>().AddSingleValue("modules", "paraminfo"))
-                .Modules.Single();
-
-            m_moduleNames = ((EnumParameterType)module.Parameters.Single(p => p.Name == "modules").Type).Values.ToArray();
-            m_queryModuleNames = ((EnumParameterType)module.Parameters.Single(p => p.Name == "querymodules").Type).Values.ToArray();
-        }
-
-        public IEnumerable<string> GetAllQueryModuleNames()
-        {
-            if (m_queryModuleNames == null)
-                RetrieveModuleNames();
-
-            return m_queryModuleNames;
-        }
-
-        public IEnumerable<string> GetAllModuleNames()
-        {
-            if (m_moduleNames == null)
-                RetrieveModuleNames();
-
-            return m_moduleNames;
-        }
-
-        public IEnumerable<Module> GetQueryModules(IEnumerable<string> moduleNames)
-        {
-            return m_processor
-                .ExecuteSingle(QueryParameters.Create<ParamInfo>().AddMultipleValues("querymodules", moduleNames))
-                .QueryModules;
-        }
-
-        public IEnumerable<Module> GetModules(IEnumerable<string> moduleNames)
-        {
-            return m_processor
-                .ExecuteSingle(QueryParameters.Create<ParamInfo>().AddMultipleValues("modules", moduleNames))
-                .Modules;
-        }
-
         public void AddQueryModule(string moduleName)
         {
             AddQueryModules(new[] { moduleName });
@@ -280,7 +228,7 @@ namespace LinqToWiki.Codegen
 
         public void AddQueryModules(IEnumerable<string> moduleNames)
         {
-            var modules = GetQueryModules(moduleNames);
+            var modules = m_modulesSource.GetQueryModules(moduleNames);
 
             foreach (var module in modules)
             {
@@ -313,20 +261,18 @@ namespace LinqToWiki.Codegen
 
         public void AddModules(IEnumerable<string> moduleNames)
         {
-            var modules = GetModules(moduleNames);
-
-            foreach (var module in modules)
+            foreach (var module in m_modulesSource.GetModules(moduleNames))
                 AddModule(module);
         }
 
         public void AddAllQueryModules()
         {
-            AddQueryModules(GetAllQueryModuleNames());
+            AddQueryModules(m_modulesSource.GetAllQueryModuleNames());
         }
 
         public void AddAllModules()
         {
-            AddModules(GetAllModuleNames());
+            AddModules(m_modulesSource.GetAllModuleNames());
         }
 
         private void AddListModule(Module module)
