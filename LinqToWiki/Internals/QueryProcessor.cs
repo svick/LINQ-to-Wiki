@@ -130,18 +130,35 @@ namespace LinqToWiki.Internals
             if (queryContinues != null)
                 processedParameters = processedParameters.Concat(queryContinues.Where(x => x != null));
 
-            var downloaded = wiki.Downloader.Download(processedParameters);
+            int i = 1;
 
-            var root = downloaded.Root;
+            while (true)
+            {
+                var downloaded = wiki.Downloader.Download(processedParameters);
 
-            var error = root.Element("error");
-            if (error != null)
-                throw ParseError(error);
+                var root = downloaded.Root;
 
-            return root;
+                var error = root.Element("error");
+                if (error != null)
+                {
+                    var exception = ParseError(error);
+                    if (exception.Code == "maxlag")
+                    {
+                        if (Downloader.LogDownloading)
+                            Console.WriteLine(exception.Message);
+                        var waitTime = TimeSpan.FromSeconds(Math.Pow(2, i) * 5);
+                        System.Threading.Thread.Sleep(waitTime);
+                        continue;
+                    }
+
+                    throw exception;
+                }
+
+                return root;
+            }
         }
 
-        private static Exception ParseError(XElement error)
+        private static ApiErrorException ParseError(XElement error)
         {
             return new ApiErrorException((string)error.Attribute("code"), (string)error.Attribute("info"));
         }
@@ -217,8 +234,6 @@ namespace LinqToWiki.Internals
                     parsedParameters.Add(
                         prefix + "limit", limit == -1 ? "max" : limit.ToString(CultureInfo.InvariantCulture));
             }
-
-            // TODO: add maxlag
 
             return parsedParameters;
         }

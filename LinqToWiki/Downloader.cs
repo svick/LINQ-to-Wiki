@@ -17,9 +17,12 @@ namespace LinqToWiki
         {
             ServicePointManager.Expect100Continue = false;
             UserAgent = "Linq to Wiki by [[w:en:User:Svick]]";
+            UseMaxlag = true;
         }
 
         public static string UserAgent { get; set; }
+
+        public static bool UseMaxlag { get; set; }
 
         public static bool LogDownloading { get; set; }
 
@@ -40,6 +43,9 @@ namespace LinqToWiki
                 LogRequest(parameters);
 
             parameters = new[] { Tuple.Create("format", "xml") }.Concat(parameters);
+
+            if (UseMaxlag)
+                parameters = parameters.Concat(new[] { Tuple.Create("maxlag", "5") });
 
             var request = CreateRequest();
 

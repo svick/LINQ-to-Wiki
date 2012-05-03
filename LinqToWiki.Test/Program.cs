@@ -10,7 +10,7 @@ namespace LinqToWiki.Test
         {
             Downloader.LogDownloading = true;
 
-            /*/
+            /**/
             var wiki = new Wiki();
             /*/
             var wiki = new Wiki("localhost/wiki/", "api.php");
