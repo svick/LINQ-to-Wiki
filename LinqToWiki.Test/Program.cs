@@ -10,13 +10,13 @@ namespace LinqToWiki.Test
         {
             Downloader.LogDownloading = true;
 
-            /**/
+            /*/
             var wiki = new Wiki();
             /*/
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            CategoryInfo(CategoryMembersSource(wiki));
+            Rollback(wiki);
         }
 
         private static void BigTitlesSource(Wiki wiki)
@@ -167,8 +167,16 @@ namespace LinqToWiki.Test
 
         private static void Rollback(Wiki wiki)
         {
-            // TODO: requires prop=revisions for token
-            var result = wiki.rollback("Test", "127.0.0.1");
+            var title = "Test";
+            var token =
+                wiki.CreateTitlesSource(title).Select(
+                    p =>
+                    p.revisions()
+                        .Where(r => r.token == revisionstoken.rollback)
+                        .Select(r => r.rollbacktoken).
+                        ToEnumerable())
+                    .ToEnumerable().Single().ToArray();
+            var result = wiki.rollback(title, "127.0.0.1", token.First());
             Console.WriteLine(result);
         }
 
