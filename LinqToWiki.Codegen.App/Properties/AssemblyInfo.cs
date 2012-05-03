@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("LinqToWiki.Codegen.Test")]
+[assembly: AssemblyTitle("LinqToWiki.Codegen.App")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("LinqToWiki.Codegen.Test")]
+[assembly: AssemblyProduct("LinqToWiki.Codegen.App")]
 [assembly: AssemblyCopyright("Copyright ©  2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("93276d6d-c02d-49b2-a766-a9543ea949d8")]
+[assembly: Guid("07210995-3647-4020-b76d-ef5b31312359")]
 
 // Version information for an assembly consists of the following four values:
 //

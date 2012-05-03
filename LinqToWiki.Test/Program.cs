@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using LinqToWiki.Generated;
 
 namespace LinqToWiki.Test
 {
@@ -11,7 +12,7 @@ namespace LinqToWiki.Test
             Downloader.LogDownloading = true;
 
             /**/
-            var wiki = new Wiki();
+            var wiki = new Wiki("en.wikipedia.org", "/w/api.php");
             /*/
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");

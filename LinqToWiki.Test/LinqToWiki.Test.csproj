@@ -34,8 +34,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="generated">
-      <HintPath>..\LinqToWiki.Codegen.Test\bin\Debug\generated.dll</HintPath>
+    <Reference Include="LinqToWiki.Generated">
+      <HintPath>..\LinqToWiki.Codegen.App\bin\Debug\LinqToWiki.Generated.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

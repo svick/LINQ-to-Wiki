@@ -301,6 +301,11 @@ namespace LinqToWiki.Codegen
                     Syntax.BinaryExpression(SyntaxKind.AssignExpression, left: left, right: right));
         }
 
+        public static ExpressionSyntax Coalesce(ExpressionSyntax left, ExpressionSyntax right)
+        {
+            return Syntax.BinaryExpression(SyntaxKind.CoalesceExpression, left, right: right);
+        }
+
         public static LiteralExpressionSyntax Literal(string value)
         {
             // TODO: escaping

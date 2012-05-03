@@ -51,6 +51,7 @@
     <Compile Include="ModuleGenerators\PropModuleGenerator.cs" />
     <Compile Include="ModuleGenerators\SinglePropModuleGenerator.cs" />
     <Compile Include="ModuleInfo\EnumParameterType.cs" />
+    <Compile Include="ModuleInfo\ModulesSource.cs" />
     <Compile Include="ModuleInfo\Parameter.cs" />
     <Compile Include="ModuleInfo\ParameterType.cs" />
     <Compile Include="ModuleInfo\Module.cs" />

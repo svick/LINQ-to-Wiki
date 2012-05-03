@@ -7,9 +7,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqToWiki.Test", "LinqToWi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqToWiki.Codegen", "LinqToWiki.Codegen\LinqToWiki.Codegen.csproj", "{F6F46A9F-5C64-4C8B-9ABD-284AA3E6DFED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqToWiki.Codegen.Test", "LinqToWiki.Codegen.Test\LinqToWiki.Codegen.Test.csproj", "{E1F995D2-9241-4D25-8FBE-F395A0E3A273}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqToWiki.ManuallyGenerated", "LinqToWiki.ManuallyGenerated\LinqToWiki.ManuallyGenerated.csproj", "{38EBE92B-FEFA-4722-80EB-8A4C3B55C085}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqToWiki.Codegen.App", "LinqToWiki.Codegen.App\LinqToWiki.Codegen.App.csproj", "{7AC22330-5AF7-4DAC-9DA6-247DE5046CA6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,16 +51,6 @@ Global
 		{F6F46A9F-5C64-4C8B-9ABD-284AA3E6DFED}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{F6F46A9F-5C64-4C8B-9ABD-284AA3E6DFED}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{F6F46A9F-5C64-4C8B-9ABD-284AA3E6DFED}.Release|x86.ActiveCfg = Release|Any CPU
-		{E1F995D2-9241-4D25-8FBE-F395A0E3A273}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{E1F995D2-9241-4D25-8FBE-F395A0E3A273}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{E1F995D2-9241-4D25-8FBE-F395A0E3A273}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{E1F995D2-9241-4D25-8FBE-F395A0E3A273}.Debug|x86.ActiveCfg = Debug|x86
-		{E1F995D2-9241-4D25-8FBE-F395A0E3A273}.Debug|x86.Build.0 = Debug|x86
-		{E1F995D2-9241-4D25-8FBE-F395A0E3A273}.Release|Any CPU.ActiveCfg = Release|x86
-		{E1F995D2-9241-4D25-8FBE-F395A0E3A273}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{E1F995D2-9241-4D25-8FBE-F395A0E3A273}.Release|Mixed Platforms.Build.0 = Release|x86
-		{E1F995D2-9241-4D25-8FBE-F395A0E3A273}.Release|x86.ActiveCfg = Release|x86
-		{E1F995D2-9241-4D25-8FBE-F395A0E3A273}.Release|x86.Build.0 = Release|x86
 		{38EBE92B-FEFA-4722-80EB-8A4C3B55C085}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{38EBE92B-FEFA-4722-80EB-8A4C3B55C085}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38EBE92B-FEFA-4722-80EB-8A4C3B55C085}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -71,6 +61,16 @@ Global
 		{38EBE92B-FEFA-4722-80EB-8A4C3B55C085}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{38EBE92B-FEFA-4722-80EB-8A4C3B55C085}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{38EBE92B-FEFA-4722-80EB-8A4C3B55C085}.Release|x86.ActiveCfg = Release|Any CPU
+		{7AC22330-5AF7-4DAC-9DA6-247DE5046CA6}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{7AC22330-5AF7-4DAC-9DA6-247DE5046CA6}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{7AC22330-5AF7-4DAC-9DA6-247DE5046CA6}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{7AC22330-5AF7-4DAC-9DA6-247DE5046CA6}.Debug|x86.ActiveCfg = Debug|x86
+		{7AC22330-5AF7-4DAC-9DA6-247DE5046CA6}.Debug|x86.Build.0 = Debug|x86
+		{7AC22330-5AF7-4DAC-9DA6-247DE5046CA6}.Release|Any CPU.ActiveCfg = Release|x86
+		{7AC22330-5AF7-4DAC-9DA6-247DE5046CA6}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{7AC22330-5AF7-4DAC-9DA6-247DE5046CA6}.Release|Mixed Platforms.Build.0 = Release|x86
+		{7AC22330-5AF7-4DAC-9DA6-247DE5046CA6}.Release|x86.ActiveCfg = Release|x86
+		{7AC22330-5AF7-4DAC-9DA6-247DE5046CA6}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

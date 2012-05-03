@@ -46,13 +46,13 @@ namespace LinqToWiki.Codegen
             Files = new TupleList<string, CompilationUnitSyntax>();
             TypeManager = new TypeManager(this);
 
-            Namespace = ns ?? "LinqToWiki";
+            Namespace = ns ?? "LinqToWiki.Generated";
             EntitiesNamespace = Namespace + ".Entities";
 
             m_modulesSource = new ModulesSource(new WikiInfo(baseUri, apiPath));
 
             CreatePageClass();
-            CreateWikiClass();
+            CreateWikiClass(baseUri, apiPath);
             CreateQueryActionClass();
             CreateEnumsFile();
         }
@@ -91,7 +91,7 @@ namespace LinqToWiki.Codegen
                     "LinqToWiki.Internals", EntitiesNamespace));
         }
 
-        private void CreateWikiClass()
+        private void CreateWikiClass(string baseUri, string apiPath)
         {
             var wikiField = SyntaxEx.FieldDeclaration(
                 new[] { SyntaxKind.PrivateKeyword, SyntaxKind.ReadOnlyKeyword }, Names.WikiInfo, "m_wiki");
@@ -104,7 +104,10 @@ namespace LinqToWiki.Codegen
 
             var wikiAssignment = SyntaxEx.Assignment(
                 wikiField,
-                SyntaxEx.ObjectCreation(Names.WikiInfo, (NamedNode)baseUriParameter, (NamedNode)apiPathParameter));
+                SyntaxEx.ObjectCreation(
+                    Names.WikiInfo,
+                    SyntaxEx.Coalesce((NamedNode)baseUriParameter, SyntaxEx.Literal(baseUri)),
+                    SyntaxEx.Coalesce((NamedNode)apiPathParameter, SyntaxEx.Literal(apiPath))));
 
             var queryAssignment = SyntaxEx.Assignment(
                 queryProperty, SyntaxEx.ObjectCreation(Names.QueryAction, (NamedNode)wikiField));

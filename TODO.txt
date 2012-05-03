@@ -1,12 +1,12 @@
-* proper CLI applications
 * methods from LinqToWiki.Test to LinqToWiki.Samples
 * props from file
 * XML documentation
+* compress requests?
+* GUI application
+* write thesis
 * optionally turn off getting namespaces every time (or maybe cache them?)
 * figure out what to do with tokens
 * figure out what to do with warnings (maybe WarningsAsExceptions switch)
-* compress requests?
 * consider using multipart/formdata when necessary
-* TitlesSource with more than `limit` pages
 * Take()?
 * all configuration in one place
