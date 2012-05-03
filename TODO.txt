@@ -1,4 +1,4 @@
-* overlong TitlesSource
+* look at paging in allpages
 * categoryinfo
 * TODOs in code and NotImplementedExceptions
 * proper CLI applications
@@ -12,3 +12,4 @@
 * consider using multipart/formdata when necessary
 * TitlesSource with more than `limit` pages
 * Take()?
+* all configuration in one place

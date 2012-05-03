@@ -16,7 +16,24 @@ namespace LinqToWiki.Test
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            Revisions(TitlePages(wiki));
+            BigTitlesSource(wiki);
+        }
+
+        private static void BigTitlesSource(Wiki wiki)
+        {
+            var pageTitles = wiki.Query.allpages()
+                .Where(p => p.filterredir == allpagesfilterredir.nonredirects)
+                .Select(p => p.title)
+                .ToEnumerable();
+            var pagesSource = wiki.CreateTitlesSource(pageTitles);
+
+            var lotsOfCategories = pagesSource
+                .Select(p => new { p.info.title, categories = p.categories().Select(c => 1).ToEnumerable().Count() })
+                .ToEnumerable()
+                .Where(p => p.categories >= 20)
+                .Take(5);
+
+            Write(lotsOfCategories);
         }
 
         private static void Revisions(PagesSource<Page> pages)

@@ -53,18 +53,19 @@ namespace LinqToWiki.Internals
 
                 var queryElement = downloaded.Element("query");
 
-                if (queryElement == null)
-                    yield return default(TResult);
+                if (queryElement != null)
+                {
 
-                var partPageData = queryElement.Element("pages").Elements("page")
-                    .Select(e => new PageData(m_wiki, e, pageProperties, pagingManager)).ToArray();
+                    var partPageData = queryElement.Element("pages").Elements("page")
+                        .Select(e => new PageData(m_wiki, e, pageProperties, pagingManager)).ToArray();
 
-                pagingManager.SetPages(partPageData);
+                    pagingManager.SetPages(partPageData);
 
-                var part = partPageData.Select(selector);
+                    var part = partPageData.Select(selector);
 
-                foreach (var item in part)
-                    yield return item;
+                    foreach (var item in part)
+                        yield return item;
+                }
 
                 primaryQueryContinue = newPrimaryQueryContinue;
             } while (pagesCollection.HasMorePages(primaryQueryContinue));
