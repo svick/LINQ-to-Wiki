@@ -76,9 +76,8 @@ namespace LinqToWiki.Internals
             switch (m_queryTypeProperties.QueryType)
             {
             case QueryType.List:
-                throw new InvalidOperationException();
             case QueryType.Prop:
-                throw new NotImplementedException();
+                throw new InvalidOperationException();
             case QueryType.Meta:
                 return parameters.Selector(
                     m_queryTypeProperties.Parse(downloaded.Element("query"), m_wiki));
