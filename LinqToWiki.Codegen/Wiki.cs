@@ -354,15 +354,14 @@ namespace LinqToWiki.Codegen
             new ModuleGenerator(this).Generate(module);
         }
 
-        public CompilerResults Compile(string name)
+        public CompilerResults Compile(string name, string path = "")
         {
             if (m_modulesFinished == 0)
                 throw new InvalidOperationException("No modules were successfully finished, nothing to compile.");
 
             var compiler = new CSharpCodeProvider();
 
-            // TODO: use actual Temp directory
-            var files = WriteToFiles(@"C:\Temp\generated");
+            var files = WriteToFiles(Path.Combine(Path.GetTempPath(), "LinqToWiki"));
 
             return compiler.CompileAssemblyFromFile(
                 new CompilerParameters(
@@ -372,10 +371,10 @@ namespace LinqToWiki.Codegen
                         typeof(System.Xml.Linq.XElement).Assembly.Location,
                         typeof(System.Xml.IXmlLineInfo).Assembly.Location,
                         typeof(WikiInfo).Assembly.Location
-                    }, name + ".dll")
+                    }, Path.Combine(path, name + ".dll"))
                 {
                     TreatWarningsAsErrors = true,
-                    CompilerOptions = string.Format("/doc:{0}.xml /nowarn:1591", name),
+                    CompilerOptions = string.Format("/doc:{0} /nowarn:1591", Path.Combine(path, name + ".xml")),
                     IncludeDebugInformation = true
                 },
                 files.ToArray());
