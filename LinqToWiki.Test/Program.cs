@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LinqToWiki.Generated;
 
-namespace LinqToWiki.Test
+namespace LinqToWiki.Samples
 {
     static class Program
     {

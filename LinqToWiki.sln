@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqToWiki", "LinqToWiki\LinqToWiki.csproj", "{98C63DD2-A2D0-4982-8C8B-ED5AF8AA1EDF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqToWiki.Test", "LinqToWiki.Test\LinqToWiki.Test.csproj", "{8FDD3001-7AAA-498E-A17E-ECE63C6E1865}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqToWiki.Samples", "LinqToWiki.Test\LinqToWiki.Samples.csproj", "{8FDD3001-7AAA-498E-A17E-ECE63C6E1865}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqToWiki.Codegen", "LinqToWiki.Codegen\LinqToWiki.Codegen.csproj", "{F6F46A9F-5C64-4C8B-9ABD-284AA3E6DFED}"
 EndProject

@@ -8,8 +8,8 @@
     <ProjectGuid>{8FDD3001-7AAA-498E-A17E-ECE63C6E1865}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LinqToWiki.Test</RootNamespace>
-    <AssemblyName>LinqToWiki.Test</AssemblyName>
+    <RootNamespace>LinqToWiki.Samples</RootNamespace>
+    <AssemblyName>LinqToWiki.Samples</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
