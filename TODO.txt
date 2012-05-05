@@ -9,3 +9,4 @@
 * consider using multipart/formdata when necessary
 * Take()?
 * all configuration in one place
+* documentation for enum members?

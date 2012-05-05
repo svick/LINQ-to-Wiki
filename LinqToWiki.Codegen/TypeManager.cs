@@ -201,12 +201,14 @@ namespace LinqToWiki.Codegen
 
         private static readonly char[] ToReplace = "-/ ".ToCharArray();
 
+        private static readonly string[] Restricted = new[] { "new", "true", "false" };
+
         private static string FixEnumMemberName(string value)
         {
             if (value == string.Empty)
                 return "none";
-            if (value == "new")
-                return "@new";
+            if (Restricted.Contains(value))
+                return '@' + value;
 
             if (value[0] == '!')
                 value = "not-" + value.Substring(1);
