@@ -120,7 +120,7 @@ namespace LinqToWiki.Codegen
 
             var constructorParameter = SyntaxEx.Parameter("string", "value");
             var contructor = SyntaxEx.ConstructorDeclaration(
-                new[] { SyntaxKind.PrivateKeyword }, typeName, new[] { constructorParameter },
+                new[] { SyntaxKind.InternalKeyword }, typeName, new[] { constructorParameter },
                 constructorInitializer: SyntaxEx.BaseConstructorInitializer((NamedNode)constructorParameter));
 
             var classDeclaration =
@@ -244,8 +244,7 @@ namespace LinqToWiki.Codegen
         private ExpressionSyntax CreateEnumConverter(EnumParameterType type, string moduleName, ExpressionSyntax value)
         {
             var typeName = m_enumTypeNames[moduleName, type];
-            return SyntaxEx.Cast(
-                typeName, SyntaxEx.Invocation(SyntaxEx.MemberAccess("Enum", "Parse"), SyntaxEx.TypeOf(typeName), value));
+            return SyntaxEx.ObjectCreation(typeName, value);
         }
     }
 }
