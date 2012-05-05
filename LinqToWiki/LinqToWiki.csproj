@@ -69,6 +69,7 @@
     <Compile Include="Internals\QueryRepresentation.cs" />
     <Compile Include="Internals\QueryType.cs" />
     <Compile Include="Internals\QueryTypeProperties.cs" />
+    <Compile Include="Internals\StringValue.cs" />
     <Compile Include="Internals\ValueParser.cs" />
     <Compile Include="Internals\WikiInfo.cs" />
     <Compile Include="Namespace.cs" />

@@ -173,7 +173,7 @@ namespace LinqToWiki.Codegen
             Files.Add(
                 Names.Enums,
                 SyntaxEx.CompilationUnit(
-                    SyntaxEx.NamespaceDeclaration(Namespace), "System", "System.ComponentModel", "System.Globalization"));
+                    SyntaxEx.NamespaceDeclaration(Namespace), "LinqToWiki.Internals"));
         }
 
         private void CreatePageResultClass()

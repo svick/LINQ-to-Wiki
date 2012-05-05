@@ -33,7 +33,8 @@ namespace LinqToWiki.Codegen
             if (simpleType != null)
                 return GetSimpleTypeName(simpleType, propertyName, multi, nullable, useItemOrCollection);
 
-            return GetEnumTypeName((EnumParameterType)parameterType, propertyName, moduleName, multi, nullable);
+            return GetEnumTypeName(
+                (EnumParameterType)parameterType, propertyName, moduleName, multi, useItemOrCollection);
         }
 
         private static string GetSimpleTypeName(
@@ -71,19 +72,20 @@ namespace LinqToWiki.Codegen
             return result;
         }
 
-        private string GetEnumTypeName(EnumParameterType enumType, string propertyName, string moduleName, bool multi, bool nullable)
+        private string GetEnumTypeName(
+            EnumParameterType enumType, string propertyName, string moduleName, bool multi, bool useItemOrCollection)
         {
             string result;
             if (!m_enumTypeNames.TryGetValue(moduleName, enumType, out result))
-                result = GenerateType(enumType, propertyName, moduleName, multi);
+                result = GenerateType(enumType, propertyName, moduleName);
 
-            if (nullable)
-                result += '?';
+            if (multi)
+                result = string.Format(useItemOrCollection ? "ItemOrCollection<{0}>" : "IEnumerable<{0}>", result);
 
             return result;
         }
 
-        private string GenerateType(EnumParameterType enumType, string propertyName, string moduleName, bool multi)
+        private string GenerateType(EnumParameterType enumType, string propertyName, string moduleName)
         {
             string typeName = moduleName + propertyName;
 
@@ -95,10 +97,6 @@ namespace LinqToWiki.Codegen
                 while (moduleTypes.Values.Contains(typeName))
                     typeName = moduleName + propertyName + i++;
             }
-
-            var enumsFile = m_wiki.Files[Wiki.Names.Enums];
-
-            var namespaceDeclaration = enumsFile.SingleDescendant<NamespaceDeclarationSyntax>();
 
             var fixedMemberNameMapping = new TupleList<string, string>();
             var memberNames = new List<string>();
@@ -113,42 +111,26 @@ namespace LinqToWiki.Codegen
                 memberNames.Add(fixedName);
             }
 
-            EnumDeclarationSyntax enumDeclaration;
+            var members = enumType.Values.Select(
+                memberName =>
+                SyntaxEx.FieldDeclaration(
+                    new[] { SyntaxKind.PublicKeyword, SyntaxKind.StaticKeyword, SyntaxKind.ReadOnlyKeyword },
+                    typeName, FixEnumMemberName(memberName),
+                    SyntaxEx.ObjectCreation(typeName, SyntaxEx.Literal(memberName))));
 
-            if (multi)
-            {
-                var members = new List<EnumMemberDeclarationSyntax>();
+            var constructorParameter = SyntaxEx.Parameter("string", "value");
+            var contructor = SyntaxEx.ConstructorDeclaration(
+                new[] { SyntaxKind.PrivateKeyword }, typeName, new[] { constructorParameter },
+                constructorInitializer: SyntaxEx.BaseConstructorInitializer((NamedNode)constructorParameter));
 
-                long value = 1;
-                foreach (var memberName in memberNames)
-                {
-                    members.Add(SyntaxEx.EnumMemberDeclaration(memberName, value));
-                    value *= 2;
-                }
-                enumDeclaration = SyntaxEx.EnumDeclaration(
-                    typeName, members, memberNames.Count <= 31 ? (SyntaxKind?)null : SyntaxKind.LongKeyword)
-                    .WithAttribute(SyntaxEx.AttributeDeclaration("Flags"));
-            }
-            else
-                enumDeclaration = SyntaxEx.EnumDeclaration(typeName, memberNames);
+            var classDeclaration =
+                SyntaxEx.ClassDeclaration(typeName, SyntaxEx.ParseTypeName("StringValue"), contructor)
+                    .WithAdditionalMembers(members);
 
-            var newNamespaceDeclaration = namespaceDeclaration;
+            var namespaceDeclaration = m_wiki.Files[Wiki.Names.Enums].SingleDescendant<NamespaceDeclarationSyntax>();
 
-            if (fixedMemberNameMapping.Any())
-            {
-                var converter = GenerateConverter(typeName, fixedMemberNameMapping);
-
-                newNamespaceDeclaration = newNamespaceDeclaration.WithAdditionalMembers(converter);
-
-                enumDeclaration = enumDeclaration.WithAttribute(
-                    SyntaxEx.AttributeDeclaration(
-                        "TypeConverter", SyntaxEx.AttributeArgument(SyntaxEx.TypeOf(converter.Identifier.ValueText))));
-            }
-
-            newNamespaceDeclaration = newNamespaceDeclaration.WithAdditionalMembers(enumDeclaration);
-
-            m_wiki.Files[Wiki.Names.Enums] = enumsFile.ReplaceNode(
-                namespaceDeclaration, newNamespaceDeclaration);
+            m_wiki.Files[Wiki.Names.Enums] = m_wiki.Files[Wiki.Names.Enums].ReplaceNode(
+                namespaceDeclaration, namespaceDeclaration.WithAdditionalMembers(classDeclaration));
 
             m_enumTypeNames.Add(moduleName, enumType, typeName);
 

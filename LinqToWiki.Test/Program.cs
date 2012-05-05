@@ -63,13 +63,13 @@ namespace LinqToWiki.Samples
 
         private static void Delete(Wiki wiki)
         {
-            string token = wiki.tokens(tokenstype.delete).deletetoken;
+            string token = wiki.tokens(new[] { tokenstype.delete }).deletetoken;
             wiki.delete("Test", token: token);
         }
 
         private static void Edit(Wiki wiki)
         {
-            var token = wiki.tokens(tokenstype.edit).edittoken;
+            var token = wiki.tokens(new[] { tokenstype.edit }).edittoken;
             var result = wiki.edit(
                 title: "Talk:Test2", section: "new", sectiontitle: "Hello", text: "Hello world! ~~~~",
                 summary: "greeting the world", token: token);
@@ -78,7 +78,7 @@ namespace LinqToWiki.Samples
 
         private static void EmailUser(Wiki wiki)
         {
-            var token = wiki.tokens(tokenstype.email).emailtoken;
+            var token = wiki.tokens(new[] { tokenstype.email }).emailtoken;
             var result = wiki.emailuser("User:Svick", "Hello", "Mail from LinqToWiki", token);
             Console.WriteLine(result);
         }
@@ -104,10 +104,10 @@ namespace LinqToWiki.Samples
 
         private static void Import(Wiki wiki)
         {
-            var token = wiki.tokens(tokenstype.import).importtoken;
+            var token = wiki.tokens(new[] { tokenstype.import }).importtoken;
 
             var result = wiki.import(
-                token, "imported some pages", interwikisource: importinterwikisource.wikipedia,
+                token, "imported some pages", interwikisource: importinterwikisource.meta,
                 interwikipage: "User:Svick/Sandbox", templates: true);
 
             Write(result);
@@ -131,7 +131,7 @@ namespace LinqToWiki.Samples
 
         private static void Move(Wiki wiki)
         {
-            var token = wiki.tokens(tokenstype.move).movetoken;
+            var token = wiki.tokens(new[] { tokenstype.move }).movetoken;
 
             var result = wiki.move(from: "Test2", to: "Test", token: token);
             Console.WriteLine(result);
@@ -154,7 +154,7 @@ namespace LinqToWiki.Samples
 
         private static void Protect(Wiki wiki)
         {
-            var token = wiki.tokens(tokenstype.protect).protecttoken;
+            var token = wiki.tokens(new[] { tokenstype.protect }).protecttoken;
 
             var result = wiki.protect(new[] { "edit=autoconfirmed", "move=sysop" }, "Test", token: token);
             Console.WriteLine(result);
@@ -184,14 +184,17 @@ namespace LinqToWiki.Samples
         private static void Tokens(Wiki wiki)
         {
             var tokens = wiki.tokens(
-                tokenstype.block | tokenstype.delete | tokenstype.protect | tokenstype.watch | tokenstype.unblock
-                | tokenstype.move | tokenstype.patrol | tokenstype.import | tokenstype.edit);
+                new[]
+                {
+                    tokenstype.block, tokenstype.delete, tokenstype.protect, tokenstype.watch, tokenstype.unblock,
+                    tokenstype.move, tokenstype.patrol, tokenstype.import, tokenstype.edit
+                });
             Console.WriteLine(tokens);
         }
 
         private static void Unblock(Wiki wiki)
         {
-            var token = wiki.tokens(tokenstype.unblock).unblocktoken;
+            var token = wiki.tokens(new[] { tokenstype.unblock }).unblocktoken;
             var result = wiki.unblock(user: "Test", token: token, reason: "I don't hate you anymore.");
             Console.WriteLine(result);
         }
@@ -210,7 +213,7 @@ namespace LinqToWiki.Samples
 
         private static void Upload(Wiki wiki)
         {
-            var token = wiki.tokens(tokenstype.edit).edittoken;
+            var token = wiki.tokens(new[] { tokenstype.edit }).edittoken;
             var result = wiki.upload(
                 "Flower.jpeg",
                 url: "http://upload.wikimedia.org/wikipedia/commons/4/4e/Hymensoporum_flavum_flowers.jpg",
@@ -221,7 +224,7 @@ namespace LinqToWiki.Samples
 
         private static void Watch(Wiki wiki)
         {
-            var token = wiki.tokens(tokenstype.watch).watchtoken;
+            var token = wiki.tokens(new[] { tokenstype.watch }).watchtoken;
             var result = wiki.watch("Test", false, token);
             Console.WriteLine(result);
         }
@@ -493,8 +496,7 @@ namespace LinqToWiki.Samples
 
         private static void Backlinks(Wiki wiki)
         {
-            var result = (from bl in wiki.Query.backlinks()
-                          where bl.title == "User:Svick"
+            var result = (from bl in wiki.Query.backlinks("User:Svick")
                           where bl.ns == Namespace.Project
                           select bl.title)
                 .ToEnumerable().Take(10);
@@ -539,8 +541,7 @@ namespace LinqToWiki.Samples
 
         private static void EmbeddedIn(Wiki wiki)
         {
-            var result = (from ei in wiki.Query.embeddedin()
-                          where ei.title == "Template:WikiProject cleanup listing"
+            var result = (from ei in wiki.Query.embeddedin("Template:WikiProject cleanup listing")
                           where ei.filterredir == embeddedinfilterredir.nonredirects
                           select new { ei.title, ei.redirect })
                 .ToEnumerable().Take(10);
@@ -560,8 +561,7 @@ namespace LinqToWiki.Samples
 
         private static void ImageUsage(Wiki wiki)
         {
-            var result = wiki.Query.imageusage()
-                .Where(iu => iu.title == "File:Indiafilm.svg")
+            var result = wiki.Query.imageusage("File:Indiafilm.svg")
                 .ToEnumerable().Take(10);
 
             Write(result);
@@ -674,7 +674,7 @@ namespace LinqToWiki.Samples
         private static void Watchlist(Wiki wiki)
         {
             var result = from wl in wiki.Query.watchlist()
-                         where wl.show == (watchlistshow.bot | watchlistshow.not_minor)
+                         where wl.show == new[] { watchlistshow.bot, watchlistshow.not_minor }
                          where !wl.allrev
                          select new { wl.title, wl.user, wl.timestamp, wl.comment };
 
