@@ -125,13 +125,22 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             string name, ParameterType type, bool nullable = false, string description = null, bool multi = false)
         {
             var result = SyntaxEx.AutoPropertyDeclaration(
-                new[] { SyntaxKind.PublicKeyword }, Wiki.TypeManager.GetTypeName(type, name, ClassNameBase, multi, nullable),
+                new[] { SyntaxKind.PublicKeyword },
+                Wiki.TypeManager.GetTypeName(type, FixPropertyName(name), ClassNameBase, multi, nullable),
                 GetPropertyName(name), SyntaxKind.PrivateKeyword);
 
             if (description != null)
                 result = result.WithDocumentationSummary(description);
 
             return result;
+        }
+
+        private static string FixPropertyName(string name)
+        {
+            if (name == "*")
+                return "value";
+
+            return name;
         }
 
         private static string GetPropertyName(string name, bool identifier = true)

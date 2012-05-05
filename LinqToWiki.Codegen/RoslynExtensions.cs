@@ -572,6 +572,11 @@ namespace LinqToWiki.Codegen
                 statements: statements.ToSyntaxList());
         }
 
+        public static BlockSyntax Block(IEnumerable<StatementSyntax> statements)
+        {
+            return Syntax.Block(statements: statements.ToSyntaxList());
+        }
+
         public static InvocationExpressionSyntax Invocation(ExpressionSyntax expression, params ExpressionSyntax[] arguments)
         {
             return Invocation(expression, (IEnumerable<ExpressionSyntax>)arguments);

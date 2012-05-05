@@ -8,7 +8,7 @@ using Roslyn.Compilers.CSharp;
 
 namespace LinqToWiki.Codegen.ModuleGenerators
 {
-    class ListModuleGenerator : ModuleGeneratorBase
+    class QueryModuleGenerator : ModuleGeneratorBase
     {
         protected string SelectClassName { get; private set; }
         protected string WhereClassName { get; private set; }
@@ -22,7 +22,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
         protected FieldDeclarationSyntax SelectProps { get; private set; }
         private GenericNameSyntax m_queryType;
 
-        public ListModuleGenerator(Wiki wiki)
+        public QueryModuleGenerator(Wiki wiki)
             : base(wiki)
         {}
 

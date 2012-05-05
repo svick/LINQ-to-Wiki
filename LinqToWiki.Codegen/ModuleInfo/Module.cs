@@ -20,6 +20,8 @@ namespace LinqToWiki.Codegen.ModuleInfo
 
         public QueryType? QueryType { get; private set; }
 
+        public bool ListResult { get; private set; }
+
         public IEnumerable<Parameter> Parameters { get; private set; }
 
         public IEnumerable<PropertyGroup> PropertyGroups { get; private set; }
@@ -45,6 +47,9 @@ namespace LinqToWiki.Codegen.ModuleInfo
                         element.Attribute("querytype") == null
                             ? null
                             : (QueryType?)Enum.Parse(typeof(QueryType), (string)element.Attribute("querytype"), true),
+                    ListResult =
+                        element.Attribute("listresult") != null
+                        || (propsDefault != null && propsDefault.Attribute("listresult") != null),
                     Parameters = element.Element("parameters").Elements().Select(Parameter.Parse).ToArray(),
                     PropertyGroups =
                         propsElement == null

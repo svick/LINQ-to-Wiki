@@ -79,13 +79,16 @@ namespace LinqToWiki.Internals
             case QueryType.Prop:
                 throw new InvalidOperationException();
             case QueryType.Meta:
-                return parameters.Selector(
-                    m_queryTypeProperties.Parse(downloaded.Element("query"), m_wiki));
+                return parameters.Selector(m_queryTypeProperties.Parse(downloaded.Element("query"), m_wiki));
             case null:
+                var element = downloaded.Element(m_queryTypeProperties.ModuleName);
+                var attribute = downloaded.Attribute(m_queryTypeProperties.ModuleName);
+                if (element == null && attribute != null)
+                    element = new XElement(attribute.Name, attribute.Value);
                 return
                     parameters.Selector(
                         m_queryTypeProperties.Parse(
-                            downloaded.Element(m_queryTypeProperties.ModuleName),
+                            element,
                             m_wiki));
             }
 

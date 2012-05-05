@@ -137,6 +137,13 @@ namespace LinqToWiki.Samples
             Console.WriteLine(result);
         }
 
+        //private static void Options(Wiki wiki)
+        //{
+        //    var userInfo = wiki.Query.userinfo();
+        //    var result = wiki.options(userInfo.optionstoken, change: new[] { "skin=monobook" });
+        //    Console.WriteLine(result);
+        //}
+
         private static void Patrol(Wiki wiki)
         {
             var recentChange = wiki.Query.recentchanges()

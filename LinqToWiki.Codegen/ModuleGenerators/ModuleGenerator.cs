@@ -33,10 +33,13 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             {
                 var codeUnit = SyntaxEx.CompilationUnit(
                     SyntaxEx.NamespaceDeclaration(Wiki.EntitiesNamespace, resultType),
-                    "System", "System.Globalization", "System.Xml.Linq", "LinqToWiki", "LinqToWiki.Internals");
+                    "System", "System.Linq", "System.Globalization", "System.Xml.Linq", "LinqToWiki",
+                    "LinqToWiki.Internals");
 
                 Wiki.Files.Add(ClassNameBase, codeUnit);
             }
+
+            m_listResult = module.ListResult;
 
             GenerateMethod(module);
         }
@@ -53,12 +56,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
         protected virtual ClassDeclarationSyntax GenerateResultClass(IEnumerable<PropertyGroup> propertyGroups)
         {
-            m_listResult = propertyGroups.Any(g => g.Name != null);
-
-            var propertyGroup =
-                m_listResult
-                    ? propertyGroups.SingleOrDefault(g => g.Name == string.Empty)
-                    : propertyGroups.SingleOrDefault(g => g.Name == null);
+            var propertyGroup = propertyGroups.SingleOrDefault(g => g.Name == string.Empty);
 
             if (propertyGroup == null)
                 return null;

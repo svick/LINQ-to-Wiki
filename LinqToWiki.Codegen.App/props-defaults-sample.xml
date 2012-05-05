@@ -2,7 +2,7 @@
 <modules>
   <module name="block">
     <props>
-      <prop>
+      <prop name="">
         <properties>
           <property name="blocktoken" type="string" nullable="" />
           <property name="user" type="string" nullable="" />
@@ -22,7 +22,7 @@
   </module>
   <module name="compare">
     <props>
-      <prop>
+      <prop name="">
         <properties>
           <property name="fromtitle" type="string" nullable="" />
           <property name="fromrevid" type="integer" />
@@ -35,7 +35,7 @@
   </module>
   <module name="delete">
     <props>
-      <prop>
+      <prop name="">
         <properties>
           <property name="title" type="string" />
           <property name="reason" type="string" />
@@ -45,7 +45,7 @@
   </module>
   <module name="edit">
     <props>
-      <prop>
+      <prop name="">
         <properties>
           <property name="new" type="boolean" />
           <property name="result">
@@ -66,7 +66,7 @@
   </module>
   <module name="emailuser">
     <props>
-      <prop>
+      <prop name="">
         <properties>
           <property name="result">
             <type>
@@ -81,7 +81,7 @@
   </module>
   <module name="expandtemplates">
     <props>
-      <prop>
+      <prop name="">
         <properties>
           <property name="*" type="string" />
         </properties>
@@ -90,7 +90,7 @@
   </module>
   <module name="filerevert">
     <props>
-      <prop>
+      <prop name="">
         <properties>
           <property name="result">
             <type>
@@ -103,7 +103,7 @@
       </prop>
     </props>
   </module>
-  <module name="import">
+  <module listresult="" name="import">
     <props>
       <prop name="">
         <properties>
@@ -116,7 +116,7 @@
   </module>
   <module name="login">
     <props>
-      <prop>
+      <prop name="">
         <properties>
           <property name="result">
             <type>
@@ -153,7 +153,7 @@
   </module>
   <module name="move">
     <props>
-      <prop>
+      <prop name="">
         <properties>
           <property name="from" type="string" />
           <property name="to" type="string" />
@@ -167,9 +167,18 @@
       </prop>
     </props>
   </module>
+  <module name="options">
+    <props>
+      <prop name="*">
+        <properties>
+          <property name="0" type="success" />
+        </properties>
+      </prop>
+    </props>
+  </module>
   <module name="patrol">
     <props>
-      <prop>
+      <prop name="">
         <properties>
           <property name="rcid" type="integer" />
           <property name="ns" type="namespace" />
@@ -180,7 +189,7 @@
   </module>
   <module name="protect">
     <props>
-      <prop>
+      <prop name="">
         <properties>
           <property name="title" type="string" />
           <property name="reason" type="string" />
@@ -189,7 +198,7 @@
       </prop>
     </props>
   </module>
-  <module name="purge">
+  <module listresult="" name="purge">
     <props>
       <prop name="">
         <properties>
@@ -207,7 +216,7 @@
   </module>
   <module name="rollback">
     <props>
-      <prop>
+      <prop name="">
         <properties>
           <property name="title" type="string" />
           <property name="pageid" type="integer" />
@@ -221,7 +230,7 @@
   </module>
   <module name="tokens">
     <props>
-      <prop>
+      <prop name="">
         <properties>
           <property name="patroltoken" type="string" nullable="" />
           <property name="edittoken" type="string" nullable="" />
@@ -239,7 +248,7 @@
   </module>
   <module name="unblock">
     <props>
-      <prop>
+      <prop name="">
         <properties>
           <property name="unblocktoken" type="string" nullable="" />
           <property name="id" type="integer" nullable="" />
@@ -251,7 +260,7 @@
   </module>
   <module name="undelete">
     <props>
-      <prop>
+      <prop name="">
         <properties>
           <property name="title" type="string" />
           <property name="revisions" type="integer" />
@@ -263,7 +272,7 @@
   </module>
   <module name="upload">
     <props>
-      <prop>
+      <prop name="">
         <properties>
           <property name="result">
             <type>
@@ -284,7 +293,7 @@
   </module>
   <module name="watch">
     <props>
-      <prop>
+      <prop name="">
         <properties>
           <property name="title" type="string" />
           <property name="unwatched" type="boolean" />
@@ -294,7 +303,7 @@
       </prop>
     </props>
   </module>
-  <module name="allcategories">
+  <module listresult="" name="allcategories">
     <props>
       <prop name="">
         <properties>
@@ -316,7 +325,7 @@
       </prop>
     </props>
   </module>
-  <module name="allimages">
+  <module listresult="" name="allimages">
     <props>
       <prop name="">
         <properties>
@@ -401,7 +410,7 @@
       </prop>
     </props>
   </module>
-  <module name="alllinks">
+  <module listresult="" name="alllinks">
     <props>
       <prop name="ids">
         <properties>
@@ -416,7 +425,7 @@
       </prop>
     </props>
   </module>
-  <module name="allmessages">
+  <module listresult="" name="allmessages">
     <props>
       <prop name="">
         <properties>
@@ -434,7 +443,7 @@
       </prop>
     </props>
   </module>
-  <module name="allpages">
+  <module listresult="" name="allpages">
     <props>
       <prop name="">
         <properties>
@@ -445,7 +454,7 @@
       </prop>
     </props>
   </module>
-  <module name="allusers">
+  <module listresult="" name="allusers">
     <props>
       <prop name="">
         <properties>
@@ -474,7 +483,7 @@
       </prop>
     </props>
   </module>
-  <module name="backlinks">
+  <module listresult="" name="backlinks">
     <props>
       <prop name="">
         <properties>
@@ -486,7 +495,7 @@
       </prop>
     </props>
   </module>
-  <module name="blocks">
+  <module listresult="" name="blocks">
     <props>
       <prop name="id">
         <properties>
@@ -547,7 +556,7 @@
       </prop>
     </props>
   </module>
-  <module name="categories">
+  <module listresult="" name="categories">
     <props>
       <prop name="">
         <properties>
@@ -575,7 +584,7 @@
   </module>
   <module name="categoryinfo">
     <props>
-      <prop>
+      <prop name="">
         <properties>
           <property name="size" type="integer" />
           <property name="pages" type="integer" />
@@ -586,7 +595,7 @@
       </prop>
     </props>
   </module>
-  <module name="categorymembers">
+  <module listresult="" name="categorymembers">
     <props>
       <prop name="ids">
         <properties>
@@ -627,7 +636,7 @@
       </prop>
     </props>
   </module>
-  <module name="deletedrevs">
+  <module listresult="" name="deletedrevs">
     <props>
       <prop name="">
         <properties>
@@ -642,7 +651,7 @@
       </prop>
     </props>
   </module>
-  <module name="duplicatefiles">
+  <module listresult="" name="duplicatefiles">
     <props>
       <prop name="">
         <properties>
@@ -653,7 +662,7 @@
       </prop>
     </props>
   </module>
-  <module name="embeddedin">
+  <module listresult="" name="embeddedin">
     <props>
       <prop name="">
         <properties>
@@ -665,7 +674,7 @@
       </prop>
     </props>
   </module>
-  <module name="extlinks">
+  <module listresult="" name="extlinks">
     <props>
       <prop name="">
         <properties>
@@ -674,7 +683,7 @@
       </prop>
     </props>
   </module>
-  <module name="exturlusage">
+  <module listresult="" name="exturlusage">
     <props>
       <prop name="ids">
         <properties>
@@ -694,7 +703,7 @@
       </prop>
     </props>
   </module>
-  <module name="filearchive">
+  <module listresult="" name="filearchive">
     <props>
       <prop name="">
         <properties>
@@ -765,9 +774,14 @@
           <property name="mime" type="string" />
         </properties>
       </prop>
+      <prop name="mediatype">
+        <properties>
+          <property name="mediatype" type="string" />
+        </properties>
+      </prop>
     </props>
   </module>
-  <module name="imageinfo">
+  <module listresult="" name="imageinfo">
     <props>
       <prop name="timestamp">
         <properties>
@@ -851,7 +865,7 @@
       </prop>
     </props>
   </module>
-  <module name="images">
+  <module listresult="" name="images">
     <props>
       <prop name="">
         <properties>
@@ -861,7 +875,7 @@
       </prop>
     </props>
   </module>
-  <module name="imageusage">
+  <module listresult="" name="imageusage">
     <props>
       <prop name="">
         <properties>
@@ -933,7 +947,7 @@
       </prop>
     </props>
   </module>
-  <module name="iwbacklinks">
+  <module listresult="" name="iwbacklinks">
     <props>
       <prop name="">
         <properties>
@@ -955,7 +969,7 @@
       </prop>
     </props>
   </module>
-  <module name="iwlinks">
+  <module listresult="" name="iwlinks">
     <props>
       <prop name="">
         <properties>
@@ -966,7 +980,7 @@
       </prop>
     </props>
   </module>
-  <module name="langbacklinks">
+  <module listresult="" name="langbacklinks">
     <props>
       <prop name="">
         <properties>
@@ -988,7 +1002,7 @@
       </prop>
     </props>
   </module>
-  <module name="langlinks">
+  <module listresult="" name="langlinks">
     <props>
       <prop name="">
         <properties>
@@ -999,7 +1013,7 @@
       </prop>
     </props>
   </module>
-  <module name="links">
+  <module listresult="" name="links">
     <props>
       <prop name="">
         <properties>
@@ -1009,7 +1023,7 @@
       </prop>
     </props>
   </module>
-  <module name="logevents">
+  <module listresult="" name="logevents">
     <props>
       <prop name="ids">
         <properties>
@@ -1082,7 +1096,7 @@
       </prop>
     </props>
   </module>
-  <module name="protectedtitles">
+  <module listresult="" name="protectedtitles">
     <props>
       <prop name="">
         <properties>
@@ -1128,7 +1142,7 @@
       </prop>
     </props>
   </module>
-  <module name="querypage">
+  <module listresult="" name="querypage">
     <props>
       <prop>
         <properties>
@@ -1148,7 +1162,7 @@
       </prop>
     </props>
   </module>
-  <module name="random">
+  <module listresult="" name="random">
     <props>
       <prop name="">
         <properties>
@@ -1159,7 +1173,7 @@
       </prop>
     </props>
   </module>
-  <module name="recentchanges">
+  <module listresult="" name="recentchanges">
     <props>
       <prop name="">
         <properties>
@@ -1265,7 +1279,7 @@
       </prop>
     </props>
   </module>
-  <module name="revisions">
+  <module listresult="" name="revisions">
     <props>
       <prop name="">
         <properties>
@@ -1332,7 +1346,7 @@
       </prop>
     </props>
   </module>
-  <module name="search">
+  <module listresult="" name="search">
     <props>
       <prop name="">
         <properties>
@@ -1397,7 +1411,7 @@
       </prop>
     </props>
   </module>
-  <module name="stashimageinfo">
+  <module listresult="" name="stashimageinfo">
     <props>
       <prop name="timestamp">
         <properties>
@@ -1443,7 +1457,7 @@
       </prop>
     </props>
   </module>
-  <module name="tags">
+  <module listresult="" name="tags">
     <props>
       <prop name="">
         <properties>
@@ -1467,7 +1481,7 @@
       </prop>
     </props>
   </module>
-  <module name="templates">
+  <module listresult="" name="templates">
     <props>
       <prop name="">
         <properties>
@@ -1477,7 +1491,7 @@
       </prop>
     </props>
   </module>
-  <module name="usercontribs">
+  <module listresult="" name="usercontribs">
     <props>
       <prop name="">
         <properties>
@@ -1534,7 +1548,60 @@
       </prop>
     </props>
   </module>
-  <module name="users">
+  <module name="userinfo">
+    <props>
+      <prop name="">
+        <properties>
+          <property name="id" type="integer" />
+          <property name="name" type="string" />
+          <property name="anon" type="boolean" />
+        </properties>
+      </prop>
+      <prop name="blockinfo">
+        <properties>
+          <property name="blockedby" type="string" nullable="" />
+          <property name="blockedreason" type="string" nullable="" />
+        </properties>
+      </prop>
+      <prop name="hasmsg">
+        <properties>
+          <property name="messages" type="boolean" />
+        </properties>
+      </prop>
+      <prop name="optionstoken">
+        <properties>
+          <property name="optionstoken" type="string" />
+        </properties>
+      </prop>
+      <prop name="preferencestoken">
+        <properties>
+          <property name="preferencestoken" type="string" />
+        </properties>
+      </prop>
+      <prop name="editcount">
+        <properties>
+          <property name="editcount" type="integer" />
+        </properties>
+      </prop>
+      <prop name="realname">
+        <properties>
+          <property name="realname" type="string" nullable="" />
+        </properties>
+      </prop>
+      <prop name="email">
+        <properties>
+          <property name="email" type="string" />
+          <property name="emailauthenticated" type="timestamp" nullable="" />
+        </properties>
+      </prop>
+      <prop name="registrationdate">
+        <properties>
+          <property name="registrationdate" type="timestamp" nullable="" />
+        </properties>
+      </prop>
+    </props>
+  </module>
+  <module listresult="" name="users">
     <props>
       <prop name="">
         <properties>
@@ -1582,7 +1649,7 @@
       </prop>
     </props>
   </module>
-  <module name="watchlist">
+  <module listresult="" name="watchlist">
     <props>
       <prop name="ids">
         <properties>
@@ -1671,7 +1738,7 @@
       </prop>
     </props>
   </module>
-  <module name="watchlistraw">
+  <module listresult="" name="watchlistraw">
     <props>
       <prop name="">
         <properties>

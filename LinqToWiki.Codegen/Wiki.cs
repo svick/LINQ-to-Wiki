@@ -236,7 +236,12 @@ namespace LinqToWiki.Codegen
             foreach (var module in modules)
             {
                 if (module.QueryType == QueryType.List || module.QueryType == QueryType.Meta)
-                    AddListModule(module);
+                {
+                    if (module.ListResult)
+                        AddQueryModule(module);
+                    else
+                        AddSingleQueryModule(module);
+                }
                 else
                 {
                     if (module.PropertyGroups == null)
@@ -247,7 +252,7 @@ namespace LinqToWiki.Codegen
                         AddInfoModule(module);
                         CreatePageResultClass();
                     }
-                    else if (module.PropertyGroups.Any(g => g.Name == null))
+                    else if (!module.ListResult)
                     {
                         AddSinglePropModule(module);
                     }
@@ -278,9 +283,14 @@ namespace LinqToWiki.Codegen
             AddModules(m_modulesSource.GetAllModuleNames());
         }
 
-        private void AddListModule(Module module)
+        private void AddQueryModule(Module module)
         {
-            new ListModuleGenerator(this).Generate(module);
+            new QueryModuleGenerator(this).Generate(module);
+        }
+
+        private void AddSingleQueryModule(Module module)
+        {
+            new SingleQueryModuleGenerator(this).Generate(module);
         }
 
         private void AddPropModule(Module module)
@@ -316,7 +326,7 @@ namespace LinqToWiki.Codegen
                 new CompilerParameters(
                     new[]
                     {
-                        typeof(System.ComponentModel.TypeConverter).Assembly.Location,
+                        typeof(Enumerable).Assembly.Location,
                         typeof(System.Xml.Linq.XElement).Assembly.Location,
                         typeof(System.Xml.IXmlLineInfo).Assembly.Location,
                         typeof(WikiInfo).Assembly.Location
