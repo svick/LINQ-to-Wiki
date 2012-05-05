@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using LinqToWiki.Collections;
@@ -58,16 +59,30 @@ namespace LinqToWiki.Codegen.ModuleInfo
 
         public IEnumerable<Module> GetQueryModules(IEnumerable<string> moduleNames)
         {
-            return m_processor
-                .ExecuteSingle(QueryParameters.Create<ParamInfo>().AddMultipleValues("querymodules", moduleNames))
-                .QueryModules;
+            return GetModulesInternal(moduleNames, "querymodules", info => info.QueryModules);
         }
 
         public IEnumerable<Module> GetModules(IEnumerable<string> moduleNames)
         {
-            return m_processor
-                .ExecuteSingle(QueryParameters.Create<ParamInfo>().AddMultipleValues("modules", moduleNames))
-                .Modules;
+            return GetModulesInternal(moduleNames, "modules", info => info.Modules);
+        }
+
+        private IEnumerable<Module> GetModulesInternal(
+            IEnumerable<string> moduleNames, string parameterName, Func<ParamInfo, IEnumerable<Module>> modulesSelector)
+        {
+            const int pageSize = 50;
+            var moduleNamesArray = moduleNames.ToArray();
+
+            for (int i = 0; i < moduleNamesArray.Length; i += pageSize)
+            {
+                var result = m_processor
+                    .ExecuteSingle(
+                        QueryParameters.Create<ParamInfo>().AddMultipleValues(
+                            parameterName, moduleNames.Skip(i).Take(pageSize)));
+
+                foreach (var module in modulesSelector(result))
+                    yield return module;
+            }
         }
     }
 }
