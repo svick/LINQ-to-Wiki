@@ -20,12 +20,19 @@ namespace LinqToWiki.Codegen.ModuleInfo
 
         public QueryType? QueryType { get; private set; }
 
-        public IEnumerable<Parameter> Parameters { get; set; }
+        public IEnumerable<Parameter> Parameters { get; private set; }
 
         public IEnumerable<PropertyGroup> PropertyGroups { get; private set; }
 
-        public static Module Parse(XElement element)
+        public static Module Parse(XElement element, Dictionary<string, XElement> propsDefaults)
         {
+            XElement propsDefault = null;
+            if (propsDefaults != null)
+                propsDefaults.TryGetValue((string)element.Attribute("name"), out propsDefault);
+
+            var propsElement = element.Element("props") ??
+                               (propsDefault == null ? null : propsDefault.Element("props"));
+
             return
                 new Module
                 {
@@ -40,9 +47,9 @@ namespace LinqToWiki.Codegen.ModuleInfo
                             : (QueryType?)Enum.Parse(typeof(QueryType), (string)element.Attribute("querytype"), true),
                     Parameters = element.Element("parameters").Elements().Select(Parameter.Parse).ToArray(),
                     PropertyGroups =
-                        element.Element("props") == null
+                        propsElement == null
                             ? null
-                            : element.Element("props").Elements().Select(PropertyGroup.Parse).ToArray()
+                            : propsElement.Elements().Select(PropertyGroup.Parse).ToArray()
                 };
         }
 

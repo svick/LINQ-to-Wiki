@@ -1,4 +1,3 @@
-* props from file
 * XML documentation
 * compress requests?
 * GUI application

@@ -34,5 +34,10 @@ namespace LinqToWiki.Codegen.App
         {
             get { return m_argumentsCollection['d'] ?? string.Empty; }
         }
+
+        public string PropsFile
+        {
+            get { return m_argumentsCollection['p']; }
+        }
     }
 }

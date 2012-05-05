@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 using LinqToWiki.Collections;
 using LinqToWiki.Internals;
 using LinqToWiki.Parameters;
@@ -13,16 +14,20 @@ namespace LinqToWiki.Codegen.ModuleInfo
         private string[] m_moduleNames;
         private string[] m_queryModuleNames;
 
-        public ModulesSource(WikiInfo wiki)
+        public ModulesSource(WikiInfo wiki, string propsDefaultsPath = null)
         {
+            Dictionary<string, XElement> propsDefaults = null;
+            if (propsDefaultsPath != null)
+                propsDefaults =
+                    XDocument.Load(propsDefaultsPath).Root.Elements().ToDictionary(e => (string)e.Attribute("name"));
+
             m_processor = new QueryProcessor<ParamInfo>(
                 wiki,
                 new QueryTypeProperties<ParamInfo>(
                     "paraminfo", "", null, null,
                     new TupleList<string, string> { { "action", "paraminfo" } },
                     null,
-                    ParamInfo.Parse));
-
+                    e => ParamInfo.Parse(e, propsDefaults)));
         }
 
         private void RetrieveModuleNames()

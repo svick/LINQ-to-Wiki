@@ -41,7 +41,7 @@ namespace LinqToWiki.Codegen
         internal static readonly TupleList<string, string> QueryBaseParameters =
             new TupleList<string, string> { { "action", "query" } };
 
-        public Wiki(string baseUri, string apiPath, string ns = null)
+        public Wiki(string baseUri, string apiPath, string ns = null, string propsFilePath = null)
         {
             Files = new TupleList<string, CompilationUnitSyntax>();
             TypeManager = new TypeManager(this);
@@ -49,7 +49,7 @@ namespace LinqToWiki.Codegen
             Namespace = ns ?? "LinqToWiki.Generated";
             EntitiesNamespace = Namespace + ".Entities";
 
-            m_modulesSource = new ModulesSource(new WikiInfo(baseUri, apiPath));
+            m_modulesSource = new ModulesSource(new WikiInfo(baseUri, apiPath), propsFilePath);
 
             CreatePageClass();
             CreateWikiClass(baseUri, apiPath);
