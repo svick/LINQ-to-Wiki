@@ -7,9 +7,19 @@ using Roslyn.Compilers.CSharp;
 
 namespace LinqToWiki.Codegen.ModuleGenerators
 {
+    /// <summary>
+    /// The base class for all module generators.
+    /// </summary>
     abstract class ModuleGeneratorBase
     {
+        /// <summary>
+        /// Wiki, for which the module is generated.
+        /// </summary>
         protected Wiki Wiki { get; private set; }
+
+        /// <summary>
+        /// Base name for all classes generated for the module.
+        /// </summary>
         protected string ClassNameBase { get; private set; }
 
         protected ModuleGeneratorBase(Wiki wiki)
@@ -17,6 +27,9 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             Wiki = wiki;
         }
 
+        /// <summary>
+        /// Generates code for the module.
+        /// </summary>
         public void Generate(Module module)
         {
             if (module.PropertyGroups == null)
@@ -29,8 +42,14 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             Wiki.ModuleFinished();
         }
 
+        /// <summary>
+        /// Actually generates code specific to the module.
+        /// </summary>
         protected abstract void GenerateInternal(Module module);
 
+        /// <summary>
+        /// Creates a class for a set of properties.
+        /// </summary>
         protected ClassDeclarationSyntax GenerateClassForProperties(string className, IEnumerable<Property> properties, string baseType = null)
         {
             var propertiesArray = properties.ToArray();
@@ -43,6 +62,10 @@ namespace LinqToWiki.Codegen.ModuleGenerators
                     GenerateParseMethod(className, propertiesArray), GenerateToStringMethod(propertiesArray));
         }
 
+        /// <summary>
+        /// Creates a method that parses an XML element returned from the API by setting creating an instance
+        /// of the given class and setting its properties.
+        /// </summary>
         private MethodDeclarationSyntax GenerateParseMethod(string className, IEnumerable<Property> properties)
         {
             var elementParameter = SyntaxEx.Parameter("XElement", "element");
@@ -105,6 +128,9 @@ namespace LinqToWiki.Codegen.ModuleGenerators
                 new[] { elementParameter, wikiParameter }, statements);
         }
 
+        /// <summary>
+        /// Creates an overide of the <see cref="object.ToString"/> method for given properties.
+        /// </summary>
         private static MethodDeclarationSyntax GenerateToStringMethod(IEnumerable<Property> properties)
         {
             var formatString = string.Join(
@@ -121,6 +147,9 @@ namespace LinqToWiki.Codegen.ModuleGenerators
                 returnStatement);
         }
 
+        /// <summary>
+        /// Generates a single property.
+        /// </summary>
         protected PropertyDeclarationSyntax GenerateProperty(
             string name, ParameterType type, bool nullable = false, string description = null, bool multi = false)
         {
@@ -135,6 +164,9 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             return result;
         }
 
+        /// <summary>
+        /// Fixes the property name, so that it can be used as a base for type name.
+        /// </summary>
         private static string FixPropertyName(string name)
         {
             if (name == "*")
@@ -143,6 +175,9 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             return name;
         }
 
+        /// <summary>
+        /// Fixes the property name, so that it is a valid property name in C#.
+        /// </summary>
         private static string GetPropertyName(string name, bool identifier = true)
         {
             if (name == "*")
@@ -157,6 +192,10 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             return name.Replace('-', '_');
         }
 
+        /// <summary>
+        /// Creates an entry method, that is used to execute query for normal modules
+        /// or that can be used as a base for a query for query modules.
+        /// </summary>
         protected void GenerateMethod(
             Module module, IEnumerable<Parameter> methodParameters, string resultClassName,
             FieldDeclarationSyntax propsField, string fileName, bool nullableParameters, SortType? sortType)
@@ -234,6 +273,9 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             AddMembersToClass(fileName, propertiesField, method);
         }
 
+        /// <summary>
+        /// Creates a field that holds <see cref="QueryTypeProperties{T}"/> for the module.
+        /// </summary>
         protected FieldDeclarationSyntax CreatePropertiesField(
             Module module, string resultClassName, FieldDeclarationSyntax propsField, SortType? sortType)
         {
@@ -260,13 +302,26 @@ namespace LinqToWiki.Codegen.ModuleGenerators
                 queryTypePropertiesType, ClassNameBase + "Properties", propertiesInitializer);
         }
 
+        /// <summary>
+        /// Gets parameters that are used in all queries for this module.
+        /// </summary>
         protected abstract IEnumerable<Tuple<string, string>> GetBaseParameters(Module module);
 
+        /// <summary>
+        /// Creates the body of the method created in <see cref="GenerateMethod"/>.
+        /// </summary>
         protected abstract IList<StatementSyntax> GenerateMethodBody(
             ExpressionSyntax queryProcessor, ExpressionSyntax queryParameters, IList<StatementSyntax> commonStatements);
 
+        /// <summary>
+        /// Returns the return type of the method from <see cref="GenerateMethod"/>.
+        /// </summary>
         protected abstract TypeSyntax GenerateMethodResultType();
 
+        /// <summary>
+        /// Creates an expression that creates the <see cref="LinqToWiki.Collections.TupleList{T1,T2}"/>
+        /// that is passed as a parameter.
+        /// </summary>
         private static ObjectCreationExpressionSyntax CreateTupleListExpression(IEnumerable<Tuple<string, string>> tupleList)
         {
             return SyntaxEx.ObjectCreation(
@@ -274,6 +329,9 @@ namespace LinqToWiki.Codegen.ModuleGenerators
                 tupleList.Select(t => new[] { t.Item1, t.Item2 }.Select(SyntaxEx.Literal)));
         }
 
+        /// <summary>
+        /// Creates a field that holds information about property groups for the given module.
+        /// </summary>
         protected FieldDeclarationSyntax CreatePropsField(IEnumerable<PropertyGroup> propertyGroups)
         {
             var initializers =
@@ -292,12 +350,15 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             return propsField;
         }
 
+        /// <summary>
+        /// Adds members to the only class in a given file.
+        /// </summary>
         protected void AddMembersToClass(string fileName, params MemberDeclarationSyntax[] members)
         {
             var file = Wiki.Files[fileName];
-            var @class = file.SingleDescendant<ClassDeclarationSyntax>();
+            var classDeclaration = file.SingleDescendant<ClassDeclarationSyntax>();
 
-            Wiki.Files[fileName] = file.ReplaceNode(@class, @class.WithAdditionalMembers(members));
+            Wiki.Files[fileName] = file.ReplaceNode(classDeclaration, classDeclaration.WithAdditionalMembers(members));
         }
     }
 }

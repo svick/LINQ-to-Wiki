@@ -4,10 +4,20 @@ using System.Xml.Linq;
 
 namespace LinqToWiki.Codegen.ModuleInfo
 {
+    /// <summary>
+    /// Parameter or property type whose value can be from a fixed set of strings.
+    /// Is represented as <see cref="LinqToWiki.Internals.StringValue"/> in generated code.
+    /// </summary>
     class EnumParameterType : ParameterType
     {
+        /// <summary>
+        /// The set of possible values.
+        /// </summary>
         public IEnumerable<string> Values { get; private set; }
 
+        /// <summary>
+        /// Creates the type based on a <c>type</c> XML element.
+        /// </summary>
         public EnumParameterType(XElement element)
         {
             Values = element.Elements().Select(e => (string)e).ToArray();
@@ -19,8 +29,6 @@ namespace LinqToWiki.Codegen.ModuleInfo
 
             if (otherEnum == null)
                 return false;
-
-            // TODO: ignore order
 
             return this.Values.SequenceEqual(otherEnum.Values);
         }

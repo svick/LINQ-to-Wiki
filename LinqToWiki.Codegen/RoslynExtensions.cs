@@ -6,12 +6,15 @@ using Roslyn.Compilers.CSharp;
 
 namespace LinqToWiki.Codegen
 {
+    /// <summary>
+    /// Extension methods that help with creating of Roslyn syntax trees.
+    /// </summary>
     public static class RoslynExtensions
     {
-         public static string GetName(this FieldDeclarationSyntax fieldDeclaration)
-         {
-             return fieldDeclaration.Declaration.Variables.Single().Identifier.ValueText;
-         }
+        public static string GetName(this FieldDeclarationSyntax fieldDeclaration)
+        {
+            return fieldDeclaration.Declaration.Variables.Single().Identifier.ValueText;
+        }
 
         public static string GetName(this PropertyDeclarationSyntax propertyDeclaration)
         {
@@ -99,6 +102,9 @@ namespace LinqToWiki.Codegen
         }
     }
 
+    /// <summary>
+    /// Contains methods for easy creating of Roslyn syntax trees.
+    /// </summary>
     public static class SyntaxEx
     {
         public static TypeSyntax ParseTypeName(string typeName)
@@ -109,12 +115,14 @@ namespace LinqToWiki.Codegen
             return Syntax.ParseTypeName(typeName);
         }
 
-        public static FieldDeclarationSyntax FieldDeclaration(IEnumerable<SyntaxKind> modifiers, string typeName, string fieldName, ExpressionSyntax initializer = null)
+        public static FieldDeclarationSyntax FieldDeclaration(
+            IEnumerable<SyntaxKind> modifiers, string typeName, string fieldName, ExpressionSyntax initializer = null)
         {
             return FieldDeclaration(modifiers, Syntax.ParseTypeName(typeName), fieldName, initializer);
         }
 
-        public static FieldDeclarationSyntax FieldDeclaration(IEnumerable<SyntaxKind> modifiers, TypeSyntax type, string fieldName, ExpressionSyntax initializer = null)
+        public static FieldDeclarationSyntax FieldDeclaration(
+            IEnumerable<SyntaxKind> modifiers, TypeSyntax type, string fieldName, ExpressionSyntax initializer = null)
         {
             return Syntax.FieldDeclaration(
                 modifiers: TokenList(modifiers),
@@ -137,12 +145,14 @@ namespace LinqToWiki.Codegen
             return modifier == null ? Syntax.TokenList() : Syntax.TokenList(Syntax.Token(modifier.Value));
         }
 
-        public static ClassDeclarationSyntax ClassDeclaration(string className, TypeSyntax baseType, params MemberDeclarationSyntax[] members)
+        public static ClassDeclarationSyntax ClassDeclaration(
+            string className, TypeSyntax baseType, params MemberDeclarationSyntax[] members)
         {
             return ClassDeclaration(className, baseType, (IEnumerable<MemberDeclarationSyntax>)members);
         }
 
-        public static ClassDeclarationSyntax ClassDeclaration(string className, params MemberDeclarationSyntax[] members)
+        public static ClassDeclarationSyntax ClassDeclaration(
+            string className, params MemberDeclarationSyntax[] members)
         {
             return ClassDeclaration(className, (IEnumerable<MemberDeclarationSyntax>)members);
         }
@@ -159,7 +169,8 @@ namespace LinqToWiki.Codegen
             return ClassDeclaration(classType, className, null, members);
         }
 
-        public static ClassDeclarationSyntax ClassDeclaration(string className, IEnumerable<MemberDeclarationSyntax> members)
+        public static ClassDeclarationSyntax ClassDeclaration(
+            string className, IEnumerable<MemberDeclarationSyntax> members)
         {
             return ClassDeclaration(className, null, members);
         }
@@ -229,7 +240,8 @@ namespace LinqToWiki.Codegen
                 members: members.ToSeparatedList());
         }
 
-        public static EnumMemberDeclarationSyntax EnumMemberDeclaration(string name, long? value = null, bool useHex = true)
+        public static EnumMemberDeclarationSyntax EnumMemberDeclaration(
+            string name, long? value = null, bool useHex = true)
         {
             var valueClause = value == null ? null : Syntax.EqualsValueClause(value: Literal(value.Value, useHex));
             return Syntax.EnumMemberDeclaration(identifier: Syntax.Identifier(name), equalsValueOpt: valueClause);
@@ -257,7 +269,8 @@ namespace LinqToWiki.Codegen
             return ConstructorInitializer(SyntaxKind.BaseConstructorInitializer, arguments);
         }
 
-        private static ConstructorInitializerSyntax ConstructorInitializer(SyntaxKind kind, IEnumerable<ExpressionSyntax> arguments)
+        private static ConstructorInitializerSyntax ConstructorInitializer(
+            SyntaxKind kind, IEnumerable<ExpressionSyntax> arguments)
         {
             return Syntax.ConstructorInitializer(
                 kind,
@@ -309,7 +322,8 @@ namespace LinqToWiki.Codegen
         public static LiteralExpressionSyntax Literal(string value)
         {
             // TODO: escaping
-            return Syntax.LiteralExpression(SyntaxKind.StringLiteralExpression, Syntax.Literal('"' + value + '"', value));
+            return Syntax.LiteralExpression(
+                SyntaxKind.StringLiteralExpression, Syntax.Literal('"' + value + '"', value));
         }
 
         public static LiteralExpressionSyntax Literal(bool value)
@@ -332,7 +346,8 @@ namespace LinqToWiki.Codegen
             return Syntax.LiteralExpression(SyntaxKind.NullLiteralExpression);
         }
 
-        public static NamespaceDeclarationSyntax NamespaceDeclaration(string name, params MemberDeclarationSyntax[] members)
+        public static NamespaceDeclarationSyntax NamespaceDeclaration(
+            string name, params MemberDeclarationSyntax[] members)
         {
             return Syntax.NamespaceDeclaration(
                 name: Syntax.ParseName(name), members: members.Where(m => m != null).ToSyntaxList());
@@ -459,7 +474,7 @@ namespace LinqToWiki.Codegen
                 typeParameterListOpt: typeParameterListSyntax,
                 parameterList: Syntax.ParameterList(parameters: parameters.ToSeparatedList()),
                 bodyOpt: statmentsSyntax,
-                semicolonTokenOpt:semicolonToken);
+                semicolonTokenOpt: semicolonToken);
         }
 
         public static ObjectCreationExpressionSyntax ObjectCreation(
@@ -469,12 +484,14 @@ namespace LinqToWiki.Codegen
             return ObjectCreation(Syntax.ParseTypeName(typeName), arguments, initializers);
         }
 
-        public static ObjectCreationExpressionSyntax ObjectCreation(string typeName, params ExpressionSyntax[] arguments)
+        public static ObjectCreationExpressionSyntax ObjectCreation(
+            string typeName, params ExpressionSyntax[] arguments)
         {
             return ObjectCreation(typeName, (IEnumerable<ExpressionSyntax>)arguments);
         }
 
-        public static ObjectCreationExpressionSyntax ObjectCreation(TypeSyntax type, params ExpressionSyntax[] arguments)
+        public static ObjectCreationExpressionSyntax ObjectCreation(
+            TypeSyntax type, params ExpressionSyntax[] arguments)
         {
             return ObjectCreation(type, (IEnumerable<ExpressionSyntax>)arguments);
         }
@@ -486,7 +503,8 @@ namespace LinqToWiki.Codegen
         }
 
         public static ObjectCreationExpressionSyntax ObjectCreation(
-            TypeSyntax type, IEnumerable<ExpressionSyntax> arguments, IEnumerable<IEnumerable<ExpressionSyntax>> initializers = null)
+            TypeSyntax type, IEnumerable<ExpressionSyntax> arguments,
+            IEnumerable<IEnumerable<ExpressionSyntax>> initializers = null)
         {
             var argumentsArray = arguments == null ? new ExpressionSyntax[0] : arguments.ToArray();
             var argumentList =
@@ -526,7 +544,8 @@ namespace LinqToWiki.Codegen
                 initializerOpt: initializer);
         }
 
-        public static LocalDeclarationStatementSyntax LocalDeclaration(string type, string localName, ExpressionSyntax value)
+        public static LocalDeclarationStatementSyntax LocalDeclaration(
+            string type, string localName, ExpressionSyntax value)
         {
             return Syntax.LocalDeclarationStatement(
                 declaration: Syntax.VariableDeclaration(
@@ -560,7 +579,8 @@ namespace LinqToWiki.Codegen
                 elseOpt: elseStatement == null ? null : Syntax.ElseClause(statement: elseStatement));
         }
 
-        public static SwitchStatementSyntax Switch(ExpressionSyntax expression, IEnumerable<SwitchSectionSyntax> sections)
+        public static SwitchStatementSyntax Switch(
+            ExpressionSyntax expression, IEnumerable<SwitchSectionSyntax> sections)
         {
             return Syntax.SwitchStatement(expression: expression, sections: sections.ToSyntaxList());
         }
@@ -577,19 +597,22 @@ namespace LinqToWiki.Codegen
             return Syntax.Block(statements: statements.ToSyntaxList());
         }
 
-        public static InvocationExpressionSyntax Invocation(ExpressionSyntax expression, params ExpressionSyntax[] arguments)
+        public static InvocationExpressionSyntax Invocation(
+            ExpressionSyntax expression, params ExpressionSyntax[] arguments)
         {
             return Invocation(expression, (IEnumerable<ExpressionSyntax>)arguments);
         }
 
-        public static InvocationExpressionSyntax Invocation(ExpressionSyntax expression, IEnumerable<ExpressionSyntax> arguments)
+        public static InvocationExpressionSyntax Invocation(
+            ExpressionSyntax expression, IEnumerable<ExpressionSyntax> arguments)
         {
             return Syntax.InvocationExpression(
                 expression,
                 Syntax.ArgumentList(arguments: arguments.Select(a => Syntax.Argument(expression: a)).ToSeparatedList()));
         }
 
-        public static ElementAccessExpressionSyntax ElementAccess(ExpressionSyntax expression, params ExpressionSyntax[] arguments)
+        public static ElementAccessExpressionSyntax ElementAccess(
+            ExpressionSyntax expression, params ExpressionSyntax[] arguments)
         {
             return Syntax.ElementAccessExpression(
                 expression,
@@ -617,7 +640,8 @@ namespace LinqToWiki.Codegen
             return MemberAccess(Syntax.ParseExpression(name), memberName);
         }
 
-        public static MemberAccessExpressionSyntax MemberAccess(ExpressionSyntax expression, SimpleNameSyntax memberName)
+        public static MemberAccessExpressionSyntax MemberAccess(
+            ExpressionSyntax expression, SimpleNameSyntax memberName)
         {
             return Syntax.MemberAccessExpression(SyntaxKind.MemberAccessExpression, expression, name: memberName);
         }
@@ -698,7 +722,8 @@ namespace LinqToWiki.Codegen
                     .ToSyntaxList());
         }
 
-        private static XmlElementSyntax DocumentationElement(string elementName, string text, IEnumerable<Tuple<string, string>> attributes = null)
+        private static XmlElementSyntax DocumentationElement(
+            string elementName, string text, IEnumerable<Tuple<string, string>> attributes = null)
         {
             var nameSyntax = XmlName(elementName);
             var exteriorTrivia = Syntax.DocumentationCommentExteriorTrivia("///");
@@ -749,7 +774,8 @@ namespace LinqToWiki.Codegen
             return Syntax.XmlName(localName: Syntax.Identifier(name));
         }
 
-        public static AttributeDeclarationSyntax AttributeDeclaration(string name, params AttributeArgumentSyntax[] arguments)
+        public static AttributeDeclarationSyntax AttributeDeclaration(
+            string name, params AttributeArgumentSyntax[] arguments)
         {
             return Syntax.AttributeDeclaration(
                 attributes:
@@ -776,6 +802,13 @@ namespace LinqToWiki.Codegen
         }
     }
 
+    /// <summary>
+    /// Class that represents reference to a named symbol, like a local variable or a field.
+    /// Can be used for referencing such node after its creation.
+    /// 
+    /// Is implicitly convertible from types declaring those symbols and to <see cref="IdentifierNameSyntax"/>,
+    /// that's be used to reference them.
+    /// </summary>
     public class NamedNode
     {
         private readonly string m_name;

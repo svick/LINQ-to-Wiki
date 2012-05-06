@@ -8,18 +8,26 @@ using Roslyn.Compilers.CSharp;
 
 namespace LinqToWiki.Codegen.ModuleGenerators
 {
+    /// <summary>
+    /// Generates code for <see cref="LinqToWiki.Internals.QueryType.List"/> query modules,
+    /// or <see cref="LinqToWiki.Internals.QueryType.Meta"/> query modules
+    /// that return a list of results.
+    /// </summary>
     class QueryModuleGenerator : ModuleGeneratorBase
     {
-        protected string SelectClassName { get; private set; }
-        protected string WhereClassName { get; private set; }
-        protected string OrderByClassName { get; private set; }
+        private string m_selectClassName;
+        private string m_whereClassName;
+        private string m_orderByClassName;
 
+        /// <summary>
+        /// Name of the class that contains the entry method for this module.
+        /// </summary>
         protected virtual string MethodClassName
         {
             get { return Wiki.Names.QueryAction; }
         }
 
-        protected FieldDeclarationSyntax SelectProps { get; private set; }
+        private FieldDeclarationSyntax m_selectProps;
         private GenericNameSyntax m_queryType;
 
         public QueryModuleGenerator(Wiki wiki)
@@ -28,9 +36,9 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
         protected override void GenerateInternal(Module module)
         {
-            SelectClassName = ClassNameBase + "Select";
-            WhereClassName = ClassNameBase + "Where";
-            OrderByClassName = ClassNameBase + "OrderBy";
+            m_selectClassName = ClassNameBase + "Select";
+            m_whereClassName = ClassNameBase + "Where";
+            m_orderByClassName = ClassNameBase + "OrderBy";
 
             var parameters = module.Parameters.ToList();
 
@@ -55,12 +63,12 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             Wiki.Files.Add(ClassNameBase, codeUnit);
 
             string queryTypeName = "WikiQuery";
-            var queryTypeGenericParameters = new List<string> { WhereClassName, SelectClassName };
+            var queryTypeGenericParameters = new List<string> { m_whereClassName, m_selectClassName };
 
             if (orderByClass != null)
             {
                 queryTypeName += "Sortable";
-                queryTypeGenericParameters.Insert(1, OrderByClassName);
+                queryTypeGenericParameters.Insert(1, m_orderByClassName);
             }
 
             if (module.Generator)
@@ -84,38 +92,51 @@ namespace LinqToWiki.Codegen.ModuleGenerators
                     sortType = SortType.Newer;
             }
 
-            GenerateMethod(module, methodParameters, SelectClassName, SelectProps, MethodClassName, false, sortType);
+            GenerateMethod(module, methodParameters, m_selectClassName, m_selectProps, MethodClassName, false, sortType);
         }
 
+        /// <summary>
+        /// Removes parameters with the given names from the list and returns them in a new list.
+        /// </summary>
         private static IList<Parameter> RemoveAndReturnByNames(List<Parameter> parameters, params string[] names)
         {
             return parameters.RemoveAndReturn(p => names.Contains(p.Name));
         }
 
+        /// <summary>
+        /// Creates class that used in the <c>select</c> clause.
+        /// </summary>
         private ClassDeclarationSyntax GenerateSelect(IEnumerable<PropertyGroup> propertyGroups, bool first)
         {
             propertyGroups = propertyGroups.Where(pg => pg.Name != null).ToArray();
 
             var propsField = CreatePropsField(propertyGroups);
 
-            SelectProps = propsField;
+            m_selectProps = propsField;
 
             AddMembersToClass(MethodClassName, propsField);
 
             var properties = propertyGroups.SelectMany(g => g.Properties).Distinct();
 
-            return GenerateClassForProperties(SelectClassName, properties, first ? "IFirst" : null);
+            return GenerateClassForProperties(m_selectClassName, properties, first ? "IFirst" : null);
         }
 
+        /// <summary>
+        /// Creates class that is used in the <c>where</c> clause.
+        /// </summary>
         private ClassDeclarationSyntax GenerateWhere(IEnumerable<Parameter> parameters)
         {
             var propertyDeclarations =
                 parameters.Select(p => GenerateProperty(p.Name, p.Type, multi: p.Multi, description: p.Description));
 
-            return SyntaxEx.ClassDeclaration(WhereClassName, propertyDeclarations)
+            return SyntaxEx.ClassDeclaration(m_whereClassName, propertyDeclarations)
                 .WithPrivateConstructor();
         }
 
+        /// <summary>
+        /// Creates class that is ised in the <c>orderby</c> clause.
+        /// Returns <c>null</c>, if the module doesn't support sorting.
+        /// </summary>
         private ClassDeclarationSyntax GenerateOrderBy(IEnumerable<Parameter> parameters, IEnumerable<Property> properties)
         {
             var propertyTypes = properties.Distinct().ToDictionary(p => p.Name, p => p.Type);
@@ -131,7 +152,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
                 propertyDeclarations =
                     ((EnumParameterType)sortParameter.Type).Values.Select(v => GenerateProperty(v, propertyTypes[v]));
 
-            return SyntaxEx.ClassDeclaration(OrderByClassName, propertyDeclarations)
+            return SyntaxEx.ClassDeclaration(m_orderByClassName, propertyDeclarations)
                 .WithPrivateConstructor();
         }
 

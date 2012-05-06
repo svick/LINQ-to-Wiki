@@ -1,7 +1,13 @@
 namespace LinqToWiki.Codegen.ModuleInfo
 {
+    /// <summary>
+    /// A simple or primitive type represented just by its name.
+    /// </summary>
     class SimpleParameterType : ParameterType
     {
+        /// <summary>
+        /// Name of the type.
+        /// </summary>
         public string Name { get; private set; }
 
         public SimpleParameterType(string name)

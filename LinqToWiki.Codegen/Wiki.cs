@@ -13,8 +13,14 @@ using Roslyn.Compilers.CSharp;
 
 namespace LinqToWiki.Codegen
 {
+    /// <summary>
+    /// Holds all information about the code being generated for a wiki.
+    /// </summary>
     public class Wiki
     {
+        /// <summary>
+        /// Nnames of basic generated types.
+        /// </summary>
         internal static class Names
         {
             public const string Wiki = "Wiki";
@@ -31,13 +37,30 @@ namespace LinqToWiki.Codegen
 
         private int m_modulesFinished;
 
+        /// <summary>
+        /// The namespace of generated types that are not entities.
+        /// </summary>
         internal string Namespace { get; private set; }
+
+        /// <summary>
+        /// The namespace of generated entities: types used for the select, where and orderby clauses
+        /// of query modules and as result of non-query modules.
+        /// </summary>
         internal string EntitiesNamespace { get; private set; }
 
+        /// <summary>
+        /// List of all source code files, along with their names.
+        /// </summary>
         internal TupleList<string, CompilationUnitSyntax> Files { get; private set; }
 
+        /// <summary>
+        /// <see cref="TypeManager"/> for this wiki.
+        /// </summary>
         internal TypeManager TypeManager { get; private set; }
 
+        /// <summary>
+        /// Base parameters common to non-prop query modules.
+        /// </summary>
         internal static readonly TupleList<string, string> QueryBaseParameters =
             new TupleList<string, string> { { "action", "query" } };
 
@@ -57,6 +80,9 @@ namespace LinqToWiki.Codegen
             CreateEnumsFile();
         }
 
+        /// <summary>
+        /// Creates the <c>QueryAction</c> class that is used to access non-prop query modules.
+        /// </summary>
         private void CreateQueryActionClass()
         {
             var wikiField = SyntaxEx.FieldDeclaration(
@@ -78,6 +104,9 @@ namespace LinqToWiki.Codegen
                     "LinqToWiki.Parameters", "LinqToWiki.Internals", EntitiesNamespace));
         }
 
+        /// <summary>
+        /// Creates the <c>Page</c> class that used to access prop query modules.
+        /// </summary>
         private void CreatePageClass()
         {
             var pageClass = SyntaxEx.ClassDeclaration(SyntaxKind.AbstractKeyword, Names.Page)
@@ -91,6 +120,11 @@ namespace LinqToWiki.Codegen
                     "LinqToWiki.Internals", EntitiesNamespace));
         }
 
+        /// <summary>
+        /// Creates the <c>Wiki</c> class, that is used as an entry point for the whole API.
+        /// It can be used to access non-query modules directly and non-prop query mdoules
+        /// indirectly though its <c>Query</c> property.
+        /// </summary>
         private void CreateWikiClass(string baseUri, string apiPath)
         {
             var wikiField = SyntaxEx.FieldDeclaration(
@@ -131,6 +165,10 @@ namespace LinqToWiki.Codegen
                     "LinqToWiki.Internals", "LinqToWiki.Parameters", EntitiesNamespace));
         }
 
+        /// <summary>
+        /// Creates methods to create <see cref="ListSourceBase{TPage}"/> page sources
+        /// for the <c>Wiki</c> class.
+        /// </summary>
         private static IEnumerable<MethodDeclarationSyntax> CreatePageSourceMethods(FieldDeclarationSyntax wikiField)
         {
             var pageSources =
@@ -168,6 +206,9 @@ namespace LinqToWiki.Codegen
             }
         }
 
+        /// <summary>
+        /// Creates file that holds all enums.
+        /// </summary>
         private void CreateEnumsFile()
         {
             Files.Add(
@@ -176,6 +217,10 @@ namespace LinqToWiki.Codegen
                     SyntaxEx.NamespaceDeclaration(Namespace), "LinqToWiki.Internals"));
         }
 
+        /// <summary>
+        /// Creates the <c>PageResult</c> class that can be used as a named (non-anonymous) type
+        /// for the result of PageSource queries.
+        /// </summary>
         private void CreatePageResultClass()
         {
             var infoResultClassName = Files["info"].SingleDescendant<ClassDeclarationSyntax>().Identifier.ValueText;
@@ -224,11 +269,9 @@ namespace LinqToWiki.Codegen
                     "System.Collections.Generic", EntitiesNamespace));
         }
 
-        public void AddQueryModule(string moduleName)
-        {
-            AddQueryModules(new[] { moduleName });
-        }
-
+        /// <summary>
+        /// Adds the code for the given query modules.
+        /// </summary>
         public void AddQueryModules(IEnumerable<string> moduleNames)
         {
             var modules = m_modulesSource.GetQueryModules(moduleNames);
@@ -238,9 +281,9 @@ namespace LinqToWiki.Codegen
                 if (module.QueryType == QueryType.List || module.QueryType == QueryType.Meta)
                 {
                     if (module.ListResult)
-                        AddQueryModule(module);
+                        new QueryModuleGenerator(this).Generate(module);
                     else
-                        AddSingleQueryModule(module);
+                        new SingleQueryModuleGenerator(this).Generate(module);
                 }
                 else
                 {
@@ -249,70 +292,52 @@ namespace LinqToWiki.Codegen
 
                     if (module.Name == "info")
                     {
-                        AddInfoModule(module);
+                        new InfoModuleGenerator(this).Generate(module);
                         CreatePageResultClass();
                     }
                     else if (!module.ListResult)
                     {
-                        AddSinglePropModule(module);
+                        new SinglePropModuleGenerator(this).Generate(module);
                     }
                     else
                     {
                         if (module.Name == "stashimageinfo")
                             continue;
 
-                        AddPropModule(module);
+                        new PropModuleGenerator(this).Generate(module);
                     }
                 }
             }
         }
 
+        /// <summary>
+        /// Adds the code for the given non-query modules.
+        /// </summary>
         public void AddModules(IEnumerable<string> moduleNames)
         {
             foreach (var module in m_modulesSource.GetModules(moduleNames))
-                AddModule(module);
+                new ModuleGenerator(this).Generate(module);
         }
 
+        /// <summary>
+        /// Adds the code for all query modules.
+        /// </summary>
         public void AddAllQueryModules()
         {
             AddQueryModules(m_modulesSource.GetAllQueryModuleNames());
         }
 
+        /// <summary>
+        /// Adds the code for all non-query modules.
+        /// </summary>
         public void AddAllModules()
         {
             AddModules(m_modulesSource.GetAllModuleNames());
         }
 
-        private void AddQueryModule(Module module)
-        {
-            new QueryModuleGenerator(this).Generate(module);
-        }
-
-        private void AddSingleQueryModule(Module module)
-        {
-            new SingleQueryModuleGenerator(this).Generate(module);
-        }
-
-        private void AddPropModule(Module module)
-        {
-            new PropModuleGenerator(this).Generate(module);
-        }
-
-        private void AddSinglePropModule(Module module)
-        {
-            new SinglePropModuleGenerator(this).Generate(module);
-        }
-
-        private void AddInfoModule(Module module)
-        {
-            new InfoModuleGenerator(this).Generate(module);
-        }
-
-        private void AddModule(Module module)
-        {
-            new ModuleGenerator(this).Generate(module);
-        }
-
+        /// <summary>
+        /// Compiles the generated code into a DLL.
+        /// </summary>
         public CompilerResults Compile(string name, string path = "")
         {
             if (m_modulesFinished == 0)
@@ -339,6 +364,9 @@ namespace LinqToWiki.Codegen
                 files.ToArray());
         }
 
+        /// <summary>
+        /// Writes the generated code into a folder.
+        /// </summary>
         public IEnumerable<string> WriteToFiles(string directoryPath)
         {
             if (m_modulesFinished == 0)
@@ -377,6 +405,9 @@ namespace LinqToWiki.Codegen
             return builder.ToString();
         }
 
+        /// <summary>
+        /// Marks module as finished.
+        /// </summary>
         public void ModuleFinished()
         {
             m_modulesFinished++;

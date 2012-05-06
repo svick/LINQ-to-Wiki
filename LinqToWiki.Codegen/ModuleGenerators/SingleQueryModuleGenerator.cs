@@ -8,6 +8,8 @@ using LinqToWiki.Internals;
 
 namespace LinqToWiki.Codegen.ModuleGenerators
 {
+    /// Generates code for <see cref="LinqToWiki.Internals.QueryType.Meta"/> query modules,
+    /// that return a single result (like <c>userinfo</c>).
     class SingleQueryModuleGenerator : ModuleGenerator
     {
         public SingleQueryModuleGenerator(Wiki wiki)

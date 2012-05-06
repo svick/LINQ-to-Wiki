@@ -3,6 +3,9 @@ using System.Xml.Linq;
 
 namespace LinqToWiki.Codegen.ModuleInfo
 {
+    /// <summary>
+    /// Base type for classes that represent the type of parameter or property in the API.
+    /// </summary>
     public abstract class ParameterType : IEquatable<ParameterType>
     {
         public static ParameterType Parse(XElement element)

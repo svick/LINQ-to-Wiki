@@ -6,6 +6,10 @@ using Roslyn.Compilers.CSharp;
 
 namespace LinqToWiki.Codegen.ModuleGenerators
 {
+    /// <summary>
+    /// Generates code for <see cref="LinqToWiki.Internals.QueryType.Prop"/> query modules
+    /// that return a list of results (almost all of them do).
+    /// </summary>
     class PropModuleGenerator : QueryModuleGenerator
     {
         public PropModuleGenerator(Wiki wiki)

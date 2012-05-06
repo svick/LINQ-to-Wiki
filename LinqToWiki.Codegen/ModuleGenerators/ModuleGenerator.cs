@@ -7,11 +7,26 @@ using Roslyn.Compilers.CSharp;
 
 namespace LinqToWiki.Codegen.ModuleGenerators
 {
+    /// <summary>
+    /// Generates code for “normal” (non-query) modules.
+    /// </summary>
     class ModuleGenerator : ModuleGeneratorBase
     {
+        /// <summary>
+        /// Name of the class that will be returned by this module.
+        /// If the module doesn't return anything (like <c>logout</c>), should be <c>"object"</c>
+        /// and <see cref="m_voidResult"/> should be set to <c>true</c>.
+        /// </summary>
         protected string ResultClassName { get; private set; }
 
+        /// <summary>
+        /// Is the result a list (i.e. <see cref="IEnumerable{T}"/>)?
+        /// </summary>
         private bool m_listResult;
+
+        /// <summary>
+        /// Is the result <c>void</c>?
+        /// </summary>
         private bool m_voidResult;
 
         public ModuleGenerator(Wiki wiki)
@@ -44,16 +59,25 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             GenerateMethod(module);
         }
 
+        /// <summary>
+        /// Returns the property groups of the module.
+        /// </summary>
         protected virtual IEnumerable<PropertyGroup> GetPropertyGroups(Module module)
         {
             return module.PropertyGroups;
         }
 
+        /// <summary>
+        /// Generates the method that can be called to use this module.
+        /// </summary>
         protected virtual void GenerateMethod(Module module)
         {
             GenerateMethod(module, module.Parameters, ResultClassName, null, Wiki.Names.Wiki, true, null);
         }
 
+        /// <summary>
+        /// Generates the class that will be returned from this module.
+        /// </summary>
         protected virtual ClassDeclarationSyntax GenerateResultClass(IEnumerable<PropertyGroup> propertyGroups)
         {
             var propertyGroup = propertyGroups.SingleOrDefault(g => g.Name == string.Empty);

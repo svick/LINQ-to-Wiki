@@ -8,6 +8,9 @@ using LinqToWiki.Parameters;
 
 namespace LinqToWiki.Codegen.ModuleInfo
 {
+    /// <summary>
+    /// Class that can be used to retrieve information about API modules available on a wiki.
+    /// </summary>
     class ModulesSource
     {
         private readonly QueryProcessor<ParamInfo> m_processor;
@@ -31,6 +34,9 @@ namespace LinqToWiki.Codegen.ModuleInfo
                     e => ParamInfo.Parse(e, propsDefaults)));
         }
 
+        /// <summary>
+        /// Loads module names from the wiki.
+        /// </summary>
         private void RetrieveModuleNames()
         {
             var module = m_processor
@@ -41,6 +47,9 @@ namespace LinqToWiki.Codegen.ModuleInfo
             m_queryModuleNames = ((EnumParameterType)module.Parameters.Single(p => p.Name == "querymodules").Type).Values.ToArray();
         }
 
+        /// <summary>
+        /// Returns the names of all query modules.
+        /// </summary>
         public IEnumerable<string> GetAllQueryModuleNames()
         {
             if (m_queryModuleNames == null)
@@ -49,6 +58,9 @@ namespace LinqToWiki.Codegen.ModuleInfo
             return m_queryModuleNames;
         }
 
+        /// <summary>
+        /// Returns the names of all non-query modules.
+        /// </summary>
         public IEnumerable<string> GetAllModuleNames()
         {
             if (m_moduleNames == null)
@@ -57,16 +69,26 @@ namespace LinqToWiki.Codegen.ModuleInfo
             return m_moduleNames;
         }
 
+        /// <summary>
+        /// Returns information about the given query modules.
+        /// </summary>
         public IEnumerable<Module> GetQueryModules(IEnumerable<string> moduleNames)
         {
             return GetModulesInternal(moduleNames, "querymodules", info => info.QueryModules);
         }
 
+        /// <summary>
+        /// Returns information about the given non-query modules.
+        /// </summary>
         public IEnumerable<Module> GetModules(IEnumerable<string> moduleNames)
         {
             return GetModulesInternal(moduleNames, "modules", info => info.Modules);
         }
 
+        /// <summary>
+        /// Returns information about the given modules
+        /// (query or non-query, based on the <see cref="modulesSelector"/> and <see cref="parameterName"/>).
+        /// </summary>
         private IEnumerable<Module> GetModulesInternal(
             IEnumerable<string> moduleNames, string parameterName, Func<ParamInfo, IEnumerable<Module>> modulesSelector)
         {

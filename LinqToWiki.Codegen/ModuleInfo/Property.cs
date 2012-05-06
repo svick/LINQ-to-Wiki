@@ -3,14 +3,29 @@ using System.Xml.Linq;
 
 namespace LinqToWiki.Codegen.ModuleInfo
 {
+    /// <summary>
+    /// Property of the result of a module.
+    /// </summary>
     public class Property : IEquatable<Property>
     {
+        /// <summary>
+        /// Name of the property
+        /// </summary>
         public string Name { get; internal set; }
 
+        /// <summary>
+        /// Type of the property
+        /// </summary>
         public ParameterType Type { get; internal set; }
 
+        /// <summary>
+        /// Is the property nullable?
+        /// </summary>
         public bool Nullable { get; internal set; }
 
+        /// <summary>
+        /// Parses the <c>property</c> XML element.
+        /// </summary>
         public static Property Parse(XElement element)
         {
             return new Property

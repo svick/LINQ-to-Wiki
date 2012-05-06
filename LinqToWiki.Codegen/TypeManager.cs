@@ -7,6 +7,10 @@ using Roslyn.Compilers.CSharp;
 
 namespace LinqToWiki.Codegen
 {
+    /// <summary>
+    /// Handles converting API types into source code.
+    /// Creates code for types for <see cref="EnumParameterType"/>.
+    /// </summary>
     class TypeManager
     {
         private readonly Wiki m_wiki;
@@ -19,12 +23,18 @@ namespace LinqToWiki.Codegen
             m_wiki = wiki;
         }
 
+        /// <summary>
+        /// Returns a type name that can be used in the source code for the specified parameter.
+        /// </summary>
         public string GetTypeName(
             Parameter parameter, string moduleName, bool nullable, bool useItemOrCollection = true)
         {
             return GetTypeName(parameter.Type, parameter.Name, moduleName, parameter.Multi, nullable, useItemOrCollection);
         }
 
+        /// <summary>
+        /// Returns a type name that can be used in the source code for the <see cref="ParameterType"/>.
+        /// </summary>
         public string GetTypeName(
             ParameterType parameterType, string propertyName, string moduleName, bool multi, bool nullable = false,
             bool useItemOrCollection = true)
@@ -37,6 +47,9 @@ namespace LinqToWiki.Codegen
                 (EnumParameterType)parameterType, propertyName, moduleName, multi, useItemOrCollection);
         }
 
+        /// <summary>
+        /// Returns a source code type name for the given <see cref="SimpleParameterType"/>.
+        /// </summary>
         private static string GetSimpleTypeName(
             SimpleParameterType simpleType, string propertyName, bool multi, bool nullable, bool useItemOrCollection)
         {
@@ -72,6 +85,9 @@ namespace LinqToWiki.Codegen
             return result;
         }
 
+        /// <summary>
+        /// Returns a source code type name for the given <see cref="EnumParameterType"/>.
+        /// </summary>
         private string GetEnumTypeName(
             EnumParameterType enumType, string propertyName, string moduleName, bool multi, bool useItemOrCollection)
         {
@@ -85,6 +101,9 @@ namespace LinqToWiki.Codegen
             return result;
         }
 
+        /// <summary>
+        /// Creates a type representing the given <see cref="EnumParameterType"/>.
+        /// </summary>
         private string GenerateType(EnumParameterType enumType, string propertyName, string moduleName)
         {
             string typeName = moduleName + propertyName;
@@ -137,10 +156,19 @@ namespace LinqToWiki.Codegen
             return typeName;
         }
 
+        /// <summary>
+        /// Characters that can't be present in the names of enum members and have be replaced.
+        /// </summary>
         private static readonly char[] ToReplace = "-/ ".ToCharArray();
 
+        /// <summary>
+        /// Names of enum members that are keywords and have to be prefixed by a <c>@</c>.
+        /// </summary>
         private static readonly string[] Restricted = new[] { "new", "true", "false" };
 
+        /// <summary>
+        /// Fixes the name of an enum member, so that it's a valid C# identifier.
+        /// </summary>
         private static string FixEnumMemberName(string value)
         {
             if (value == string.Empty)
@@ -157,7 +185,9 @@ namespace LinqToWiki.Codegen
             return value;
         }
 
-        // value is expected to be a string
+        /// <summary>
+        /// Returns an expression that converts the string <see cref="value"/> into the type of <see cref="property"/>.
+        /// </summary>
         public ExpressionSyntax CreateConverter(Property property, string moduleName, ExpressionSyntax value, ExpressionSyntax wiki)
         {
             var simpleType = property.Type as SimpleParameterType;
@@ -167,6 +197,10 @@ namespace LinqToWiki.Codegen
             return CreateEnumConverter((EnumParameterType)property.Type, moduleName, value);
         }
 
+        /// <summary>
+        /// Returns an expression that converts to a <see cref="SimpleParameterType"/>,
+        /// using <see cref="LinqToWiki.Internals.ValueParser"/>.
+        /// </summary>
         private static ExpressionSyntax CreateSimpleConverter(
             SimpleParameterType simpleType, string propertyName, ExpressionSyntax value, ExpressionSyntax wiki)
         {
@@ -197,6 +231,9 @@ namespace LinqToWiki.Codegen
             return SyntaxEx.Invocation(SyntaxEx.MemberAccess("ValueParser", "Parse" + typeName), value);
         }
 
+        /// <summary>
+        /// Returns an expression that converts to an <see cref="EnumParameterType"/>.
+        /// </summary>
         private ExpressionSyntax CreateEnumConverter(EnumParameterType type, string moduleName, ExpressionSyntax value)
         {
             var typeName = m_enumTypeNames[moduleName, type];

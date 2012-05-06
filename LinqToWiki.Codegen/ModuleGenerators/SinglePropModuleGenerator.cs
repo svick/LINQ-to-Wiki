@@ -6,6 +6,10 @@ using Roslyn.Compilers.CSharp;
 
 namespace LinqToWiki.Codegen.ModuleGenerators
 {
+    /// <summary>
+    /// Generates code for <see cref="LinqToWiki.Internals.QueryType.Prop"/> query modules
+    /// that return a single result (like <c>categoryinfo</c>).
+    /// </summary>
     class SinglePropModuleGenerator : ModuleGenerator
     {
         public SinglePropModuleGenerator(Wiki wiki)
@@ -23,6 +27,9 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             AddMembersToClass(Wiki.Names.Page, propsField, propertiesField, moduleProperty);
         }
 
+        /// <summary>
+        /// Creates the property that can used to access the information from the given module.
+        /// </summary>
         private PropertyDeclarationSyntax CreateProperty(Module module)
         {
             var summary = SyntaxEx.DocumentationSummary(module.Description);

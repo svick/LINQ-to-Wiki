@@ -42,12 +42,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LinqToWikiRoslynExtensions.cs" />
     <Compile Include="ListExtensions.cs" />
     <Compile Include="ModuleGenerators\InfoModuleGenerator.cs" />
     <Compile Include="ModuleGenerators\QueryModuleGenerator.cs" />
     <Compile Include="ModuleGenerators\ModuleGenerator.cs" />
     <Compile Include="ModuleGenerators\ModuleGeneratorBase.cs" />
-    <Compile Include="ModuleGenerators\ModuleGeneratorRoslynExtensions.cs" />
     <Compile Include="ModuleGenerators\PropModuleGenerator.cs" />
     <Compile Include="ModuleGenerators\SinglePropModuleGenerator.cs" />
     <Compile Include="ModuleGenerators\SingleQueryModuleGenerator.cs" />

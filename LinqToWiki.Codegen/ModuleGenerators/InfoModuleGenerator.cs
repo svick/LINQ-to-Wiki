@@ -1,18 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using LinqToWiki.Codegen.ModuleInfo;
-using LinqToWiki.Collections;
 using Roslyn.Compilers.CSharp;
 
 namespace LinqToWiki.Codegen.ModuleGenerators
 {
+    /// <summary>
+    /// Generates code for the <c>info</c> query module.
+    /// </summary>
     class InfoModuleGenerator : SinglePropModuleGenerator
     {
         public InfoModuleGenerator(Wiki wiki)
             : base(wiki)
         {}
 
+        /// <summary>
+        /// Properties that are always present and don't actually require the <c>info</c> module.
+        /// </summary>
         private static readonly PropertyGroup SpecialProperties =
             new PropertyGroup
             {
