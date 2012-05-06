@@ -61,6 +61,7 @@
     <Compile Include="Expressions\ExpressionReplacer.cs" />
     <Compile Include="Expressions\PageExpressionParser.cs" />
     <Compile Include="Expressions\UsedPropertiesGatherer.cs" />
+    <Compile Include="Internals\NamespaceInfo.cs" />
     <Compile Include="Internals\PageData.cs" />
     <Compile Include="Internals\PageProperties.cs" />
     <Compile Include="Internals\PagingManager.cs" />
@@ -76,16 +77,15 @@
     <Compile Include="PageSources\GeneratorPagesCollection.cs" />
     <Compile Include="PageSources\GeneratorPagesSource.cs" />
     <Compile Include="PageSources\IPagesCollection.cs" />
-    <Compile Include="PageSources\IPagesSource.cs" />
     <Compile Include="PageSources\ListPagesCollection.cs" />
     <Compile Include="PageSources\ListSourceBase.cs" />
     <Compile Include="PageSources\PageIdsSource.cs" />
     <Compile Include="PageSources\PagesSource.cs" />
-    <Compile Include="PageSources\PagesSourceExtensions.cs" />
     <Compile Include="PageSources\RevIdsSource.cs" />
     <Compile Include="PageSources\TitlesSource.cs" />
     <Compile Include="Parameters\NameValueParameter.cs" />
     <Compile Include="Parameters\PageQueryParameters.cs" />
+    <Compile Include="Parameters\PropQueryParameters.cs" />
     <Compile Include="Parameters\QueryParameters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WikiQuery\WikiQueryFirstExtension.cs" />

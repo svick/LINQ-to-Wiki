@@ -1,4 +1,5 @@
 * XML documentation
+* XML documentation of generated types (e.g. Wiki)
 * write thesis
 * GUI application
 * optionally turn off getting namespaces every time (or maybe cache them?)

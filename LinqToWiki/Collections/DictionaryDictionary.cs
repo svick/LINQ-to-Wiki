@@ -9,6 +9,9 @@ namespace LinqToWiki.Collections
     /// </summary>
     public class DictionaryDictionary<TKey1, TKey2, TValue> : Dictionary<TKey1, Dictionary<TKey2, TValue>>
     {
+        /// <summary>
+        /// Gets or sets the value associated with the specified composite key.
+        /// </summary>
         public TValue this[TKey1 key1, TKey2 key2]
         {
             get
@@ -20,11 +23,15 @@ namespace LinqToWiki.Collections
             }
             set
             {
-                GetOrCreateInnerDict(key1)[key2] = value;
+                GetOrCreateInnerDictionary(key1)[key2] = value;
             }
         }
 
-        private Dictionary<TKey2, TValue> GetOrCreateInnerDict(TKey1 key1)
+        /// <summary>
+        /// Returns the inner dictionary for the given key.
+        /// If it doesn't exist yet, creates it first.
+        /// </summary>
+        private Dictionary<TKey2, TValue> GetOrCreateInnerDictionary(TKey1 key1)
         {
             Dictionary<TKey2, TValue> innerDict;
             bool found = TryGetValue(key1, out innerDict);
@@ -36,6 +43,10 @@ namespace LinqToWiki.Collections
             return innerDict;
         }
 
+        /// <summary>
+        /// Gets the value associated with the specified key.
+        /// </summary>
+        /// <returns><c>>true</c> if the Dictionary contains an element with the specified key; otherwise, <c>false</c>.</returns>
         public bool TryGetValue(TKey1 key1, TKey2 key2, out TValue value)
         {
             Dictionary<TKey2, TValue> innerDict;
@@ -47,9 +58,12 @@ namespace LinqToWiki.Collections
             return false;
         }
 
+        /// <summary>
+        /// Adds the specified key and value to the dictionary.
+        /// </summary>
         public void Add(TKey1 key1, TKey2 key2, TValue value)
         {
-            GetOrCreateInnerDict(key1).Add(key2, value);
+            GetOrCreateInnerDictionary(key1).Add(key2, value);
         }
     }
 }

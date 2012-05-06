@@ -23,7 +23,7 @@ namespace LinqToWiki.Internals
         }
 
         /// <summary>
-        /// Executes a query based on the <see cref="parameters"/> and returns a collection of results.
+        /// Executes a query based on the <see cref="parameters"/> and returns a lazy collection of results.
         /// </summary>
         public IEnumerable<TResult> ExecuteList<TResult>(QueryParameters<T, TResult> parameters)
         {
@@ -44,6 +44,9 @@ namespace LinqToWiki.Internals
             } while (queryContinue != null);
         }
 
+        /// <summary>
+        /// Retrieves items for a single primary page.
+        /// </summary>
         private IEnumerable<TResult> GetListItems<TResult>(Func<T, TResult> selector, XElement downloaded)
         {
             XElement resultsElement;
@@ -86,39 +89,55 @@ namespace LinqToWiki.Internals
                 if (element == null && attribute != null)
                     element = new XElement(attribute.Name, attribute.Value);
                 return
-                    parameters.Selector(
-                        m_queryTypeProperties.Parse(
-                            element,
-                            m_wiki));
+                    parameters.Selector(m_queryTypeProperties.Parse(element, m_wiki));
             }
 
             throw new NotSupportedException();
         }
 
+        /// <summary>
+        /// Executes query based on the given parameters and returns the results as an XML element.
+        /// </summary>
         private XElement Download(
             IEnumerable<Tuple<string, string>> processedParameters, Tuple<string, string> queryContinue = null)
         {
             return Download(m_wiki, processedParameters, queryContinue);
         }
 
+        /// <summary>
+        /// Processes the data about the query and returns a collection of query parameters.
+        /// </summary>
         private IEnumerable<Tuple<string, string>> ProcessParameters(QueryParameters parameters, bool list)
         {
             return ProcessParameters(m_queryTypeProperties, parameters, list);
         }
 
+        /// <summary>
+        /// Returns a <see cref="QueryPageProcessor"/> used in page source queries.
+        /// </summary>
         public QueryPageProcessor GetPageProcessor()
         {
             return new QueryPageProcessor(m_wiki);
         }
 
+        /// <summary>
+        /// Returns a delegate that can be used to get generator parameters for a given limit.
+        /// </summary>
         public Func<int, IEnumerable<Tuple<string, string>>> ProcessGeneratorParameters(QueryParameters parameters)
         {
             return limit => ProcessParameters(m_queryTypeProperties, parameters, true, true, limit);
         }
     }
 
+    /// <summary>
+    /// Processes query parameters and parses the result of the query.
+    /// Non-generic, static part of <see cref="QueryProcessor{T}"/>.
+    /// </summary>
     public abstract class QueryProcessor
     {
+        /// <summary>
+        /// Executes query based on the given parameters and returns the results as an XML element.
+        /// </summary>
         public static XElement Download(
             WikiInfo wiki, IEnumerable<Tuple<string, string>> processedParameters,
             Tuple<string, string> queryContinue = null)
@@ -126,6 +145,10 @@ namespace LinqToWiki.Internals
             return Download(wiki, processedParameters, new[] { queryContinue });
         }
 
+        /// <summary>
+        /// Executes query based on the given parameters and returns the results as an XML element.
+        /// Supports multiple query-contine parameters.
+        /// </summary>
         public static XElement Download(
             WikiInfo wiki, IEnumerable<Tuple<string, string>> processedParameters,
             IEnumerable<Tuple<string, string>> queryContinues = null)
@@ -161,11 +184,17 @@ namespace LinqToWiki.Internals
             }
         }
 
+        /// <summary>
+        /// Parses error element returned from the API into an <see cref="ApiErrorException"/>.
+        /// </summary>
         private static ApiErrorException ParseError(XElement error)
         {
             return new ApiErrorException((string)error.Attribute("code"), (string)error.Attribute("info"));
         }
 
+        /// <summary>
+        /// Processes the data about the query and returns a collection of query parameters.
+        /// </summary>
         public static IEnumerable<Tuple<string, string>> ProcessParameters(
             QueryTypeProperties queryTypeProperties, QueryParameters parameters,
             bool list, bool generator = false, int limit = -1)
@@ -231,16 +260,18 @@ namespace LinqToWiki.Internals
             if (list)
             {
                 if (!generator)
-                    parsedParameters.Add(prefix + "prop", NameValueParameter.JoinValues(selectedProps));
+                    parsedParameters.Add(prefix + "prop", selectedProps.ToQueryString());
 
                 if (limit != 0)
-                    parsedParameters.Add(
-                        prefix + "limit", limit == -1 ? "max" : limit.ToString(CultureInfo.InvariantCulture));
+                    parsedParameters.Add(prefix + "limit", limit == -1 ? "max" : limit.ToQueryString());
             }
 
             return parsedParameters;
         }
 
+        /// <summary>
+        /// Gets query-continue values for a given module.
+        /// </summary>
         public static Tuple<string, string> GetQueryContinue(XElement downloaded, string moduleName)
         {
             Tuple<string, string> result;
@@ -248,6 +279,9 @@ namespace LinqToWiki.Internals
             return result;
         }
 
+        /// <summary>
+        /// Parses query-continue values in a query result.
+        /// </summary>
         public static Dictionary<string, Tuple<string, string>> GetQueryContinues(XElement downloaded)
         {
             var queryContinueElement = downloaded.Element("query-continue");

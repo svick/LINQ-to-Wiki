@@ -7,6 +7,9 @@ namespace LinqToWiki.Internals
     /// </summary>
     public abstract class StringValue : IEquatable<StringValue>
     {
+        /// <summary>
+        /// The underlying string value.
+        /// </summary>
         public string Value { get; private set; }
 
         protected StringValue(string value)

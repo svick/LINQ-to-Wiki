@@ -5,6 +5,9 @@ using LinqToWiki.Parameters;
 
 namespace LinqToWiki.Internals
 {
+    /// <summary>
+    /// Handles secondary paging for a set of pages from the same primary page.
+    /// </summary>
     class PagingManager
     {
         private readonly WikiInfo m_wiki;
@@ -31,16 +34,26 @@ namespace LinqToWiki.Internals
             m_secondaryQueryContinues = secondaryQueryContinues;
         }
 
+        /// <summary>
+        /// Sets the set of pages to handle.
+        /// </summary>
         public void SetPages(IEnumerable<PageData> pages)
         {
             m_pages = pages.Where(p => p.PageId != null).ToDictionary(p => p.PageId.Value);
         }
 
+        /// <summary>
+        /// Are there any more secondary pages for the given property?
+        /// </summary>
         public bool HasMore(string name)
         {
             return m_secondaryQueryContinues.ContainsKey(name);
         }
 
+        /// <summary>
+        /// Retrieves one more secondary page
+        /// and puts data from it to the corresponding <see cref="PageData"/>.
+        /// </summary>
         public void GetMore()
         {
             var downloaded = QueryProcessor.Download(

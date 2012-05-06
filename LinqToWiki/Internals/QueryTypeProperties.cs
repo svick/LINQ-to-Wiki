@@ -5,6 +5,10 @@ using System.Xml.Linq;
 
 namespace LinqToWiki.Internals
 {
+    /// <summary>
+    /// Represents a module and its properties.
+    /// Non-generic part of <see cref="QueryTypeProperties{T}"/>.
+    /// </summary>
     public abstract class QueryTypeProperties
     {
         private readonly IDictionary<string, string[]> m_props;
@@ -63,11 +67,15 @@ namespace LinqToWiki.Internals
             return m_props.Values.SelectMany(p => p).Distinct();
         }
 
+        /// <summary>
+        /// Returns a delegate that can be used for parsing of results for this module.
+        /// Non-generic version of <see cref="QueryTypeProperties{T}.Parse"/>.
+        /// </summary>
         public abstract Func<XElement, WikiInfo, object> Parser { get; }
     }
 
     /// <summary>
-    /// Represents a certain type of query and its properties.
+    /// Represents a module and its properties.
     /// </summary>
     public class QueryTypeProperties<T> : QueryTypeProperties
     {

@@ -6,7 +6,9 @@ using LinqToWiki.Parameters;
 namespace LinqToWiki
 {
     /// <summary>
-    /// Represents a result of a query.
+    /// Represents the result of a query.
+    /// The query is actually executed only after <see cref="ToEnumerable"/>
+    /// is called and its result is enumerated.
     /// </summary>
     public class WikiQueryResult<TSource, TResult> : IWikiQueryResult
     {
@@ -24,11 +26,17 @@ namespace LinqToWiki
             Parameters = parameters;
         }
 
+        /// <summary>
+        /// Exectes the query as a <see cref="List{T}"/>.
+        /// </summary>
         public List<TResult> ToList()
         {
             return ToEnumerable().ToList();
         }
 
+        /// <summary>
+        /// Executes the query as an <see cref="IEnumerable{T}"/>.
+        /// </summary>
         public IEnumerable<TResult> ToEnumerable()
         {
             return QueryProcessor.ExecuteList(Parameters);

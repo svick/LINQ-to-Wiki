@@ -51,10 +51,5 @@ namespace LinqToWiki.Parameters
         {
             return string.Format("{0}={1}", Name, Value);
         }
-
-        public static string JoinValues(IEnumerable<string> values)
-        {
-            return string.Join("|", values);
-        }
     }
 }

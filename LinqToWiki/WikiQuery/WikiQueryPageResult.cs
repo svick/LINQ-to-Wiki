@@ -26,11 +26,17 @@ namespace LinqToWiki
             m_parameters = parameters;
         }
 
+        /// <summary>
+        /// Exectes the query as a <see cref="List{T}"/>.
+        /// </summary>
         public List<TResult> ToList()
         {
             return ToEnumerable().ToList();
         }
 
+        /// <summary>
+        /// Executes the query as an <see cref="IEnumerable{T}"/>.
+        /// </summary>
         public IEnumerable<TResult> ToEnumerable()
         {
             return m_queryProcessor.ExecuteList(m_parameters, m_selector, m_pageProperties);

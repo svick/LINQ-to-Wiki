@@ -2,6 +2,9 @@
 
 namespace LinqToWiki.Expressions
 {
+    /// <summary>
+    /// Replaces an expression with another one.
+    /// </summary>
     public class ExpressionReplacer : ExpressionVisitor
     {
         private readonly Expression m_toReplace;
@@ -21,6 +24,10 @@ namespace LinqToWiki.Expressions
             return base.Visit(exp);
         }
 
+        /// <summary>
+        /// Returns <see cref="expression"/> with instances of <see cref="toReplace"/>
+        /// replaced by <see cref="replaceWith"/>.
+        /// </summary>
         public static Expression Replace(
             Expression expression, Expression toReplace, Expression replaceWith)
         {

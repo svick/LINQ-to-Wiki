@@ -8,8 +8,17 @@ using LinqToWiki.Parameters;
 
 namespace LinqToWiki.Expressions
 {
+    /// <summary>
+    /// Parses queries that use a page source.
+    /// </summary>
     static class PageExpressionParser
     {
+        /// <summary>
+        /// Parses the select clause of a page source query.
+        /// The result is a modified collection of parameters
+        /// and a delegate that can be used to create the result for each item
+        /// (in the form of <see cref="PageData"/>).
+        /// </summary>
         public static PageQueryParameters ParseSelect<TSource, TResult>(
             Expression<Func<TSource, TResult>> expression, PageQueryParameters baseParameters,
             out Func<PageData, TResult> processedExpression)
@@ -19,6 +28,9 @@ namespace LinqToWiki.Expressions
         }
     }
 
+    /// <summary>
+    /// Does the heavy lifting for <see cref="PageExpressionParser.ParseSelect{TSource,TResult}"/>´.
+    /// </summary>
     class PageSelectVisitor : ExpressionVisitor
     {
         /// <summary>
@@ -171,6 +183,10 @@ namespace LinqToWiki.Expressions
             return base.VisitMethodCall(node);
         }
 
+        /// <summary>
+        /// Lists base types of a given <see cref="type"/>.
+        /// For generic types, the result contains their generic type definitions.
+        /// </summary>
         private static IEnumerable<Type> BaseTypes(Type type)
         {
             while (true)
@@ -187,6 +203,9 @@ namespace LinqToWiki.Expressions
             }
         }
 
+        /// <summary>
+        /// The entry-point of <see cref="PageSelectVisitor"/>.
+        /// </summary>
         public static IEnumerable<PropQueryParameters> Process<TSource, TResult>(
             Expression<Func<TSource, TResult>> expression, out Func<PageData, TResult> processedExpression)
         {
@@ -210,8 +229,7 @@ namespace LinqToWiki.Expressions
                     .ToArray();
 
                 if (tokens.Any())
-                    propQueryParameters = propQueryParameters.AddSingleValue(
-                        "token", NameValueParameter.JoinValues(tokens));
+                    propQueryParameters = propQueryParameters.AddSingleValue("token", tokens.ToQueryString());
 
                 parameters.Add("info", propQueryParameters);
             }

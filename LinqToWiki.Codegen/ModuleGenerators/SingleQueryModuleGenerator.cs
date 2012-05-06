@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using LinqToWiki.Codegen.ModuleInfo;
 using LinqToWiki.Collections;
-using LinqToWiki.Parameters;
 using Roslyn.Compilers.CSharp;
+using LinqToWiki.Internals;
 
 namespace LinqToWiki.Codegen.ModuleGenerators
 {
@@ -29,8 +29,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
                     { module.QueryType.ToString().ToLowerInvariant(), module.Name },
                     {
                         module.Prefix + "prop",
-                        NameValueParameter.JoinValues(
-                            module.PropertyGroups.Select(g => g.Name).Where(n => n != string.Empty))
+                        module.PropertyGroups.Select(g => g.Name).Where(n => n != string.Empty).ToQueryString()
                     }
                 });
         }

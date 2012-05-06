@@ -6,6 +6,9 @@ using LinqToWiki.Parameters;
 
 namespace LinqToWiki.Internals
 {
+    /// <summary>
+    /// Handles executing of page source queries.
+    /// </summary>
     public class QueryPageProcessor
     {
         private readonly WikiInfo m_wiki;
@@ -15,6 +18,9 @@ namespace LinqToWiki.Internals
             m_wiki = wiki;
         }
 
+        /// <summary>
+        /// Returns the results of the query as a lazy collection.
+        /// </summary>
         internal IEnumerable<TResult> ExecuteList<TResult>(
             PageQueryParameters parameters, Func<PageData, TResult> selector,
             Dictionary<string, QueryTypeProperties> pageProperties)
@@ -70,6 +76,9 @@ namespace LinqToWiki.Internals
             } while (pagesCollection.HasMorePages(primaryQueryContinue));
         }
 
+        /// <summary>
+        /// Processes the data about the query and returns a collection of query parameters.
+        /// </summary>
         internal static Tuple<string, string>[] ProcessParameters(
             IEnumerable<PropQueryParameters> propQueryParametersCollection,
             IEnumerable<Tuple<string, string>> currentParameters, Dictionary<string, QueryTypeProperties> pageProperties,
@@ -94,7 +103,7 @@ namespace LinqToWiki.Internals
 
             return new[] { Tuple.Create("action", "query") }
                 .Concat(currentParameters.Select(x => Tuple.Create(x.Item1, x.Item2)))
-                .Concat(new[] { Tuple.Create("prop", NameValueParameter.JoinValues(propNames)) })
+                .Concat(new[] { Tuple.Create("prop", propNames.ToQueryString()) })
                 .Concat(propParameters)
                 .ToArray();
         }

@@ -3,6 +3,9 @@ using LinqToWiki.Internals;
 
 namespace LinqToWiki
 {
+    /// <summary>
+    /// Base type for page sources based on a static list of pages.
+    /// </summary>
     public abstract class ListSourceBase<TPage> : PagesSource<TPage>
     {
         private readonly string m_parameterName;
@@ -15,7 +18,7 @@ namespace LinqToWiki
             m_values = values;
         }
 
-        protected override IPagesCollection GetPagesCollectionInternal()
+        protected override IPagesCollection GetPagesCollection()
         {
             return new ListPagesCollection(m_parameterName, m_values);
         }

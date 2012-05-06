@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
 using LinqToWiki.Collections;
-using LinqToWiki.Parameters;
+using LinqToWiki.Internals;
 
 namespace LinqToWiki
 {
+    /// <summary>
+    /// Collection of pages for a <see cref="ListSourceBase{TPage}"/>.
+    /// </summary>
     class ListPagesCollection : IPagesCollection
     {
         static ListPagesCollection()
@@ -12,6 +15,10 @@ namespace LinqToWiki
             MaxLimit = 50;
         }
 
+        /// <summary>
+        /// How many pages should be in a single page. Defaults to 50.
+        /// Won't work correctly if set to more than the maximum set by the wiki.
+        /// </summary>
         public static int MaxLimit { get; set; }
 
         private readonly string m_parameterName;
@@ -31,6 +38,9 @@ namespace LinqToWiki
             return m_iterating;
         }
 
+        /// <summary>
+        /// Moves the internal enumerator if necessary.
+        /// </summary>
         private void MoveIfNecessary()
         {
             if (m_shouldMove)
@@ -58,7 +68,7 @@ namespace LinqToWiki
                     break;
                 MoveIfNecessary();
             }
-            return new TupleList<string, string> { { m_parameterName, NameValueParameter.JoinValues(formattedValues) } };
+            return new TupleList<string, string> { { m_parameterName, formattedValues.ToQueryString() } };
         }
     }
 }

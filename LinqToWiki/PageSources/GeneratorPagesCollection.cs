@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace LinqToWiki
 {
+    /// <summary>
+    /// Collection of pages for a <see cref="GeneratorPagesSource{TPage}"/>.
+    /// </summary>
     class GeneratorPagesCollection : IPagesCollection
     {
         private readonly Func<int, IEnumerable<Tuple<string, string>>> m_baseParametersSelector;

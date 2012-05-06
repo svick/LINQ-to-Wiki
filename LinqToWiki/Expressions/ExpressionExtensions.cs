@@ -2,6 +2,9 @@
 
 namespace LinqToWiki.Expressions
 {
+    /// <summary>
+    /// Contains extension methods for <see cref="Expression"/> types.
+    /// </summary>
     public static class ExpressionExtensions
     {
         /// <summary>

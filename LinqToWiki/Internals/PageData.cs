@@ -4,13 +4,28 @@ using System.Xml.Linq;
 
 namespace LinqToWiki.Internals
 {
+    /// <summary>
+    /// Represents information about a single page from a page source query,
+    /// including information from secondary paging.
+    /// </summary>
     class PageData
     {
         private readonly WikiInfo m_wiki;
         private readonly Dictionary<string, QueryTypeProperties> m_pageProperties;
         private readonly PagingManager m_pagingManager;
 
+        /// <summary>
+        /// The info object with information about the current page.
+        /// The type is <see cref="object"/>, because the info type is generated
+        /// and can be different for different wikis.
+        /// </summary>
         private readonly object m_info;
+
+        /// <summary>
+        /// Contains named data lists.
+        /// Each data list contains data for given property (e.g. <c>categories</c>) from already retrieved
+        /// secondary paging.
+        /// </summary>
         private readonly Dictionary<string, List<object>> m_data = new Dictionary<string, List<object>>();
 
         public PageData(
@@ -33,8 +48,16 @@ namespace LinqToWiki.Internals
             }
         }
 
+        /// <summary>
+        /// Page ID of the page.
+        /// Can be <c>null</c> for missing or invalid pages.
+        /// </summary>
         internal long? PageId { get; private set; }
 
+        /// <summary>
+        /// When secondary paging progresses, this method is used to add new data
+        /// to the <see cref="PageData"/> object.
+        /// </summary>
         internal void AddData(XElement element)
         {
             foreach (var dataElement in element.Elements())
@@ -52,6 +75,10 @@ namespace LinqToWiki.Internals
             }
         }
 
+        /// <summary>
+        /// Returns a data list with the given name.
+        /// If one doesn't exist yet, it's created first.
+        /// </summary>
         private List<object> GetOrCreateDataList(string name)
         {
             List<object> dataList;
@@ -63,11 +90,19 @@ namespace LinqToWiki.Internals
             return dataList;
         }
 
+        /// <summary>
+        /// Returns the info object for the current page.
+        /// </summary>
         public TInfo GetInfo<TInfo>()
         {
             return (TInfo)m_info;
         }
 
+        /// <summary>
+        /// Returns the collection of objects for the prop with the given name
+        /// for this page.
+        /// The collection is lazy and causes secondary paging to progress if necessary.
+        /// </summary>
         public IEnumerable<T> GetData<T>(string name)
         {
             var dataList = GetOrCreateDataList(name);

@@ -4,6 +4,10 @@ using System.Reflection;
 
 namespace LinqToWiki.Internals
 {
+    /// <summary>
+    /// Contains <see cref="QueryTypeProperties"/> objects for the properties
+    /// of a page type <see cref="TPage"/>.
+    /// </summary>
     static class PageProperties<TPage>
     {
         private static readonly Dictionary<string, QueryTypeProperties> PropertiesField =

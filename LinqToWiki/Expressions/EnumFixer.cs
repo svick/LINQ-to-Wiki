@@ -21,9 +21,13 @@ namespace LinqToWiki.Expressions
             return PerformFix(node) ?? PerformFix(node.Switch()).Switch() ?? base.VisitBinary(node);
         }
 
+        /// <summary>
+        /// Actually modifies the expression.
+        /// Works only on expressions that have the constant on the right side.
+        /// </summary>
         private static BinaryExpression PerformFix(BinaryExpression node)
         {
-            // doesn't work correctly for other types of operations (and it's necessary)
+            // doesn't work correctly for other types of operations (and it's not necessary)
             if (node.NodeType != ExpressionType.Equal && node.NodeType != ExpressionType.NotEqual)
                 return null;
 

@@ -15,26 +15,42 @@ namespace LinqToWiki
             : base(queryProcessor, parameters)
         { }
 
+        /// <summary>
+        /// Specify filter or other parameter of the query.
+        /// </summary>
         public new WikiQuerySortableGenerator<TPage, TWhere, TOrderBy, TSelect> Where(Expression<Func<TWhere, bool>> predicate)
         {
             return new WikiQuerySortableGenerator<TPage, TWhere, TOrderBy, TSelect>(QueryProcessor, ExpressionParser.ParseWhere(predicate, Parameters));
         }
 
+        /// <summary>
+        /// Specify that the query should be ordered ascending by the given key.
+        /// </summary>
         public new WikiQueryGenerator<TPage, TWhere, TSelect> OrderBy<TKey>(Expression<Func<TOrderBy, TKey>> keySelector)
         {
             return new WikiQueryGenerator<TPage, TWhere, TSelect>(QueryProcessor, ExpressionParser.ParseOrderBy(keySelector, Parameters, true));
         }
 
+        /// <summary>
+        /// Specify that the query should be ordered descending by the given key.
+        /// </summary>
         public new WikiQueryGenerator<TPage, TWhere, TSelect> OrderByDescending<TKey>(Expression<Func<TOrderBy, TKey>> keySelector)
         {
             return new WikiQueryGenerator<TPage, TWhere, TSelect>(QueryProcessor, ExpressionParser.ParseOrderBy(keySelector, Parameters, false));
         }
 
+        /// <summary>
+        /// Specify that the result should be the whole object.
+        /// The parameter has to be an identity (e.g. <c>x => x</c>).
+        /// </summary>
         public new WikiQuerySortableGenerator<TPage, TWhere, TOrderBy, TSelect> Select(Expression<Func<TSelect, TSelect>> selector)
         {
             return new WikiQuerySortableGenerator<TPage, TWhere, TOrderBy, TSelect>(QueryProcessor, ExpressionParser.ParseIdentitySelect(selector, Parameters));
         }
 
+        /// <summary>
+        /// Get generator page source for the current query, that can be used for further queries.
+        /// </summary>
         public PagesSource<TPage> Pages
         {
             get
@@ -54,16 +70,26 @@ namespace LinqToWiki
             : base(queryProcessor, parameters)
         { }
 
+        /// <summary>
+        /// Specify filter or other parameter of the query.
+        /// </summary>
         public new WikiQueryGenerator<TPage, TWhere, TSelect> Where(Expression<Func<TWhere, bool>> predicate)
         {
             return new WikiQueryGenerator<TPage, TWhere, TSelect>(QueryProcessor, ExpressionParser.ParseWhere(predicate, Parameters));
         }
 
+        /// <summary>
+        /// Specify that the result should be the whole object.
+        /// The parameter has to be an identity (e.g. <c>x => x</c>).
+        /// </summary>
         public new WikiQueryGenerator<TPage, TWhere, TSelect> Select(Expression<Func<TSelect, TSelect>> selector)
         {
             return new WikiQueryGenerator<TPage, TWhere, TSelect>(QueryProcessor, ExpressionParser.ParseIdentitySelect(selector, Parameters));
         }
 
+        /// <summary>
+        /// Get generator page source for the current query, that can be used for further queries.
+        /// </summary>
         public PagesSource<TPage> Pages
         {
             get

@@ -1,23 +1,33 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using LinqToWiki.Collections;
-using LinqToWiki.Parameters;
 
 namespace LinqToWiki.Internals
 {
     /// <summary>
-    /// Contains information about a certain wiki necessary to access its API.
+    /// Contains information about a wiki necessary to access its API.
     /// </summary>
     public class WikiInfo
     {
+        /// <summary>
+        /// Base URL of the wiki.
+        /// For example <c>http://en.wikipedia.org/</c> or <c>http://localhost/wiki/</c>.
+        /// </summary>
         public Uri BaseUrl { get; private set; }
 
+        /// <summary>
+        /// The absolute URL of api.php.
+        /// For example <c>http://en.wikipedia.org/w/api.php</c> or <c>http://localhost/wiki/api.php</c>.
+        /// </summary>
         public Uri ApiUrl { get; private set; }
 
+        /// <summary>
+        /// Object that can be used to execute queries against this wiki.
+        /// </summary>
         public Downloader Downloader { get; private set; }
 
+        /// <summary>
+        /// Collection of namespaces of this wiki.
+        /// </summary>
         public NamespaceInfo Namespaces { get; private set; }
 
         public WikiInfo(string baseUrl = null, string apiPath = null, IEnumerable<Namespace> namespaces = null)
@@ -41,48 +51,6 @@ namespace LinqToWiki.Internals
                 Namespaces = new NamespaceInfo(this);
             else
                 Namespaces = new NamespaceInfo(namespaces);
-        }
-    }
-
-    public class NamespaceInfo : IEnumerable<Namespace>
-    {
-        private readonly Dictionary<int, Namespace> m_namespaces;
-
-        internal NamespaceInfo(IEnumerable<Namespace> namespaces)
-        {
-            m_namespaces = namespaces.ToDictionary(ns => ns.Id);
-        }
-
-        public NamespaceInfo(WikiInfo wiki)
-            : this(GetNamespaces(wiki))
-        {}
-
-        private static IEnumerable<Namespace> GetNamespaces(WikiInfo wiki)
-        {
-            var queryProcessor = new QueryProcessor<IEnumerable<Namespace>>(
-                wiki,
-                new QueryTypeProperties<IEnumerable<Namespace>>(
-                    "siteinfo", "", QueryType.Meta, null,
-                    new TupleList<string, string>
-                    { { "action", "query" }, { "meta", "siteinfo" }, { "siprop", "namespaces" } },
-                    null, Namespace.Parse));
-
-            return queryProcessor.ExecuteSingle(QueryParameters.Create<IEnumerable<Namespace>>());
-        }
-
-        public Namespace this[int id]
-        {
-            get { return m_namespaces[id]; }
-        }
-
-        public IEnumerator<Namespace> GetEnumerator()
-        {
-            return m_namespaces.Values.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
     }
 }

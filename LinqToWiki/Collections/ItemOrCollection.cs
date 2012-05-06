@@ -12,7 +12,7 @@ namespace LinqToWiki.Collections
     /// This class is used in queries that accept multiple values for some properties,
     /// but it also allows simple comparison with a single item without creating a collection.
     /// 
-    /// Consider those two cases:
+    /// Consider these two cases:
     /// <list type="bullet">
     /// <item><c>where x.prop == new[] { "foo", "bar" }</c></item>
     /// <item><c>where x.prop == "foo"</c></item>
@@ -23,7 +23,7 @@ namespace LinqToWiki.Collections
     /// Using this class, both cases work.
     /// 
     /// This class isn't actually necessary, the user could always create a single-item collection.
-    /// But this way there is a simpler syntax for the common case of single item.
+    /// But this way, there is a simpler syntax for the common case of single item.
     /// </remarks>
     public class ItemOrCollection<T>
     {

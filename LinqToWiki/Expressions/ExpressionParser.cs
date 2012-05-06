@@ -66,6 +66,9 @@ namespace LinqToWiki.Expressions
             throw new ArgumentException(string.Format("Unknown type of expression: {0}.", body));
         }
 
+        /// <summary>
+        /// Adds single value to QueryParameters based on a property expression and a unformatted value from a <c>Tuple</c>.
+        /// </summary>
         private static QueryParameters<TSource, TResult> AddValue<TSource, TResult>(
             QueryParameters<TSource, TResult> previousParameters, Tuple<MemberExpression, object> propertyValue)
         {
@@ -121,6 +124,9 @@ namespace LinqToWiki.Expressions
             return Tuple.Create(memberAccess, value);
         }
 
+        /// <summary>
+        /// Reverses property name into the form used by the API.
+        /// </summary>
         public static string ReversePropertyName(string propertyName)
         {
             if (propertyName == "value")

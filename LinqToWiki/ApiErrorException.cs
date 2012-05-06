@@ -13,6 +13,9 @@ namespace LinqToWiki
             Code = code;
         }
 
+        /// <summary>
+        /// Code of the exception.
+        /// </summary>
         public string Code { get; private set; }
     }
 }

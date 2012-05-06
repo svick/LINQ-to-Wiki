@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LinqToWiki.Internals;
 
 namespace LinqToWiki.Parameters
 {
@@ -104,7 +105,7 @@ namespace LinqToWiki.Parameters
         /// </summary>
         public QueryParameters<TSource, TResult> AddMultipleValues(string name, IEnumerable<string> values)
         {
-            return AddSingleValue(name, NameValueParameter.JoinValues(values));
+            return AddSingleValue(name, values.ToQueryString());
         }
 
         /// <summary>

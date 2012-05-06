@@ -4,6 +4,9 @@ using LinqToWiki.Internals;
 
 namespace LinqToWiki
 {
+    /// <summary>
+    /// Page source for a generator.
+    /// </summary>
     public sealed class GeneratorPagesSource<TPage> : PagesSource<TPage>
     {
         private readonly Func<int, IEnumerable<Tuple<string, string>>> m_baseParametersSelector;
@@ -15,7 +18,7 @@ namespace LinqToWiki
             m_baseParametersSelector = baseParametersSelector;
         }
 
-        protected override IPagesCollection GetPagesCollectionInternal()
+        protected override IPagesCollection GetPagesCollection()
         {
             return new GeneratorPagesCollection(m_baseParametersSelector);
         }

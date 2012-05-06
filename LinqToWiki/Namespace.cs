@@ -1,13 +1,19 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Xml.Linq;
 
 namespace LinqToWiki
 {
+    /// <summary>
+    /// Represenst a namespace on a wiki.
+    /// See <see cref="http://www.mediawiki.org/wiki/Manual:Namespace">Namespace in the MediaWiki manual</see>.
+    /// </summary>
     public class Namespace : IEquatable<Namespace>
     {
+        /// <summary>
+        /// Initializes the default namespaces.
+        /// </summary>
         static Namespace()
         {
             Article = Create(0, "");
@@ -28,8 +34,14 @@ namespace LinqToWiki
             CategoryTalk = Create(15, "Category talk");
         }
 
+        /// <summary>
+        /// ID of the namespace
+        /// </summary>
         public int Id { get; private set; }
 
+        /// <summary>
+        /// Name of the namespace
+        /// </summary>
         public string Name { get; private set; }
 
         private static readonly Dictionary<int, Namespace> Namespaces = new Dictionary<int, Namespace>();
@@ -47,6 +59,11 @@ namespace LinqToWiki
             Name = name;
         }
 
+        /// <summary>
+        /// Returns a namespace based on its ID.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public static Namespace Get(int id)
         {
             Namespace result;
@@ -56,6 +73,12 @@ namespace LinqToWiki
             return result;
         }
 
+        /// <summary>
+        /// Parses the <c>namespaces</c> element of a <c>siteinfo</c> query,
+        /// returning a collection of namespaces on a wiki.
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns></returns>
         public static IEnumerable<Namespace> Parse(XElement element)
         {
             return element.Element("namespaces").Elements()
@@ -93,11 +116,6 @@ namespace LinqToWiki
         public static Namespace Category { get; private set; }
 
         public static Namespace CategoryTalk { get; private set; }
-
-        public string GetQueryRepresentation()
-        {
-            return Id.ToString(CultureInfo.InvariantCulture);
-        }
 
         public static bool operator ==(Namespace first, Namespace second)
         {
