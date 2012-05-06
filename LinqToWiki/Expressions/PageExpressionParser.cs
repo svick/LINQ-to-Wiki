@@ -36,7 +36,8 @@ namespace LinqToWiki.Expressions
         /// <summary>
         /// Result properties that are always present and don't need prop=info
         /// </summary>
-        private static readonly IEnumerable<string> NonInfoProperties = new[] { "pageid", "ns", "title" };
+        private static readonly IEnumerable<string> NonInfoProperties =
+            new[] { "pageid", "ns", "title", "missing", "invalid", "special" };
 
         private static readonly MethodInfo PageDataGetInfoMethod = typeof(PageData).GetMethod("GetInfo");
         private static readonly MethodInfo PageDataGetDataMethod = typeof(PageData).GetMethod("GetData");
