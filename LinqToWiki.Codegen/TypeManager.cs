@@ -137,50 +137,6 @@ namespace LinqToWiki.Codegen
             return typeName;
         }
 
-        private static ClassDeclarationSyntax GenerateConverter(string enumName, IEnumerable<Tuple<string, string>> mapping)
-        {
-            var converterClassName = enumName + "Converter";
-
-            var ctor = SyntaxEx.ConstructorDeclaration(
-                new[] { SyntaxKind.PublicKeyword }, converterClassName, new ParameterSyntax[0], new StatementSyntax[0],
-                SyntaxEx.BaseConstructorInitializer(SyntaxEx.TypeOf(enumName)));
-
-            var contextParameter = SyntaxEx.Parameter("ITypeDescriptorContext", "context");
-            var cultureParameter = SyntaxEx.Parameter("CultureInfo", "culture");
-            var valueParameter = SyntaxEx.Parameter("object", "value");
-            var destinationTypeParameter = SyntaxEx.Parameter("Type", "destinationType");
-
-            var castedValueLocal = SyntaxEx.LocalDeclaration(
-                enumName, "castedValue", SyntaxEx.Cast(enumName, (NamedNode)valueParameter));
-
-            var switchStatement = SyntaxEx.Switch(
-                (NamedNode)castedValueLocal,
-                mapping.Select(
-                    t =>
-                    SyntaxEx.SwitchCase(
-                        SyntaxEx.MemberAccess(enumName, t.Item1), SyntaxEx.Return(SyntaxEx.Literal(t.Item2)))));
-
-            var condition = SyntaxEx.If(
-                SyntaxEx.Equals((NamedNode)destinationTypeParameter, SyntaxEx.TypeOf("string")), switchStatement);
-
-            var baseCall = SyntaxEx.Return(
-                SyntaxEx.Invocation(
-                    SyntaxEx.MemberAccess("base", "ConvertTo"),
-                    (NamedNode)contextParameter, (NamedNode)cultureParameter,
-                    (NamedNode)valueParameter, (NamedNode)destinationTypeParameter));
-
-            var convertToMethod =
-                SyntaxEx.MethodDeclaration(
-                    new[] { SyntaxKind.PublicKeyword, SyntaxKind.OverrideKeyword }, "object", "ConvertTo",
-                    new[] { contextParameter, cultureParameter, valueParameter, destinationTypeParameter },
-                    castedValueLocal, condition, baseCall);
-
-            var classDeclaration = SyntaxEx.ClassDeclaration(
-                converterClassName, SyntaxEx.ParseTypeName("EnumConverter"), ctor, convertToMethod);
-
-            return classDeclaration;
-        }
-
         private static readonly char[] ToReplace = "-/ ".ToCharArray();
 
         private static readonly string[] Restricted = new[] { "new", "true", "false" };
