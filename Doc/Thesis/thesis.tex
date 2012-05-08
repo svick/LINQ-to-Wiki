@@ -20,6 +20,13 @@
 \usepackage{graphicx}
 \usepackage{amsthm}
 
+\usepackage{listings}
+
+\lstdefinelanguage{CSharp}[Sharp]{C}
+{morekeywords={from,where,join,on,equals,orderby,descending,group,by,select},columns=flexible,showstringspaces=false}
+
+\lstset{language=CSharp}
+
 %% Balíček hyperref, kterým jdou vyrábět klikací odkazy v PDF,
 %% ale hlavně ho používáme k uložení metadat do PDF (včetně obsahu).
 %% POZOR, nezapomeňte vyplnit jméno práce a autora.

@@ -1,1 +1,69 @@
 \chapter{The goal}
+
+The goal of the LinqToWiki library is to be able to express requests to the MediaWiki API
+in a way that is readable, discoverable and checked by the compiler for correctness as much as possible.
+
+This is achieved by generating classes specific for each module and using them in LINQ queries.
+
+The two most commonly used variants of LINQ are LINQ to Objects, and various versions of LINQ for SQL databases.
+LINQ to Objects is used for querying in-memory data, like arrays.
+There are several widely-used libraries for accessing SQL databases using LINQ, including LINQ to SQL, LINQ to Entities and NHibernate.
+
+In all versions of LINQ, the queries look the same. For example:
+
+\begin{lstlisting}
+from product in allProducts
+where product.Price > 500
+   && product.InStock
+join category in categories on product.Category equals category
+orderby product.Price
+select product.Name
+\end{lstlisting}
+
+A query like this is translated into a sequence of method calls that take their parameters in the form of lambda expressions.
+For example, the \lstinline{where} part of the above query is translated into:
+
+\begin{lstlisting}
+Where(product => product.Price > 500 && product.InStock)
+\end{lstlisting}
+
+The commonalities between LINQ to Objects and SQL LINQ libraries are that the full range of operators are available
+and that all properties are available in all of them.
+
+The situation with the MediaWiki API is different in several ways:
+
+\begin{enumerate}
+\item It doesn't support queries represented by many of the LINQ operators, including \lstinline{join} and \lstinline{group by}.
+\item Some of the modules don't support sorting, some do. Of those that do support sorting, some allow specifying the sort key, others only direction.
+\item The sets of properties that are available for filtering, sorting and selecting are all different.
+\item There are modules used for queries about a set of pages. Those pages can be from a hard-coded list or a result from some other module.
+\item There are also parameters that don't fit into the LINQ model well. Some of them are required, some are not.
+\end{enumerate}
+
+The goal is to be able to represent all valid queries, while invalid queries should cause a compile-time error.
+
+Specifically, unsupported operators (like \lstinline{join} and \lstinline{group by}) should cause an error for all modules,
+while the \lstinline{orderby} clause should cause an error only for the modules that don't support sorting.
+
+Also, all operators should support only those properties that are actually supported by the API.
+So, for example for the \verb,blocks, module, the following query should compile and execute fine:
+
+\begin{lstlisting}
+from block in wiki.Blocks()
+where block.Ip == "8.8.8.8"
+orderby block descending
+select block.ById
+\end{lstlisting}
+
+While the following query should cause three errors:
+
+\begin{lstlisting}
+from block in wiki.Blocks()
+where block.ById == 1234
+orderby block.Expiry descending
+select block.Ip
+\end{lstlisting}
+
+This is because limiting the query by the blocked IP address, sorting without specifying the key and selecting the ID of the user who performed the block are all allowed.
+On the other hand, limiting by the ID of the user who performed the block, sorting by the expiration date and selecting the IP address are all impossible.
+(Actually selecting the IP address of the blocked user is possible, but the information is contained in properties with different names.)

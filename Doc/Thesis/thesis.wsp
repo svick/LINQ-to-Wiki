@@ -1,0 +1,14 @@
+[main]
+.\thesis.tex
+
+[texfiles]
+.\1-goal.tex
+.\2-mediawiki.tex
+.\3-linq.tex
+.\4-roslyn.tex
+.\5-linqtowiki.tex
+.\6-improvements.tex
+.\bibliography.tex
+.\epilog.tex
+.\preface.tex
+

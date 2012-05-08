@@ -1,2 +1,51 @@
 \chapter*{Introduction}
 \addcontentsline{toc}{chapter}{Introduction}
+
+Wiki websites running on the MediaWiki software (such as Wikipedia) offer an API (Application programming interface)
+for programmatic access to their database.
+Since MediaWiki contains many functions, the API is quite extensive too:  the core installation contains over sixty ``modules''
+and more are available through extensions. Each module accepts parameters in the form of key-value pairs
+and returns a structured response in one of the possible formats, including XML.
+
+Because of the size of the API, accessing it from some programming language is not very simple.
+Two basic approchaches are possible: static and dynamic.
+
+The dynamic approach is to create a thin library around the API modules:
+let the user specify the names of the parameters and their types and return the response
+in a dynamic manner, possibly as an associative array, or something like XML DOM.
+
+This way, the user is responsible for the correctness of his query and for correct processing
+of the response.
+Also, it is hard to discover what are the possible parameters, what values can they have
+and what form of response to expect.
+This can lead to excessive use of the documentation or a ``trial and error'' approach.
+
+The static approach is to create an extensive library that contains methods tailored for every module,
+each returning a different statically-typed result.
+
+This way, many of the errors the user could make will result in a compile-time error
+and the development environment can also advise the user what options are available.
+
+But this approach is also inflexible: if the user wants to use something the library
+was not made for, he can't.
+Differences like this can be caused by different versions of the software,
+different set of installed extensions, or just by different configuration.
+
+Another question with the static approach is how to represent the parameters in code.
+Most modules have many optional parameters, and so presenting them to the user
+in an understandable manner might be a challenge.
+
+One more problematic part might be how to represent choosing which properties to return in the result.
+A list of strings representing the chosen properties might be suitable for the dynamic approach, but not so much for the static one.
+
+\bigskip
+
+This work introduces the LinqToWiki library that tries to solve all those problems
+in the form of a .Net library.
+
+The dynamic vs. static issues are solved by automatically generating statically typed
+code based on the metadata the API provides about itself.
+
+The problems specific to the static approach are solved by using LINQ (Language integrated query):
+a set of features of the C\# language and the .Net framework,
+that is useful for representing queries and their translation into a another form.
