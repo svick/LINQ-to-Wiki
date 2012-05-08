@@ -1,0 +1,249 @@
+﻿%%% Hlavní soubor. Zde se definují základní parametry a odkazuje se na ostatní části. %%%
+
+%% Verze pro jednostranný tisk:
+% Okraje: levý 40mm, pravý 25mm, horní a dolní 25mm
+% (ale pozor, LaTeX si sám přidává 1in)
+\documentclass[12pt,a4paper]{report}
+\setlength\textwidth{145mm}
+\setlength\textheight{247mm}
+\setlength\oddsidemargin{15mm}
+\setlength\evensidemargin{15mm}
+\setlength\topmargin{0mm}
+\setlength\headsep{0mm}
+\setlength\headheight{0mm}
+% \openright zařídí, aby následující text začínal na pravé straně knihy
+\let\openright=\clearpage
+
+\usepackage[utf8]{inputenc}
+
+%% Ostatní balíčky
+\usepackage{graphicx}
+\usepackage{amsthm}
+
+%% Balíček hyperref, kterým jdou vyrábět klikací odkazy v PDF,
+%% ale hlavně ho používáme k uložení metadat do PDF (včetně obsahu).
+%% POZOR, nezapomeňte vyplnit jméno práce a autora.
+\usepackage[unicode]{hyperref}   % Musí být za všemi ostatními balíčky
+\hypersetup{pdftitle=.NET library for the MediaWiki API}
+\hypersetup{pdfauthor=Petr Onderka}
+
+%%% Drobné úpravy stylu
+
+% Tato makra přesvědčují mírně ošklivým trikem LaTeX, aby hlavičky kapitol
+% sázel příčetněji a nevynechával nad nimi spoustu místa. Směle ignorujte.
+\makeatletter
+\def\@makechapterhead#1{
+  {\parindent \z@ \raggedright \normalfont
+   \Huge\bfseries \thechapter. #1
+   \par\nobreak
+   \vskip 20\p@
+}}
+\def\@makeschapterhead#1{
+  {\parindent \z@ \raggedright \normalfont
+   \Huge\bfseries #1
+   \par\nobreak
+   \vskip 20\p@
+}}
+\makeatother
+
+% Toto makro definuje kapitolu, která není očíslovaná, ale je uvedena v obsahu.
+\def\chapwithtoc#1{
+\chapter*{#1}
+\addcontentsline{toc}{chapter}{#1}
+}
+
+\begin{document}
+
+% Trochu volnější nastavení dělení slov, než je default.
+\lefthyphenmin=2
+\righthyphenmin=2
+
+%%% Titulní strana práce
+
+\pagestyle{empty}
+\begin{center}
+
+\large
+
+Charles University in Prague
+
+\medskip
+
+Faculty of Mathematics and Physics
+
+\vfill
+
+{\bf\Large BACHELOR THESIS}
+
+\vfill
+
+\centerline{\mbox{\includegraphics[width=60mm]{img/logo.eps}}}
+
+\vfill
+\vspace{5mm}
+
+{\LARGE Petr Onderka}
+
+\vspace{15mm}
+
+% Název práce přesně podle zadání
+{\LARGE\bfseries .NET library for the MediaWiki API}
+
+\vfill
+
+% Název katedry nebo ústavu, kde byla práce oficiálně zadána
+% (dle Organizační struktury MFF UK)
+Department of Theoretical Computer Science and Mathematical Logic
+
+\vfill
+
+\begin{tabular}{rl}
+
+Supervisor of the bachelor thesis: & Tomáš Petříček \\
+\noalign{\vspace{2mm}}
+Study programme: & Computer Science \\
+\noalign{\vspace{2mm}}
+Specialization: & General Computer Science \\
+\end{tabular}
+
+\vfill
+
+% Zde doplňte rok
+Prague 2012
+
+\end{center}
+
+\newpage
+
+%%% Následuje vevázaný list -- kopie podepsaného "Zadání bakalářské práce".
+%%% Toto zadání NENÍ součástí elektronické verze práce, nescanovat.
+
+%%% Na tomto místě mohou být napsána případná poděkování (vedoucímu práce,
+%%% konzultantovi, tomu, kdo zapůjčil software, literaturu apod.)
+
+\openright
+
+\noindent
+Dedication.
+
+\newpage
+
+%%% Strana s čestným prohlášením k bakalářské práci
+
+\vglue 0pt plus 1fill
+
+\noindent
+I declare that I carried out this bachelor thesis independently, and only with the cited
+sources, literature and other professional sources.
+
+\medskip\noindent
+I understand that my work relates to the rights and obligations under the Act No.
+121/2000 Coll., the Copyright Act, as amended, in particular the fact that the Charles
+University in Prague has the right to conclude a license agreement on the use of this
+work as a school work pursuant to Section 60 paragraph 1 of the Copyright Act.
+
+\vspace{10mm}
+
+\hbox{\hbox to 0.5\hsize{%
+In ........ date ............
+\hss}\hbox to 0.5\hsize{%
+signature of the author
+\hss}}
+
+\vspace{20mm}
+\newpage
+
+%%% Povinná informační strana bakalářské práce
+
+\vbox to 0.5\vsize{
+\setlength\parindent{0mm}
+\setlength\parskip{5mm}
+
+Název práce:
+.NET knihovna pro MediaWiki API
+% přesně dle zadání
+
+Autor:
+Petr Onderka
+
+Katedra:  % Případně Ústav:
+Katedra teoretické informatiky a matematické logiky 
+% dle Organizační struktury MFF UK
+
+Vedoucí bakalářské práce:
+Mgr. Tomáš Petříček, University of Cambridge
+% dle Organizační struktury MFF UK, případně plný název pracoviště mimo MFF UK
+
+Abstrakt:
+% abstrakt v rozsahu 80-200 slov; nejedná se však o opis zadání bakalářské práce
+
+Klíčová slova:
+% 3 až 5 klíčových slov
+
+\vss}\nobreak\vbox to 0.49\vsize{
+\setlength\parindent{0mm}
+\setlength\parskip{5mm}
+
+Title:
+.NET library for the MediaWiki API
+% přesný překlad názvu práce v angličtině
+
+Author:
+Petr Onderka
+
+Department:
+Department of Theoretical Computer Science and Mathematical Logic
+% dle Organizační struktury MFF UK v angličtině
+
+Supervisor:
+Mgr. Tomáš Petříček, University of Cambridge
+% dle Organizační struktury MFF UK, případně plný název pracoviště
+% mimo MFF UK v angličtině
+
+Abstract:
+% abstrakt v rozsahu 80-200 slov v angličtině; nejedná se však o překlad
+% zadání bakalářské práce
+
+Keywords:
+% 3 až 5 klíčových slov v angličtině
+
+\vss}
+
+\newpage
+
+%%% Strana s automaticky generovaným obsahem bakalářské práce. U matematických
+%%% prací je přípustné, aby seznam tabulek a zkratek, existují-li, byl umístěn
+%%% na začátku práce, místo na jejím konci.
+
+\openright
+\pagestyle{plain}
+\setcounter{page}{1}
+\tableofcontents
+
+%%% Jednotlivé kapitoly práce jsou pro přehlednost uloženy v samostatných souborech
+\include{preface}
+\include{1-goal}
+\include{2-mediawiki}
+\include{3-linq}
+\include{4-roslyn}
+\include{5-linqtowiki}
+\include{6-improvements}
+
+\include{epilog}
+
+%%% Seznam použité literatury
+\include{bibliography}
+
+%%% Tabulky v bakalářské práci, existují-li.
+\chapwithtoc{List of Tables}
+
+%%% Použité zkratky v bakalářské práci, existují-li, včetně jejich vysvětlení.
+\chapwithtoc{List of Abbreviations}
+
+%%% Přílohy k bakalářské práci, existují-li (různé dodatky jako výpisy programů,
+%%% diagramy apod.). Každá příloha musí být alespoň jednou odkazována z vlastního
+%%% textu práce. Přílohy se číslují.
+\chapwithtoc{Attachments}
+
+\openright
+\end{document}
