@@ -1,3 +1,224 @@
 \chapter{MediaWiki API}
 
+MediaWiki is an open source wiki system.
+It is written in the PHP programming language and uses a relational database to store its data, usually MySQL.
+It is maintained by the WikiMedia Foundation, who also runs some of the biggest wikis, including Wikipedia and Wiktionary.
+It is also used by many others, including Wikia, who runs many small wikis for various interests and
+the unofficial wiki of the Faculty of Mathematics and Physics, $\upomega\upiota\upkappa\upiota$.matfyz.cz.
+
+There are several ways to programmatically access the database of some MediaWiki wiki.
+First, it's possible to directly access the database using SQL.
+This usually requires access to the server that runs the database, so it's not available in many cases.
+For WikiMedia wikis, a read-only access to most data, but excluding article texts,
+is available for registered users of Toolserver, run by WikiMedia Deutschland.
+
+Mostly specific to WikiMedia wikis is also another option: database dumps. These are files that contain
+dumps of some tables of the wikis. Their disadvantages are that the newest dump is usually several days or weeks old
+and that the files can be huge, which is impractical for getting information about a small number of pages.
+
+Last, but not least, is the MediaWiki API.
+It can be used to remotely access any MediaWiki wiki (unless the API is disabled in the configuration)
+using the HTTP protocol.
+
+Parameters for the API request are given in the query string of a GET request or in the body of a POST request
+(some modules require the use of POST).
+The body of the POST request is usually formatted as \texttt{application/x-www-form-urlencoded},
+but file uploads require the use of \texttt{multipart/form-data}.
+
+Some parameters can accept multiple values at once.
+In these cases, the values are separated by a pipe character (\texttt{|}).
+
+The response can be in one of the several available formats, the most widely used ones are XML and JSON.
+
+The API is divided into modules and there are two kinds of modules:
+``normal'' modules (called ``non-query modules'' in this work) and query modules.
+
+Non-query modules are usually used to perform some action.
+For example the \texttt{edit} module can be used to edit a page
+and the \texttt{block} module can be used to block a user (it can be used only by a user with sufficient privileges).
+
+Query modules are used for retrieving information about the wiki. There are three types of query modules:
+
+\begin{itemize}
+\item \texttt{list} modules: Return contents of various lists.
+For example the \texttt{allcategories} module can be used to list all categories on a wiki,
+while the \texttt{categorymembers} module can be used to list members of a certain category.
+\item \texttt{prop} modules: Return information about a set of pages.
+For example, the \texttt{categories} module can be used to retrieve the categories for each page in a given set.
+\item \texttt{meta} modules: Return meta information that are not directly associated with pages.
+For example the \texttt{userinfo} module can be used to retrieve information about the currently logged-in user.
+\end{itemize}
+
+For \texttt{prop} modules, the set of pages they operate on can be specified directly using page titles or page IDs.
+
+Another option is to use some other module (usually a \texttt{list} module) as a so called ``generator''.
+This way, one can for example retrieve the categories of all pages in a specific category,
+by using the \texttt{categorymembers} module as a generator for the \texttt{categories} module.
+
+The API is also extensible: MediaWiki extensions can add their own modules and modify some behavior of the existing modules.
+
+An example of an API request URI and a response in the XML format is in Figure \ref{API example}.
+
+\begin{figure}[htbp]
+\texttt{http://en.wikipedia.org/w/api.php}~\texttt{?}\
+\texttt{format}~\texttt{=}~\texttt{xml}~\texttt{\&}
+\texttt{action}~\texttt{=}~\texttt{query}~\texttt{\&}
+\texttt{list}~\texttt{=}~\texttt{categorymembers}~\texttt{\&}
+\texttt{cmtitle}~\texttt{=}~\texttt{Category:Query\%20languages}~\texttt{\&}
+\texttt{cmprop}~\texttt{=}~\texttt{title}~\texttt{\&}
+\texttt{cmtype}~\texttt{=}~\texttt{page}~\texttt{\&}
+\texttt{cmdir}~\texttt{=}~\texttt{descending}~\texttt{\&}
+\texttt{cmlimit}~\texttt{=}~\texttt{5}
+
+\begin{lstlisting}[language=xml]
+<?xml version="1.0"?>
+<api>
+  <query>
+    <categorymembers>
+      <cm ns="0" title="YQL (programming language)" />
+      <cm ns="0" title="Yahoo! query language" />
+      <cm ns="0" title="XQuery" />
+      <cm ns="0" title="XPath" />
+      <cm ns="0" title="XBase++" />
+    </categorymembers>
+  </query>
+  <query-continue>
+    <categorymembers cmcontinue="page|5842415345|572327" />
+  </query-continue>
+</api>
+\end{lstlisting}
+
+\caption{An example of an API request and a response}
+\label{API example}
+\end{figure}
+
+\section{Paging}
+
+Because the results of the API queries can contain thousands and sometimes even millions of entries,
+the responses are limited.
+For most modules, the default limit (when it is not specified as a parameter) is ten entries per page
+and the default maximum is 500~entries for normal users.
+For users with the \texttt{apihighlimits} right, the limits are raised, usually to 5000~entries per page.
+
+In the \texttt{limit} parameter, one can specify either the exact value,
+or the special value \texttt{max}, which means the maximum allowed for the current user.
+
+To get the data from the following page, one has to use a value specified in the \texttt{query-continue}
+element in the result (see Figure \ref{API example} again).
+The value in this element is a transparent identifier of the next page.
+
+The advantage of this system when compared with the conventional paging systems of numbering pages
+or using numeric offsets is that it avoids missing entries and duplicates when the result
+changes while retrieving the pages.
+
+The API has no notion of transactions, so it's not possible to get fully consistent results
+that would correspond to an exact moment in time.
+
+But thanks to this paging system, one can be certain that an entry that should be in the result set
+during retrieving of all of the pages will actually be present in the result set exactly once.
+
+The situation gets even more complicated when using a \texttt{prop} module with another modules as a generator.
+That is because both modules have their own paging.
+
+When such a request is made, the first response will contain a limited number of items from the generator
+and a limited number of results from the \texttt{prop} module for those items.
+To retrieve the next set of items from the generator, one has to use the \texttt{query-continue} for the generator
+(called ``primary paging'' in this work).
+To retrieve the next set of results for the items from the first result,
+one has to use the \texttt{query-continue} for the \texttt{prop} module (called ``secondary paging'' here).
+
+For an example, see Figure \ref{paging}.
+It shows how the paging might work when using the \texttt{allpages} module as a generator,
+together with the \texttt{prop} module \texttt{categories}.
+The \texttt{query-continue} elements are not shown in the figure.
+
+\begin{figure}[htbp]
+\begin{center}
+\begin{tikzpicture}
+\path (0,12) node(11) {
+\begin{minipage}{150pt}
+\begin{lstlisting}[language=xml,frame=single]
+<query>
+  <pages>
+    <page title="A" />
+    <page title="B">
+      <categories>
+        <cl title="X" />
+        <cl title="Y" />
+      </categories>
+    </page>
+  </pages>
+</query>
+\end{lstlisting}
+\end{minipage}
+} (7,12) node(12) {
+\begin{minipage}{150pt}
+\begin{lstlisting}[language=xml,frame=single]
+<query>
+  <pages>
+    <page title="A">
+      <categories>
+        <cl title="X" />
+        <cl title="Y" />
+      </categories>
+    </page>
+    <page title="B" />
+  </pages>
+</query>
+\end{lstlisting}
+\end{minipage}
+} (11,12) node(13) {\dots};
+
+\path (0,4) node(21) {
+\begin{minipage}{150pt}
+\begin{lstlisting}[language=xml,frame=single]
+<query>
+  <pages>
+    <page title="C">
+        <cl title="X" />
+        <cl title="Y" />
+    </page>
+    <page title="D" />
+  </pages>
+</query>
+\end{lstlisting}
+\end{minipage}
+} (7,4) node(22) {
+\begin{minipage}{150pt}
+\begin{lstlisting}[language=xml,frame=single]
+<query>
+  <pages>
+    <page title="C">
+      <categories>
+        <cl title="Z" />
+      </categories>
+    </page>
+    <page title="D">
+      <categories>
+        <cl title="X" />
+      </categories>
+    </page>
+  </pages>
+</query>
+\end{lstlisting}
+\end{minipage}
+};
+
+\path (0,0) node(31) {\dots};
+
+\draw[->] (11) -- (12);
+\draw[->] (12) -- (13);
+\draw[->] (11) -- (21);
+\draw[->] (21) -- (22);
+\draw[->] (21) -- (31);
+
+%TODO: divné mezery
+\end{tikzpicture}
+\end{center}
+
+\caption{An example of primary and secondary paging}
+\label{paging}
+
+\end{figure}
+
 \section{The \texttt{paraminfo} module}
