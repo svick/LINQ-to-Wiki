@@ -49,7 +49,7 @@ if the property is \texttt{false}, it is not present in the result at all,
 and if its value is \texttt{true}, it is represented with as an empty string.
 
 The API is divided into modules and there are two kinds of modules:
-``normal'' modules (called ``non-query modules'' in this work) and query modules.
+“normal” modules (called “non-query modules” in this work) and query modules.
 
 Non-query modules are usually used to perform some action.
 For example the \texttt{edit} module can be used to edit a page
@@ -69,7 +69,7 @@ For example the \texttt{userinfo} module can be used to retrieve information abo
 
 For \texttt{prop} modules, the set of pages they operate on can be specified directly using page titles or page IDs.
 
-Another option is to use some other module (usually a \texttt{list} module) as a so called ``generator''.
+Another option is to use some other module (usually a \texttt{list} module) as a so called “generator”.
 This way, one can for example retrieve the categories of all pages in a specific category,
 by using the \texttt{categorymembers} module as a generator for the \texttt{categories} module.
 
@@ -148,9 +148,9 @@ That is because both modules have their own paging.
 When such a request is made, the first response will contain a limited number of items from the generator
 and a limited number of results from the \texttt{prop} module for those items.
 To retrieve the next set of items from the generator, one has to use the \texttt{query-continue} for the generator
-(called ``primary paging'' in this work).
+(called “primary paging” in this work).
 To retrieve the next set of results for the items from the first result,
-one has to use the \texttt{query-continue} for the \texttt{prop} module (called ``secondary paging'' here).
+one has to use the \texttt{query-continue} for the \texttt{prop} module (called “secondary paging” here).
 
 For an example, see Figure \ref{paging}.
 It shows how the paging might work when using the \texttt{allpages} module as a generator,

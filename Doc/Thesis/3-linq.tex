@@ -1,1 +1,94 @@
 \chapter{LINQ and expression trees}
+
+LINQ, short for Language Integrated Query, is a feature of the C\# programming language
+and the .Net framework that can be used for querying of various data sources.
+It uses higher-order functions and lambda expressions to achieve a readable declarative syntax.
+
+LINQ consists of a set of so called “standard query operators”:
+methods that are used to perform the query operations on a given source.
+Also, a special syntax (called “query expressions”), similar to SQL queries, is available
+for some of those operators.
+The compiler translates a query expression into a set of calls to standard query operators,
+using lambda expressions and anonymous types.
+
+Anonymous types are types that don't have to be explicitly declared;
+they are used in similar situations as tuples in functional programming.
+An instance of an anonymous type is created by using the \lstinline{new} keyword
+without specifying the type of the object to create.
+
+For example the following query expression (as seen in Chapter \ref{goal}):
+
+\begin{lstlisting}
+from product in allProducts
+where product.Price > 500
+   && product.InStock
+join category in categories on product.Category equals category
+orderby product.Price
+select product.Name
+\end{lstlisting}
+
+Is translated into the following method calls:
+
+\begin{lstlisting}
+allProducts
+    .Where(product => product.Price > 500 && product.InStock)
+    .Join(
+        categories, product => product.Category, category => category,
+        (product, category) => new { product, category })
+    .OrderBy(t => t.product.Price)
+    .Select(t => t.product.Name)
+\end{lstlisting}
+
+The parameter~\lstinline,t, is a so called “transparent identifier”, it is used to transfer a set of variables from one method call to another.
+
+The LINQ library also contains methods that do not have a corresponding representation in query expressions. Some examples of those are \lstinline,Aggregate(),, \lstinline,Sum(), and \lstinline,ToList(),.
+
+Many of the basic query operators also correspond to a well-known higher-order function from functional programming. See Figure \ref{LINQ methods} for comparison of some of the LINQ query operators, query expression clauses, and higher-order functions.
+
+\begin{figure}[htbp]
+\begin{tabular}{lll}
+query operator & query expression clause & higher-order function \\
+\lstinline,Select(), & \lstinline,select,, \lstinline,let, & map \\
+\lstinline,Where(), & \lstinline,where, & filter \\
+\lstinline,SelectMany(), & second and following \lstinline,from, & bind \\
+\lstinline,Aggregate(), & & fold \\
+\lstinline,Join(), & \lstinline,join, & \\
+\lstinline,OrderBy(),,\cr \lstinline,OrderByDescending(), & \lstinline,orderby, & \\
+\lstinline,GroupBy(), & \lstinline,group by, & \\
+\lstinline,Sum(), \\
+\lstinline,First(), \\
+\lstinline,ToList(), \\
+\end{tabular}
+
+\caption{Comparison between LINQ query operators, query expression clauses, and higher-order functions}
+\label{LINQ methods}
+\end{figure}
+
+Usually, lambda expressions are compiled into normal methods and passed to the query operator methods as delegates
+(which are similar to function pointers in~C or first-class functions in functional languages).
+But this would not be suitable for querying of sources that are not in-memory collections,
+because the query has to be translated into another form,
+like an SQL query or a set of parameters for the MediaWiki API.
+
+Because of this, a lambda expression in C\# can be also compiled into another form:
+an expression tree.
+Expression tree is an object that represents the given lambda expression
+in a form similar to an abstract syntax tree.
+This object can be programmatically accessed and manipulated,
+which allows translation of LINQ queries into other forms, such as SQL queries.
+
+For an example of an expression tree, see Figure \ref{Expression tree}.
+
+\begin{figure}[htbp]
+\begin{center}
+\Treek[2]{4}{
+ & & & \K{Binary: AndAlso} \B{dll}_{\textnormal{Left}} \B{dr}^{\textnormal{Right}} \\
+ & \K{Binary: GreaterThan} \B{dl}_{\textnormal{Left}} \B{dr}^{\textnormal{Right}} & & & \K{Member: InStock} \B{d}^{\textnormal{Expression}} \\
+ \K{Member: Price} \B{d}_{\textnormal{Expression}} & & \K{Constant: 500} & & \K{Parameter: product} \\
+\K{Parameter: product}
+}
+\end{center}
+
+\caption{The body of the expression tree for the lambda expression \lstinline,product => product.Price > 500 && product.InStock,}
+\label{Expression tree}
+\end{figure}
