@@ -76,6 +76,7 @@ Expression tree is an object that represents the given lambda expression
 in a form similar to an abstract syntax tree.
 This object can be programmatically accessed and manipulated,
 which allows translation of LINQ queries into other forms, such as SQL queries.
+An expression tree can also be compiled into a delegate.
 
 For an example of an expression tree, see Figure \ref{Expression tree}.
 
@@ -92,3 +93,27 @@ For an example of an expression tree, see Figure \ref{Expression tree}.
 \caption{The body of the expression tree for the lambda expression \lstinline,product => product.Price > 500 && product.InStock,}
 \label{Expression tree}
 \end{figure}
+
+The .Net framework contains two implementations of the query expression pattern:
+the interfaces \lstinline,IEnumerable<T>, and \lstinline,IQueryable<T>,.
+This means that any object that implements one of these two interfaces can be used in a LINQ query.
+
+These two types implement the query expression pattern completely,
+so they can be used with any LINQ operator.
+Other custom types can implement only part of the query expression pattern,
+which would mean only a subset of the LINQ operators are available for such types.
+
+The \lstinline,IEnumerable<T>, interface usually represents an in-memory collection,
+so its implementation of the LINQ operators use delegates.
+The \lstinline,IQueryable<T>, interface is usually used to represent a remote collection
+(such as a table in a relational database),
+so its version of the LINQ operators use expression trees.
+
+The \lstinline,IQueryable<T>, interface doesn't perform any translation of expression trees
+into the target query language.
+What it does is to combine the whole query into one expression tree,
+which is then passed to an implementation of \lstinline,IQueryProvider,.
+
+The query provider is then responsible for processing the expression tree
+and translating it into its target query language.
+If the query is not valid, the query provider will throw an exception at runtime.
