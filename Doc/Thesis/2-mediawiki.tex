@@ -28,7 +28,25 @@ but file uploads require the use of \texttt{multipart/form-data}.
 Some parameters can accept multiple values at once.
 In these cases, the values are separated by a pipe character (\texttt{|}).
 
+There are some parameters that are common to many modules:
+
+\begin{itemize}
+\item The \texttt{prop} parameter is used to determine what properties will be present in the response.
+The values of this parameter don't map directly to the properties of the response,
+so for example specifying \texttt{prop=ids} might cause the property \texttt{pageid} to appear in the result.
+\item The \texttt{dir} parameter is used to determine the order of the results:
+whether it should be ascending or descending.
+\item The \texttt{sort} parameter decides which property will be used to order the results of the query.
+\end{itemize}
+
 The response can be in one of the several available formats, the most widely used ones are XML and JSON.
+
+The representation of most data types in the response is nothing unusual:
+\texttt{string}s are formatted as strings, \texttt{integer}s as decimal numbers,
+\texttt{timestamp}s are formatted according to ISO 8601.
+Only \texttt{boolean}s have possibly unexpected representation:
+if the property is \texttt{false}, it is not present in the result at all,
+and if its value is \texttt{true}, it is represented with as an empty string.
 
 The API is divided into modules and there are two kinds of modules:
 ``normal'' modules (called ``non-query modules'' in this work) and query modules.
@@ -55,9 +73,17 @@ Another option is to use some other module (usually a \texttt{list} module) as a
 This way, one can for example retrieve the categories of all pages in a specific category,
 by using the \texttt{categorymembers} module as a generator for the \texttt{categories} module.
 
+Because more than one module can be used in one request,
+the parameters for each module are distinguished by using prefixes.
+For example, the prefix for the \texttt{categorymembers} module is \texttt{cm}.
+So, setting its \texttt{limit} parameter to the value of~5 can be achieved by
+adding \texttt{cmlimit=5} to the query string of a GET request or to the body of a POST request.
+
 The API is also extensible: MediaWiki extensions can add their own modules and modify some behavior of the existing modules.
 
 An example of an API request URI and a response in the XML format is in Figure \ref{API example}.
+
+%TODO: my other contributions?
 
 \begin{figure}[htbp]
 \texttt{http://en.wikipedia.org/w/api.php}~\texttt{?}\
@@ -111,13 +137,12 @@ The advantage of this system when compared with the conventional paging systems 
 or using numeric offsets is that it avoids missing entries and duplicates when the result
 changes while retrieving the pages.
 
-The API has no notion of transactions, so it's not possible to get fully consistent results
+The API has no notion of transactions, so it is not possible to get fully consistent results
 that would correspond to an exact moment in time.
-
 But thanks to this paging system, one can be certain that an entry that should be in the result set
 during retrieving of all of the pages will actually be present in the result set exactly once.
 
-The situation gets even more complicated when using a \texttt{prop} module with another modules as a generator.
+The situation gets even more complicated when using a \texttt{prop} module with another module as a generator.
 That is because both modules have their own paging.
 
 When such a request is made, the first response will contain a limited number of items from the generator
@@ -221,4 +246,101 @@ The \texttt{query-continue} elements are not shown in the figure.
 
 \end{figure}
 
+The situation is even more complicated with the \texttt{prop} module \texttt{revisions}.
+It can be used to retrieve information about revisions of pages, including their text
+and it is the only module that can be used to get the text of a page.
+
+For other modules, when no \texttt{limit} parameter is specified, a default value is used (usually 10)
+and a \texttt{query-continue} element is present in the response, to access the remaining items.
+
+But for the \texttt{revisions} module, not specifying the \texttt{limit} parameter means that only the most
+recent revision will be shown and no \texttt{query-continue} will be present.
+Also, when \texttt{limit} is specified, the module can operate only on one revision at a time,
+so for example one has to set the \texttt{limit} of a module used as a generator to~1.
+
 \section{The \texttt{paraminfo} module}
+
+A special importance for this work has the \texttt{meta} query module \texttt{paraminfo}.
+This module can be used to retrieve information about the modules,
+which is necessary for generating code to access those modules in a static fashion.
+
+Before this work, the \texttt{paraminfo} module provided some general information about the module
+and, most importantly, information about parameters, their data types and a short description,
+useful as a documentation for the generated code.
+
+The data type of a parameter is either a simple type (e.g. \texttt{integer} or \texttt{string}),
+or an enumeration of possible values.
+
+But for the code generation, another piece of information is necessary:
+knowing the properties of the response and how do they map to the values of the \texttt{prop} parameter.
+
+Because of this, as a part of this work,
+the \texttt{paraminfo} module was extended to be able to provide information about result properties
+of the API modules, using the same type system already used to describe parameters.
+Also, most of the API modules were changed so that they can provide this information to the \texttt{paraminfo} module.
+
+Of the 73~modules present in the MediaWiki core (that is, without any extensions),
+5 are not suitable for having their result properties described,
+because their result looks different than the result of other modules (for example, there are modules that produce RSS feeds).
+Further 5 modules do use the same response format as the other modules,
+but their response cannot be described in the type system used.
+There is also 17 modules that can be partially represented using this type system, but not completely.
+
+%TODO: update
+As of 9 May 2012, the patch that adds this ability to the \texttt{paraminfo} module and the necessary
+information to most other modules is waiting for review by MediaWiki developers.
+
+A shortened example of a response from the \texttt{paraminfo} module
+for the \texttt{categorymembers} module (including the added result information in the \texttt{props} element) is in Figure~\ref{paraminfo}.
+
+\begin{figure}[htbp]
+
+\begin{lstlisting}[language=]
+<module name="categorymembers" prefix="cm" querytype="list" generator=""
+   listresult="" description="List all pages in a given category">
+  <parameters>
+    <param name="title" type="string" description="Which category ..."  />
+    <param name="pageid" type="integer" description="Page ID of ..." />
+    <param name="prop" default="ids|title" multi="" description="..." >
+      <type> <t>ids</t> <t>title</t> ... </type>
+    </param>
+    <param name="namespace" multi="" type="namespace" />
+    <param name="continue" type="string" description="For large ..."  />
+    <param name="limit" default="10" type="limit" max="500" />
+    <param name="sort" default="sortkey" description="Property to sort by">
+      <type> <t>sortkey</t> <t>timestamp</t> </type>
+    </param>
+    <param name="dir" default="ascending">
+      <type> <t>ascending</t> <t>descending</t> </type>
+    </param>
+  </parameters>
+  <props>
+    <prop name="ids">
+      <properties>
+        <property name="pageid" type="integer" />
+      </properties>
+    </prop>
+    <prop name="title">
+      <properties>
+        <property name="ns" type="namespace" />
+        <property name="title" type="string" />
+      </properties>
+    </prop>
+    <prop name="type">
+      <properties>
+        <property name="type">
+          <type>
+            <t>page</t>
+            <t>subcat</t>
+            <t>file</t>
+          </type>
+        </property>
+      </properties>
+    </prop>
+  </props>
+</module>
+\end{lstlisting}
+
+\caption{A shortened response of the \texttt{paraminfo} module for the \texttt{categorymembers} module}
+\label{paraminfo}
+\end{figure}
