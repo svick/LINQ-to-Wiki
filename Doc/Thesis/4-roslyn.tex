@@ -1,1 +1,52 @@
 \chapter{Roslyn}
+
+Microsoft Roslyn is a new implementation of the C\# compiler written in C\#
+(and a VB.NET compiler written in VB.NET).
+Its main distinguishing characteristic is that it is “open”:
+it can be used as a library to convert between text and a syntax tree,
+to manipulate the syntax tree or to interrogate semantic information.
+
+It also integrates itself into the Microsoft Visual Studio IDE
+(Integrated Development Environment), where it can be used to perform
+custom refactoring actions or to produce custom errors and warnings at compile-time.
+
+Roslyn is currently under development and its latest public version is a CTP
+(Community Technology Preview) from October 2011.
+In the CTP, the semantic part of the library in completely implemented,
+so for example the syntax tree can represent any construct of C\#
+and any syntax tree can be translated to and from source code.
+
+On the other hand, the semantic part of the library is not fully implemented in the CTP,
+which means that for example some syntax trees won't successfully compile,
+even if they represent valid C\# code.
+
+Because of its close relation with Visual Studio,
+Roslyn syntax tree is able to represent every feature of C\# with down to character precision,
+including “trivia”: parts of code that are not significant for the compiler,
+such as whitespace and comments.
+
+Trivia can also be “structured”, that is it can form a small syntax tree of its own.
+An example of this structured trivia are XML documentation comments,
+that can be used to provide documentation for a piece of code,
+which can then be automatically processed.
+
+For an example of a Roslyn syntax tree, see Figure~\ref{Syntax tree}
+
+\begin{figure}[htbp]
+
+\begin{lstlisting}
+public abstract CategoryInfoResult CategoryInfo { get; }
+\end{lstlisting}
+
+\begin{center}
+\Treek[.5]{4}{
+& & & & \K{Property}\Below{Declaration} \B[-5]{dllll} \B[-5]{dll} \B[-5]{d} \B[-5]{drr} \B[-5]{drrrr} \\
+\K{Public}\Below{Keyword} & & \K{Abstract}\Below{Keyword} & & \K{Identifier}\Below{Name} \B[-5]{d} & & \K{Identifier}\Below{Token:}\Below{CategoryInfo} & & \K{Accessor}\Below{List} \B[-5]{dll} \B[-5]{d} \B[-5]{drr} \\
+& & & & \K{Identifier}\Below{Token:}\Below{CategoryInfoResult} & & \K{OpenBrace}\Below{Token} & & \K{GetAccessor}\Below{Declaration} \B[-5]{dl} \B[-5]{dr} & & \K{CloseBrace}\Below{Token} \\
+& & & & & & & \K{Get}\Below{Keyword} & & \K{Semicolon}\Below{Token}
+}
+\end{center}
+
+\caption{An example of a piece of C\# code and its Roslyn syntax tree (without trivia)}
+\label{Syntax tree}
+\end{figure}
