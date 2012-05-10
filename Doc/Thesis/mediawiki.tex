@@ -259,9 +259,10 @@ Also, when \texttt{limit} is specified, the module can operate only on one revis
 so for example one has to set the \texttt{limit} of a module used as a generator to~1.
 
 \subsection{The \texttt{paraminfo} module}
+\label{paraminfo}
 
 A special importance for this work has the \texttt{meta} query module \texttt{paraminfo}.
-This module can be used to retrieve information about the modules,
+This module can be used to retrieve information about modules,
 which is necessary for generating code to access those modules in a static fashion.
 
 Before this work, the \texttt{paraminfo} module provided some general information about the module
@@ -271,27 +272,12 @@ useful as a documentation for the generated code.
 The data type of a parameter is either a simple type (e.g. \texttt{integer} or \texttt{string}),
 or an enumeration of possible values.
 
-But for the code generation, another piece of information is necessary:
-knowing the properties of the response and how do they map to the values of the \texttt{prop} parameter.
-
-Because of this, as a part of this work,
-the \texttt{paraminfo} module was extended to be able to provide information about result properties
-of the API modules, using the same type system already used to describe parameters.
-Also, most of the API modules were changed so that they can provide this information to the \texttt{paraminfo} module.
-
-Of the 73~modules present in the MediaWiki core (that is, without any extensions),
-5 are not suitable for having their result properties described,
-because their result looks different than the result of other modules (for example, there are modules that produce RSS feeds).
-Further 5 modules do use the same response format as the other modules,
-but their response cannot be described in the type system used.
-There is also 17 modules that can be partially represented using this type system, but not completely.
-
-%TODO: update
-As of 9 May 2012, the patch that adds this ability to the \texttt{paraminfo} module and the necessary
-information to most other modules is waiting for review by MediaWiki developers.
-
 A shortened example of a response from the \texttt{paraminfo} module
-for the \texttt{categorymembers} module (including the added result information in the \texttt{props} element) is in Figure~\ref{paraminfo}.
+for the \texttt{categorymembers} module is in Figure~\ref{paraminfo sample}.
+
+For code generation in LinqToWiki, another piece of information is necessary:
+knowing the properties of the response and how do they map to the values of the \texttt{prop} parameter.
+For information about how we added them, see Chaper~\ref{mw improvements}.
 
 \begin{figure}[htbp]
 
@@ -299,48 +285,45 @@ for the \texttt{categorymembers} module (including the added result information 
 <module name="categorymembers" prefix="cm" querytype="list"
   generator="" listresult="" description="List all pages in a ...">
   <parameters>
-    <param name="title" type="string" description="Which category ..."  />
-    <param name="pageid" type="integer" description="Page ID of ..." />
-    <param name="prop" default="ids|title" multi="" description="..." >
-      <type> <t>ids</t> <t>title</t> ... </type>
+    <param name="title" type="string" 
+      description="Which category to enumerate (required). ..." />
+    <param name="pageid" type="integer" 
+      description="Page ID of the category to enumerate. ..." />
+    <param name="prop" default="ids|title" multi=""
+      description="What pieces of information to include ...">
+      <type>
+        <t>ids</t>
+        <t>title</t>
+        <t>sortkey</t>
+        <t>sortkeyprefix</t>
+        <t>type</t>
+        <t>timestamp</t>
+      </type>
     </param>
-    <param name="namespace" multi="" type="namespace" />
-    <param name="continue" type="string" description="For large ..."  />
-    <param name="limit" default="10" type="limit" max="500" />
-    <param name="sort" default="sortkey" description="Property to ...">
-      <type> <t>sortkey</t> <t>timestamp</t> </type>
+    <param name="namespace" multi="" type="namespace"
+      description="Only include pages in these namespaces" />
+    <param name="continue" type="string"
+      description="For large categories, give the value ..." />
+    <param name="limit" default="10" max="500" type="limit" 
+      description="The maximum number of pages to return." />
+    <param name="sort" default="sortkey"
+      description="Property to sort by">
+      <type>
+        <t>sortkey</t>
+        <t>timestamp</t>
+      </type>
     </param>
-    <param name="dir" default="ascending">
-      <type> <t>ascending</t> <t>descending</t> </type>
+    <param name="dir" default="ascending"
+      description="In which direction to sort">
+      <type>
+        <t>ascending</t>
+        <t>descending</t>
+      </type>
     </param>
   </parameters>
-  <props>
-    <prop name="ids">
-      <properties>
-        <property name="pageid" type="integer" />
-      </properties>
-    </prop>
-    <prop name="title">
-      <properties>
-        <property name="ns" type="namespace" />
-        <property name="title" type="string" />
-      </properties>
-    </prop>
-    <prop name="type">
-      <properties>
-        <property name="type">
-          <type>
-            <t>page</t>
-            <t>subcat</t>
-            <t>file</t>
-          </type>
-        </property>
-      </properties>
-    </prop>
-  </props>
 </module>
 \end{lstlisting}
 
 \caption{A shortened response of the \texttt{paraminfo} module for the \texttt{categorymembers} module}
-\label{paraminfo}
+\label{paraminfo sample}
 \end{figure}

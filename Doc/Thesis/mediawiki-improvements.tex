@@ -1,0 +1,83 @@
+\chapter{MediaWiki improvements}
+\label{mw improvements}
+
+As mentioned in Section~\ref{paraminfo}, to generate types for each module of the API,
+it is necessary to know the properties contained in the module response
+and how do they map to the values of the \texttt{prop} parameter.
+
+Because this information was not available, as a part of this work,
+the \texttt{paraminfo} module was extended to be able to provide information about result properties
+of the API modules, using the same type system already used to describe parameters.
+Also, most of the API modules were changed so that they can provide this information to the \texttt{paraminfo} module.
+
+Of the 73~modules present in the MediaWiki core (that is, without any extensions),
+5 are not suitable for having their result properties described,
+because their result looks different than the result of other modules (for example, there are modules that produce RSS feeds).
+Further 5 modules do use the same response format as the other modules,
+but their response cannot be described in the type system used.
+There is also 17 modules that can be partially represented using this type system, but not completely.
+
+%TODO: update
+As of 10 May 2012, the patch that adds this ability to the \texttt{paraminfo} module and the necessary
+information to most other modules is waiting for review by MediaWiki developers.
+
+An example of the added result information to the \texttt{paraminfo} response (here for the \texttt{categorymembers} module) is in Figure~\ref{paraminfo props}.
+
+\begin{figure}[htbp]
+
+\begin{lstlisting}[language=]
+<props>
+  <prop name="ids">
+    <properties>
+      <property name="pageid" type="integer" />
+    </properties>
+  </prop>
+  <prop name="title">
+    <properties>
+      <property name="ns" type="namespace" />
+      <property name="title" type="string" />
+    </properties>
+  </prop>
+  <prop name="sortkey">
+    <properties>
+      <property name="sortkey" type="string" />
+    </properties>
+  </prop>
+  <prop name="sortkeyprefix">
+    <properties>
+      <property name="sortkeyprefix" type="string" />
+    </properties>
+  </prop>
+  <prop name="type">
+    <properties>
+      <property name="type">
+      <type>
+        <t>page</t>
+        <t>subcat</t>
+        <t>file</t>
+      </type>
+      </property>
+    </properties>
+  </prop>
+  <prop name="timestamp">
+    <properties>
+      <property name="timestamp" type="timestamp" />
+    </properties>
+  </prop>
+</props>
+\end{lstlisting}
+
+\caption{A shortened response of the \texttt{paraminfo} module for the \texttt{categorymembers} module}
+\label{paraminfo props}
+\end{figure}
+
+%TODO: update
+During this work, we also noticed several bugs and inconsistencies in the API.
+Because of this, we reported eight bugs to the WikiMedia bug-tracking system.
+Three of them turned out to be duplicates of already reported bugs and,
+as of 10~May 2012, three of them are still waiting to be fixed.
+
+We also submitted eight patches to the MediaWiki code review system.
+Although only three of them actually fix behavior of the MediaWiki API,
+the rest are only fixes in documentation and other mostly insignificant changes.
+Of those three patches, one is still waiting for review, because it is a breaking change.

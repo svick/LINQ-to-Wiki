@@ -27,13 +27,23 @@
 \usepackage{xyling}
 \usepackage{url}
 \usepackage{microtype}
+\usepackage{lmodern}
+
 
 \usepackage[center]{caption}
 
 \lstdefinelanguage{CSharp}[Sharp]{C}
 {morekeywords={from,where,join,on,equals,orderby,descending,group,by,let,select},columns=flexible,showstringspaces=false}
 
-\lstset{language=CSharp}
+\lstnewenvironment{code}[1][]%
+{
+   \noindent
+   \minipage{\linewidth} 
+   \vspace{0.5\baselineskip}
+   \lstset{#1}}
+{\endminipage}
+
+\lstset{language=CSharp,basicstyle=\ttfamily}
 
 %% Balíček hyperref, kterým jdou vyrábět klikací odkazy v PDF,
 %% ale hlavně ho používáme k uložení metadat do PDF (včetně obsahu).
@@ -244,10 +254,10 @@ Keywords:
 
 \chapter{Background}
 \input{mediawiki}
-\pagebreak[4]
 \input{linq}
 \input{roslyn}
 
+\input{mediawiki-improvements}
 \input{linqtowiki}
 \input{future-work}
 \input{conclusion}

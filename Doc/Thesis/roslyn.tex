@@ -51,6 +51,8 @@ public abstract CategoryInfoResult CategoryInfo { get; }
 \label{Syntax tree}
 \end{figure}
 
+\pagebreak[0]
+
 Roslyn syntax trees are immutable and they can be created using factory methods from the \lstinline{Syntax} class.
 And while not all elements of the syntax tree have to be specified (like the braces of the accessor list),
 creating a syntax tree can be quite cumbersome.
@@ -73,7 +75,8 @@ Syntax.PropertyDeclaration(
         Syntax.List(
           Syntax.AccessorDeclaration(
             SyntaxKind.GetAccessorDeclaration,
-            semicolonTokenOpt: Syntax.Token(SyntaxKind.SemicolonToken)))));
+            semicolonTokenOpt:
+              Syntax.Token(SyntaxKind.SemicolonToken)))));
 \end{lstlisting}
 
 \caption{A sample code to manually create a Roslyn syntax tree}

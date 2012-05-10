@@ -20,26 +20,30 @@ without specifying the type of the object to create.
 
 For example the following query expression (as seen in Chapter \ref{goal}):
 
-\begin{lstlisting}
+\nopagebreak
+
+\begin{code}
 from product in allProducts
 where product.Price > 500
    && product.InStock
 join category in categories on product.Category equals category
 orderby product.Price
 select product.Name
-\end{lstlisting}
+\end{code}
 
 Is translated into the following method calls:
 
-\begin{lstlisting}
+\begin{code}
 allProducts
     .Where(product => product.Price > 500 && product.InStock)
     .Join(
-        categories, product => product.Category, category => category,
+        categories,
+        product => product.Category,
+        category => category,
         (product, category) => new { product, category })
     .OrderBy(t => t.product.Price)
     .Select(t => t.product.Name)
-\end{lstlisting}
+\end{code}
 
 The parameter~\lstinline,t, is a so called “transparent identifier”, it is used to transfer a set of variables from one method call to another.
 
