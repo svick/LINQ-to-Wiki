@@ -21,9 +21,9 @@ It can be used to remotely access any MediaWiki wiki (unless the API is disabled
 using the HTTP protocol.
 
 Parameters for the API request are given in the query string of a GET request or in the body of a POST request
-(some modules require the use of POST).
-The body of the POST request is usually formatted as \texttt{application/x-www-form-urlencoded},
-but file uploads require the use of \texttt{multipart/form-data}.
+(modules that perform modifications require the use of POST).
+The body of the POST request is usually formatted as \path{application/x-www-form-urlencoded},
+but file uploads require the use of \path{multipart/form-data}.
 
 Some parameters can accept multiple values at once.
 In these cases, the values are separated by a pipe character (\texttt{|}).
@@ -59,7 +59,7 @@ Query modules are used for retrieving information about the wiki. There are thre
 
 \begin{itemize}
 \item \texttt{list} modules: Return contents of various lists.
-For example the \texttt{allcategories} module can be used to list all categories on a wiki,
+For example the \texttt{all\-categories} module can be used to list all categories on a wiki,
 while the \texttt{categorymembers} module can be used to list members of a certain category.
 \item \texttt{prop} modules: Return information about a set of pages.
 For example, the \texttt{categories} module can be used to retrieve the categories for each page in a given set.
@@ -296,8 +296,8 @@ for the \texttt{categorymembers} module (including the added result information 
 \begin{figure}[htbp]
 
 \begin{lstlisting}[language=]
-<module name="categorymembers" prefix="cm" querytype="list" generator=""
-   listresult="" description="List all pages in a given category">
+<module name="categorymembers" prefix="cm" querytype="list"
+  generator="" listresult="" description="List all pages in a ...">
   <parameters>
     <param name="title" type="string" description="Which category ..."  />
     <param name="pageid" type="integer" description="Page ID of ..." />
@@ -307,7 +307,7 @@ for the \texttt{categorymembers} module (including the added result information 
     <param name="namespace" multi="" type="namespace" />
     <param name="continue" type="string" description="For large ..."  />
     <param name="limit" default="10" type="limit" max="500" />
-    <param name="sort" default="sortkey" description="Property to sort by">
+    <param name="sort" default="sortkey" description="Property to ...">
       <type> <t>sortkey</t> <t>timestamp</t> </type>
     </param>
     <param name="dir" default="ascending">
