@@ -238,18 +238,22 @@ Keywords:
 \tableofcontents
 
 %%% Jednotlivé kapitoly práce jsou pro přehlednost uloženy v samostatných souborech
-\include{preface}
-\include{1-goal}
-\include{2-mediawiki}
-\include{3-linq}
-\include{4-roslyn}
-\include{5-linqtowiki}
-\include{6-improvements}
+\include{introduction}
 
-\include{epilog}
+\input{problem-analysis}
+
+\chapter{Background}
+\input{mediawiki}
+\pagebreak[4]
+\input{linq}
+\input{roslyn}
+
+\input{linqtowiki}
+\input{future-work}
+\input{conclusion}
 
 %%% Seznam použité literatury
-\include{bibliography}
+\input{bibliography}
 
 %%% Tabulky v bakalářské práci, existují-li.
 \chapwithtoc{List of Tables}

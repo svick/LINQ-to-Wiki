@@ -1,4 +1,4 @@
-\chapter{MediaWiki API}
+\section{MediaWiki API}
 
 MediaWiki is an open source wiki system.
 It is written in the PHP programming language and uses a relational database to store its data, usually MySQL.
@@ -118,7 +118,7 @@ An example of an API request URI and a response in the XML format is in Figure \
 \label{API example}
 \end{figure}
 
-\section{Paging}
+\subsection{Paging}
 
 Because the results of the API queries can contain thousands and sometimes even millions of entries,
 the responses are limited.
@@ -258,7 +258,7 @@ recent revision will be shown and no \texttt{query-continue} will be present.
 Also, when \texttt{limit} is specified, the module can operate only on one revision at a time,
 so for example one has to set the \texttt{limit} of a module used as a generator to~1.
 
-\section{The \texttt{paraminfo} module}
+\subsection{The \texttt{paraminfo} module}
 
 A special importance for this work has the \texttt{meta} query module \texttt{paraminfo}.
 This module can be used to retrieve information about the modules,

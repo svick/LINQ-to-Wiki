@@ -2,13 +2,14 @@
 .\thesis.tex
 
 [texfiles]
-.\1-goal.tex
-.\2-mediawiki.tex
-.\3-linq.tex
-.\4-roslyn.tex
-.\5-linqtowiki.tex
-.\6-improvements.tex
+.\problem-analysis.tex
+.\mediawiki.tex
+.\linq.tex
+.\roslyn.tex
+.\linqtowiki.tex
+.\future-work.tex
 .\bibliography.tex
+.\conclusion.tex
 .\epilog.tex
 .\preface.tex
 
