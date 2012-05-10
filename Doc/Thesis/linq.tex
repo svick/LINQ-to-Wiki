@@ -72,8 +72,8 @@ query operator & query expression clause & higher-order function \\
 
 Usually, lambda expressions are compiled into normal methods and passed to the query operator methods as delegates
 (which are similar to function pointers in~C or first-class functions in functional languages).
-But this would not be suitable for querying of sources that are not in-memory collections,
-because the query has to be translated into another form,
+But this would not be suitable for querying of sources that are not in-memory collections.
+This is because the query has to be translated into another form,
 like an SQL query or a set of parameters for the MediaWiki API.
 
 Because of this, a lambda expression in C\# can be also compiled into another form:

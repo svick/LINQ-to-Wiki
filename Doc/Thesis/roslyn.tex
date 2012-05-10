@@ -3,7 +3,7 @@
 Microsoft Roslyn is a new implementation of the C\# compiler written in C\#
 (and a VB.NET compiler written in VB.NET).
 Its main distinguishing characteristic is that it is “open”:
-it can be used as a library to convert between text and a syntax tree,
+it can be used for example to convert between text and a syntax tree,
 to manipulate the syntax tree or to interrogate semantic information.
 
 It also integrates itself into the Microsoft Visual Studio IDE
@@ -12,7 +12,7 @@ custom refactoring actions or to produce custom errors and warnings at compile-t
 
 Roslyn is currently under development and its latest public version is a CTP
 (Community Technology Preview) from October 2011.
-In the CTP, the semantic part of the library in completely implemented,
+In the CTP, the syntactic part of the library in completely implemented,
 so for example the syntax tree can represent any construct of C\#
 and any syntax tree can be translated to and from source code.
 
@@ -21,12 +21,12 @@ which means that for example some syntax trees won't successfully compile,
 even if they represent valid C\# code.
 
 Because of its close relation with Visual Studio,
-Roslyn syntax tree is able to represent every feature of C\# with down to character precision,
-including “trivia”: parts of code that are not significant for the compiler,
+Roslyn syntax tree is able to represent every feature of C\# with down to character precision.
+This includes “trivia”: parts of code that are not significant for the compiler,
 such as whitespace and comments.
 
-Trivia can also be “structured”, that is it can form a small syntax tree of its own.
-An example of this structured trivia are XML documentation comments,
+Trivia can also be “structured”, that is, it can form a small syntax tree of its own.
+An example of structured trivia are XML documentation comments,
 that can be used to provide documentation for a piece of code,
 which can then be automatically processed.
 
@@ -54,7 +54,7 @@ public abstract CategoryInfoResult CategoryInfo { get; }
 \pagebreak[0]
 
 Roslyn syntax trees are immutable and they can be created using factory methods from the \lstinline{Syntax} class.
-And while not all elements of the syntax tree have to be specified (like the braces of the accessor list),
+And while not all elements of the syntax tree have to be specified (like braces of a property accessor list),
 creating a syntax tree can be quite cumbersome.
 
 For an example of code to manually create the syntax tree from Figure~\ref{Syntax tree}, see Figure~\ref{Roslyn code}.
