@@ -50,9 +50,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LinqToWiki\LinqToWiki.csproj">
+    <ProjectReference Include="..\LinqToWiki.Core\LinqToWiki.Core.csproj">
       <Project>{98C63DD2-A2D0-4982-8C8B-ED5AF8AA1EDF}</Project>
-      <Name>LinqToWiki</Name>
+      <Name>LinqToWiki.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

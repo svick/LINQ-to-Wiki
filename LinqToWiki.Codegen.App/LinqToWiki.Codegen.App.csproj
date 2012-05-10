@@ -54,9 +54,9 @@
       <Project>{F6F46A9F-5C64-4C8B-9ABD-284AA3E6DFED}</Project>
       <Name>LinqToWiki.Codegen</Name>
     </ProjectReference>
-    <ProjectReference Include="..\LinqToWiki\LinqToWiki.csproj">
+    <ProjectReference Include="..\LinqToWiki.Core\LinqToWiki.Core.csproj">
       <Project>{98C63DD2-A2D0-4982-8C8B-ED5AF8AA1EDF}</Project>
-      <Name>LinqToWiki</Name>
+      <Name>LinqToWiki.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
