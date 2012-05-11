@@ -2,23 +2,27 @@
 
 MediaWiki is an open source wiki system.
 It is written in the PHP programming language and uses a relational database to store its data, usually MySQL.
-It is maintained by the WikiMedia Foundation, who also runs some of the biggest wikis, including Wikipedia and Wiktionary.
+It is maintained by the Wikimedia Foundation, who also runs some of the biggest wikis, including Wikipedia and Wiktionary.
 It is also used by many others, including Wikia, who runs many small wikis for various interests and
 the unofficial wiki of the Faculty of Mathematics and Physics, $\upomega\upiota\upkappa\upiota$.matfyz.cz.
+
+\medskip
 
 There are several ways to programmatically access the database of some MediaWiki wiki.
 First, it's possible to directly access the database using SQL.
 This usually requires access to the server that runs the database, so it's not available in many cases.
-For WikiMedia wikis, a read-only access to most data, but excluding article texts,
-is available for registered users of Toolserver, run by WikiMedia Deutschland.
+For Wikimedia wikis, a read-only access to most data, but excluding article texts,
+is available for registered users of Toolserver, run by Wikimedia Deutschland.
 
-Mostly specific to WikiMedia wikis is also another option: database dumps. These are files that contain
+Mostly specific to Wikimedia wikis is also another option: database dumps. These are files that contain
 dumps of some tables of the wikis. Their disadvantages are that the newest dump is usually several days or weeks old
 and that the files can be huge, which is impractical for getting information about a small number of pages.
 
 Last, but not least, is the MediaWiki API.
 It can be used to remotely access any MediaWiki wiki (unless the API is disabled in the configuration)
 using the HTTP protocol.
+
+\medskip
 
 Parameters for the API request are given in the query string of a GET request or in the body of a POST request
 (modules that perform modifications require the use of POST).
@@ -46,7 +50,14 @@ The representation of most data types in the response is nothing unusual:
 \texttt{timestamp}s are formatted according to ISO 8601.
 Only \texttt{boolean}s have possibly unexpected representation:
 if the property is \texttt{false}, it is not present in the result at all,
-and if its value is \texttt{true}, it is represented with as an empty string.
+and if its value is \texttt{true}, it is represented as an empty string.
+
+If there is some problem executing a request, for example if a parameter has an invalid value,
+a warning will be returned along with the result of the operation.
+In the case of a fatal problem, such as when the user doesn't have the right to perform an action,
+error alone is returned.
+
+\medskip
 
 The API is divided into modules and there are two kinds of modules:
 “normal” modules (called “non-query modules” in this work) and query modules.
@@ -82,8 +93,6 @@ adding \texttt{cmlimit=5} to the query string of a GET request or to the body of
 The API is also extensible: MediaWiki extensions can add their own modules and modify some behavior of the existing modules.
 
 An example of an API request URI and a response in the XML format is in Figure \ref{API example}.
-
-%TODO: my other contributions?
 
 \begin{figure}[htbp]
 \texttt{http://en.wikipedia.org/w/api.php}~\texttt{?}\
@@ -142,7 +151,9 @@ that would correspond to an exact moment in time.
 But thanks to this paging system, one can be certain that an entry that should be in the result set
 during retrieving of all of the pages will actually be present in the result set exactly once.
 
-The situation gets even more complicated when using a \texttt{prop} module with another module as a generator.
+\medskip
+
+The situation gets more complicated when using a \texttt{prop} module with another module as a generator.
 That is because both modules have their own paging.
 
 When such a request is made, the first response will contain a limited number of items from the generator
@@ -156,6 +167,8 @@ For an example, see Figure \ref{paging}.
 It shows how the paging might work when using the \texttt{allpages} module as a generator,
 together with the \texttt{prop} module \texttt{categories}.
 The \texttt{query-continue} elements are not shown in the figure.
+
+\medskip
 
 \begin{figure}[htbp]
 \begin{center}
