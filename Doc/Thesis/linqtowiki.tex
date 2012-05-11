@@ -58,6 +58,16 @@ It is also able to parse XML elements this module returns.
 
 \subsection{\lstinline{WikiQuery}}
 
+Probably the most often used and certainly the most interesting queries are those using \texttt{list} query modules.
+Such queries are represented by a group of types whose names start with \lstinline{WikiQuery}.
+
+Specifically, there are four such types:
+\lstinline{WikiQuery}, \lstinline{WikiQuerySortable}, \lstBreak{Wiki\-Query\-Generator} and \lstinline{WikiQuerySortableGenerator}.
+If a module supports sorting, it is represented by a type with \lstinline{Sortable} in its name
+and if it supports being used as a generator for \texttt{prop} queries, it is represented by a type with \lstinline{Generator} in its name.
+
+For a state diagram of transitions between the \lstinline{WikiQuery} types and other related types, see Figure~\ref{WikiQuery types}.
+
 \begin{figure}[htbp]
 \begin{center}
 \begin{tikzpicture}[>=angle 90]
@@ -103,58 +113,37 @@ It is also able to parse XML elements this module returns.
 \end{tikzpicture}
 \end{center}
 
-\caption{State diagram of \lstinline{WikiQuery}-related types}
+\caption{State diagram of \lstinline{WikiQuery}-related types \\ (\lstinline{WikiQuery} is shortened to \lstinline{WQ} to save space)}
 \label{WikiQuery types}
 
 \end{figure}
 
-\begin{figure}[htbp]
-\begin{tikzpicture}
-\path (2,4) node(WQS) {\lstinline{WQSortable}};
-\path (2,2) node(WQ) {\lstinline{WQ}};
+\medskip
+\pagebreak[0]
 
-\path (5,2) node(WQR) {\lstinline{WQResult}};
-\path (4,0) node(List) {\lstinline{List}};
-\path (6,0) node(IE) {\lstinline{IEnumerable}};
+% try explaining in more detail
 
-\path (9,4) node(WQSG) {\lstinline{WQSortableGenerator}};
-\path (9,2) node(WQG) {\lstinline{WQGenerator}};
+All of the \lstinline{WikiQuery}-related types are generic
+and their type parameters are used to decide what properties can be used in each operation.
+For example, the type parameter \lstinline{TOrderBy} of \lstinline{WikiQuerySortable}
+decides what properties can be used in the parameter of the \lstinline{OrderBy} method.
 
-\path (13,4) node(PS) {\lstinline{PageSource}};
-\path (13,2) node(WQPR) {\lstinline{WQPageResult}};
-\path (14,0) node(PList) {\lstinline{List}};
-\path (12,0) node(PIE) {\lstinline{IEnumerable}};
+The way this is achieved is that \lstinline{TOrderBy} is a type that contains the properties that can be
+used for sorting in the module \lstinline{WikiQuerySortable} represents
+and the \lstinline{OrderBy} method accepts lambda expressions whose parameter is of this type.
 
-\draw[->] (WQS) edge [loop above] node {\lstinline{Where}} ();
-\draw[->] (WQS) edge node[left] {\lstinline{OrderBy}} (WQ);
-\draw[->] (WQS) edge node[above right] {\lstinline{Select}} (WQR);
+For example, if some module supported sorting by \lstinline{PageId} and \lstinline{Title},
+then \lstinline{TOrderBy} would be a type that contains two properties with those names.
+Because of this, a query like \lstinline{query.OrderBy(x => x.Title)} would compile and execute fine,
+but \lstinline{query.Orderby(x => x.Name)} would fail to compile.
 
-\draw[->] (WQ) edge [loop below] node {\lstinline{Where}} ();
-\draw[->] (WQ) edge node[above] {\lstinline{Select}} (WQR);
+Because of the way lambda expressions work, queries like \lstBreak{query.OrderBy(x => x.Title.Substring(1))} or \lstBreak{query.OrderBy(x => random.Next())} would compile fine.
+But because there is no way to efficiently execute such queries using the MediaWiki API,
+they will fail with an exception at runtime.
 
-\draw[->] (WQR) edge node[left] {\lstinline{ToList}} (List);
-\draw[->] (WQR) edge node[right] {\lstinline{ToEnumerable}} (IE);
+\medskip
 
-\draw[->] (WQSG) edge [loop above] node {\lstinline{Where}} ();
-\draw[->] (WQSG) edge node[right] {\lstinline{OrderBy}} (WQG);
-\draw[->] (WQSG) edge node[above left] {\lstinline{Select}} (WQR);
 
-\draw[->] (WQG) edge [loop below] node {\lstinline{Where}} ();
-\draw[->] (WQG) edge node[above] {\lstinline{Select}} (WQR);
-
-\draw[->] (WQSG) edge node[auto] {\lstinline{Pages}} (PS);
-\draw[->] (WQG) edge node[below right] {\lstinline{Pages}} (PS);
-
-\draw[->] (PS) edge node[auto] {\lstinline{Select}} (WQPR);
-\draw[->] (WQPR) edge node[right] {\lstinline{ToList}} (PList);
-\draw[->] (WQPR) edge node[left] {\lstinline{ToEnumerable}} (PIE);
-
-\end{tikzpicture}
-
-\caption{TODO}
-\label{WikiQuery types}
-
-\end{figure}
 
 % WikiQuery
 % PageSources and types related to prop queries
