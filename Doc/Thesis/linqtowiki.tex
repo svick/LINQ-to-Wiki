@@ -48,8 +48,123 @@ but it can also be used without it.
 In fact, LinqToWiki.\allowbreak{}Codegen internally uses LinqToWiki.Core to access the \texttt{paraminfo} module
 using manually written code.
 
-\medskip
+\subsection{\lstinline{QueryTypeProperties}}
 
+The \lstinline{QueryTypeProperties} class holds basic information about a “query type”,
+which corresponds to an API module.
+Those information include the prefix this module uses in its parameters,
+what type of module it is or mapping of its result properties to values accepted by the \texttt{prop} parameter.
+It is also able to parse XML elements this module returns.
+
+\subsection{\lstinline{WikiQuery}}
+
+\begin{figure}[htbp]
+\begin{center}
+\begin{tikzpicture}[>=angle 90]
+\path (0,9) node(WQS) {\lstinline{WQSortable}};
+\path (5,9) node(WQ) {\lstinline{WQ}};
+
+\path (5,6) node(WQR) {\lstinline{WQResult}};
+\path (9,7.5) node(List) {\lstinline{List}};
+\path (9,4.5) node(IE) {\lstinline{IEnumerable}};
+
+\path (0,3) node(WQSG) {\lstinline{WQSortableGenerator}};
+\path (5,3) node(WQG) {\lstinline{WQGenerator}};
+
+\path (0,0) node(PS) {\lstinline{PageSource}};
+\path (5,0) node(WQPR) {\lstinline{WQPageResult}};
+\path (9,1.5) node(PList) {\lstinline{List}};
+\path (9,-1.5) node(PIE) {\lstinline{IEnumerable}};
+
+\draw[->] (WQS) edge [out=188,in=172,looseness=5,auto] node {\lstinline{Where}} (WQS);
+\draw[->] (WQS) edge node[above] {\lstinline{OrderBy}} (WQ);
+\draw[->] (WQS) edge node[below left] {\lstinline{Select}} (WQR);
+
+\draw[->] (WQ) edge [out=-20,in=20,looseness=8,right] node {\lstinline{Where}} (WQ);
+\draw[->] (WQ) edge node[right] {\lstinline{Select}} (WQR);
+
+\draw[->] (WQR) edge node[below right] {\lstinline{ToList}} (List);
+\draw[->] (WQR) edge node[above right] {\lstinline{ToEnumerable}} (IE);
+
+\draw[->] (WQSG) edge [out=185,in=175,looseness=5,auto] node {\lstinline{Where}} (WQSG);
+\draw[->] (WQSG) edge node[auto] {\lstinline{OrderBy}} (WQG);
+\draw[->] (WQSG) edge node[above left] {\lstinline{Select}} (WQR);
+
+\draw[->] (WQG) edge [out=-8,in=8,looseness=5,right] node {\lstinline{Where}} (WQG);
+\draw[->] (WQG) edge node[right] {\lstinline{Select}} (WQR);
+
+\draw[->] (WQSG) edge node[auto] {\lstinline{Pages}} (PS);
+\draw[->] (WQG) edge node[auto] {\lstinline{Pages}} (PS);
+
+\draw[->] (PS) edge node[auto] {\lstinline{Select}} (WQPR);
+\draw[->] (WQPR) edge node[below right] {\lstinline{ToList}} (PList);
+\draw[->] (WQPR) edge node[above right] {\lstinline{ToEnumerable}} (PIE);
+
+\end{tikzpicture}
+\end{center}
+
+\caption{State diagram of \lstinline{WikiQuery}-related types}
+\label{WikiQuery types}
+
+\end{figure}
+
+\begin{figure}[htbp]
+\begin{tikzpicture}
+\path (2,4) node(WQS) {\lstinline{WQSortable}};
+\path (2,2) node(WQ) {\lstinline{WQ}};
+
+\path (5,2) node(WQR) {\lstinline{WQResult}};
+\path (4,0) node(List) {\lstinline{List}};
+\path (6,0) node(IE) {\lstinline{IEnumerable}};
+
+\path (9,4) node(WQSG) {\lstinline{WQSortableGenerator}};
+\path (9,2) node(WQG) {\lstinline{WQGenerator}};
+
+\path (13,4) node(PS) {\lstinline{PageSource}};
+\path (13,2) node(WQPR) {\lstinline{WQPageResult}};
+\path (14,0) node(PList) {\lstinline{List}};
+\path (12,0) node(PIE) {\lstinline{IEnumerable}};
+
+\draw[->] (WQS) edge [loop above] node {\lstinline{Where}} ();
+\draw[->] (WQS) edge node[left] {\lstinline{OrderBy}} (WQ);
+\draw[->] (WQS) edge node[above right] {\lstinline{Select}} (WQR);
+
+\draw[->] (WQ) edge [loop below] node {\lstinline{Where}} ();
+\draw[->] (WQ) edge node[above] {\lstinline{Select}} (WQR);
+
+\draw[->] (WQR) edge node[left] {\lstinline{ToList}} (List);
+\draw[->] (WQR) edge node[right] {\lstinline{ToEnumerable}} (IE);
+
+\draw[->] (WQSG) edge [loop above] node {\lstinline{Where}} ();
+\draw[->] (WQSG) edge node[right] {\lstinline{OrderBy}} (WQG);
+\draw[->] (WQSG) edge node[above left] {\lstinline{Select}} (WQR);
+
+\draw[->] (WQG) edge [loop below] node {\lstinline{Where}} ();
+\draw[->] (WQG) edge node[above] {\lstinline{Select}} (WQR);
+
+\draw[->] (WQSG) edge node[auto] {\lstinline{Pages}} (PS);
+\draw[->] (WQG) edge node[below right] {\lstinline{Pages}} (PS);
+
+\draw[->] (PS) edge node[auto] {\lstinline{Select}} (WQPR);
+\draw[->] (WQPR) edge node[right] {\lstinline{ToList}} (PList);
+\draw[->] (WQPR) edge node[left] {\lstinline{ToEnumerable}} (PIE);
+
+\end{tikzpicture}
+
+\caption{TODO}
+\label{WikiQuery types}
+
+\end{figure}
+
+% WikiQuery
+% PageSources and types related to prop queries
+% ExpressionParser
+% QueryParameters
+% QueryProcessor, its helpers
+
+\subsection{\lstinline{Downloader}}
+
+% TODO: reword
 Probably the most basic type in this project is \lstinline{Downloader}.
 It takes care of forming the query string, executing the request and
 returning the result as an \lstinline{XDocument}.
@@ -64,16 +179,7 @@ The decision to use \path{application/x-www-form-urlencoded} follows from the fa
 \path{multipart/form-data} is very inefficient when sending multiple parameters with short values,
 which is common when making requests to the API.
 
-\medskip
-
-
-
-% QueryProcessor, its helpers
-% QueryTypeProperties
-% QueryParameters
-% WikiQuery
-% ExpressionParser
-% PageSources and types related to prop queries
+% TODO: maybe some conclusion?
 
 \section{The LinqToWiki.Codegen project}
 
