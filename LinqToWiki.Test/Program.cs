@@ -11,13 +11,66 @@ namespace LinqToWiki.Samples
         {
             Downloader.LogDownloading = true;
 
-            /*/
+            /**/
             var wiki = new Wiki("en.wikipedia.org", "/w/api.php");
             /*/
             var wiki = new Wiki("localhost/wiki/", "api.php");
             Login(wiki, "Svick", "heslo");
             /**/
-            Edit(wiki);
+
+            EmptyCategoriesFaster(wiki);
+        }
+
+        // http://en.wikipedia.org/wiki/Wikipedia_talk:Categorization/Archive_14#Unused_categories
+        private static void EmptyCategoriesFaster(Wiki wiki)
+        {
+            var result = wiki.Query
+                .allcategories()
+                .Where(c => c.max == 0)
+                .Pages
+                .Select(
+                    c => new
+                         {
+                             c.info.title,
+                             c.info.missing,
+                             softRedirectCategory =
+                             c.categories()
+                             .Where(cc => cc.categories == "Category:Wikipedia soft redirected categories")
+                             .Select(cc => cc.title)
+                             .ToEnumerable()
+                         })
+                .ToEnumerable()
+                .Where(c => !c.missing && !c.softRedirectCategory.Any())
+                .Select(c => c.title)
+                .Take(10);
+
+            Write(result);
+        }
+
+        private static void EmptyCategoriesSlower(Wiki wiki)
+        {
+            var result = wiki.Query
+                .allpages()
+                .Where(p => p.ns == Namespace.Category)
+                .Pages
+                .Select(
+                    p =>
+                    new
+                    {
+                        p.info.title,
+                        p.categoryinfo,
+                        softRedirectCategory =
+                        p.categories()
+                        .Where(c => c.categories == "Category:Wikipedia soft redirected categories")
+                        .Select(c => c.title)
+                        .ToEnumerable()
+                    })
+                .ToEnumerable()
+                .Where(c => (c.categoryinfo == null || c.categoryinfo.size == 0) && !c.softRedirectCategory.Any())
+                .Select(c => c.title)
+                .Take(10);
+
+            Write(result);
         }
 
         private static void BigTitlesSource(Wiki wiki)
