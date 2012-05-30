@@ -11,7 +11,7 @@ namespace LinqToWiki.Codegen.ModuleInfo
     /// <summary>
     /// Class that can be used to retrieve information about API modules available on a wiki.
     /// </summary>
-    class ModulesSource
+    public class ModulesSource
     {
         private readonly QueryProcessor<ParamInfo> m_processor;
 
