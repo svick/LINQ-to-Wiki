@@ -1,3 +1,4 @@
+* new Roslyn CTP
 * XML documentation
 * XML documentation of generated types (e.g. Wiki)
 * write thesis
