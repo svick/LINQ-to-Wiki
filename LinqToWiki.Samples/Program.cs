@@ -7,7 +7,7 @@ namespace LinqToWiki.Samples
 {
     static class Program
     {
-        static void Main()
+        private static void Main()
         {
             Downloader.LogDownloading = true;
 
@@ -21,86 +21,7 @@ namespace LinqToWiki.Samples
             EmptyCategoriesFaster(wiki);
         }
 
-        // http://en.wikipedia.org/wiki/Wikipedia_talk:Categorization/Archive_14#Unused_categories
-        private static void EmptyCategoriesFaster(Wiki wiki)
-        {
-            var result = wiki.Query
-                .allcategories()
-                .Where(c => c.max == 0)
-                .Pages
-                .Select(
-                    c => new
-                         {
-                             c.info.title,
-                             c.info.missing,
-                             softRedirectCategory =
-                             c.categories()
-                             .Where(cc => cc.categories == "Category:Wikipedia soft redirected categories")
-                             .Select(cc => cc.title)
-                             .ToEnumerable()
-                         })
-                .ToEnumerable()
-                .Where(c => !c.missing && !c.softRedirectCategory.Any())
-                .Select(c => c.title)
-                .Take(10);
-
-            Write(result);
-        }
-
-        private static void EmptyCategoriesSlower(Wiki wiki)
-        {
-            var result = wiki.Query
-                .allpages()
-                .Where(p => p.ns == Namespace.Category)
-                .Pages
-                .Select(
-                    p =>
-                    new
-                    {
-                        p.info.title,
-                        p.categoryinfo,
-                        softRedirectCategory =
-                        p.categories()
-                        .Where(c => c.categories == "Category:Wikipedia soft redirected categories")
-                        .Select(c => c.title)
-                        .ToEnumerable()
-                    })
-                .ToEnumerable()
-                .Where(c => (c.categoryinfo == null || c.categoryinfo.size == 0) && !c.softRedirectCategory.Any())
-                .Select(c => c.title)
-                .Take(10);
-
-            Write(result);
-        }
-
-        private static void BigTitlesSource(Wiki wiki)
-        {
-            var pageTitles = wiki.Query.allpages()
-                .Where(p => p.filterredir == allpagesfilterredir.nonredirects)
-                .Select(p => p.title)
-                .ToEnumerable();
-            var pagesSource = wiki.CreateTitlesSource(pageTitles);
-
-            var lotsOfCategories = pagesSource
-                .Select(p => new { p.info.title, categories = p.categories().Select(c => 1).ToEnumerable().Count() })
-                .ToEnumerable()
-                .Where(p => p.categories >= 20)
-                .Take(5);
-
-            Write(lotsOfCategories);
-        }
-
-        private static void Revisions(PagesSource<Page> pages)
-        {
-            var source = pages.Select(p => PageResult.Create(p.info, p.revisions().ToEnumerable()))
-                .ToEnumerable();
-            Write(source);
-
-            var pageTexts= pages.Select(p => p.revisions().Select(r => r.value).FirstOrDefault())
-                .ToEnumerable()
-                .Take(3);
-            Write(pageTexts);
-        }
+        #region Simple methods
 
         private static void Block(Wiki wiki)
         {
@@ -146,7 +67,13 @@ namespace LinqToWiki.Samples
         {
             var fileName = "TOR1.jpeg";
             var info = wiki.CreateTitlesSource("File:" + fileName)
-                .Select(f => new { token = f.info.edittoken, archiveNames = f.imageinfo().Select(i => i.archivename).ToEnumerable()})
+                .Select(
+                    f =>
+                    new
+                    {
+                        token = f.info.edittoken,
+                        archiveNames = f.imageinfo().Select(i => i.archivename).ToEnumerable()
+                    })
                 .ToEnumerable().Single();
             var archiveName = info.archiveNames.ElementAt(1);
 
@@ -289,6 +216,10 @@ namespace LinqToWiki.Samples
             Console.WriteLine(result);
         }
 
+        #endregion
+
+        #region Page sources
+
         private static PagesSource<Page> TitlePages(Wiki wiki)
         {
             return wiki.CreateTitlesSource(
@@ -320,6 +251,10 @@ namespace LinqToWiki.Samples
                     select cm).Pages;
         }
 
+        #endregion
+
+        #region Page source methods
+
         private static void PageResultProps(PagesSource<Page> pages)
         {
             var source = pages
@@ -348,7 +283,7 @@ namespace LinqToWiki.Samples
                         categories =
                         p.categories()
                         .Where(c => c.show == categoriesshow.not_hidden)
-                        .Select(c => new { c.title , c.sortkeyprefix })
+                        .Select(c => new { c.title, c.sortkeyprefix })
                         .ToEnumerable()
                         .Take(1)
                     }
@@ -465,6 +400,18 @@ namespace LinqToWiki.Samples
             Write(source);
         }
 
+        private static void Revisions(PagesSource<Page> pages)
+        {
+            var source = pages.Select(p => PageResult.Create(p.info, p.revisions().ToEnumerable()))
+                .ToEnumerable();
+            Write(source);
+
+            var pageTexts = pages.Select(p => p.revisions().Select(r => r.value).FirstOrDefault())
+                .ToEnumerable()
+                .Take(3);
+            Write(pageTexts);
+        }
+
         private static void Templates(PagesSource<Page> pages)
         {
             var source = pages
@@ -481,6 +428,10 @@ namespace LinqToWiki.Samples
 
             Write(source);
         }
+
+        #endregion
+
+        #region List methods
 
         private static void AllCategories(Wiki wiki)
         {
@@ -749,6 +700,87 @@ namespace LinqToWiki.Samples
             Write(result);
         }
 
+        #endregion
+
+        #region Lots of items in TitlesSource
+
+        private static void BigTitlesSource(Wiki wiki)
+        {
+            var pageTitles = wiki.Query.allpages()
+                .Where(p => p.filterredir == allpagesfilterredir.nonredirects)
+                .Select(p => p.title)
+                .ToEnumerable();
+            var pagesSource = wiki.CreateTitlesSource(pageTitles);
+
+            var lotsOfCategories = pagesSource
+                .Select(p => new { p.info.title, categories = p.categories().Select(c => 1).ToEnumerable().Count() })
+                .ToEnumerable()
+                .Where(p => p.categories >= 20)
+                .Take(5);
+
+            Write(lotsOfCategories);
+        }
+
+        #endregion
+
+        #region Real-life complex query
+
+        // http://en.wikipedia.org/wiki/Wikipedia_talk:Categorization/Archive_14#Unused_categories
+        private static void EmptyCategoriesFaster(Wiki wiki)
+        {
+            var result = wiki.Query
+                .allcategories()
+                .Where(c => c.max == 0)
+                .Pages
+                .Select(
+                    c => new
+                    {
+                        c.info.title,
+                        c.info.missing,
+                        softRedirectCategory =
+                             c.categories()
+                             .Where(cc => cc.categories == "Category:Wikipedia soft redirected categories")
+                             .Select(cc => cc.title)
+                             .ToEnumerable()
+                    })
+                .ToEnumerable()
+                .Where(c => !c.missing && !c.softRedirectCategory.Any())
+                .Select(c => c.title)
+                .Take(10);
+
+            Write(result);
+        }
+
+        private static void EmptyCategoriesSlower(Wiki wiki)
+        {
+            var result = wiki.Query
+                .allpages()
+                .Where(p => p.ns == Namespace.Category)
+                .Pages
+                .Select(
+                    p =>
+                    new
+                    {
+                        p.info.title,
+                        p.categoryinfo,
+                        softRedirectCategory =
+                        p.categories()
+                        .Where(c => c.categories == "Category:Wikipedia soft redirected categories")
+                        .Select(c => c.title)
+                        .ToEnumerable()
+                    })
+                .ToEnumerable()
+                .Where(c => (c.categoryinfo == null || c.categoryinfo.size == 0) && !c.softRedirectCategory.Any())
+                .Select(c => c.title)
+                .Take(10);
+
+            Write(result);
+        }
+
+        #endregion
+
+        #region Helper methods
+
         private static void Write<T>(WikiQueryPageResult<PageResult<T>> source)
         {
             Write(source.ToEnumerable());
@@ -778,5 +810,7 @@ namespace LinqToWiki.Samples
 
             Console.WriteLine("Total: {0}", array.Length);
         }
+
+        #endregion
     }
 }
