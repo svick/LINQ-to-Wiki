@@ -14,6 +14,11 @@ which then get translated into efficient API reuqests.
 Because the API can vary from wiki to wiki,
 [it's necessary to configure the library thorough an automatically generated assembly](#generating-configuration-for-a-wiki).
 
+- [Usage](#usage)
+- [Generating configuration for a wiki](#generating-configuration-for-a-wiki)
+- [Developer documentation](#developer-documentation)
+
+
 Usage
 -----
 
@@ -127,7 +132,63 @@ I want only the first section (`Where(r => r.section == "0")`),
 I want to select the text of the revision (here called “value”, `Select(r => r.value)`)
 and only for the first (latest) revision (`FirstOrDefault()`).
 
-For many more examples, have a look at the LinqToWiki.Samples project.
+For examples of almost all methods in LINQ to Wiki,
+have a look at [the LinqToWiki.Samples project](https://github.com/svick/LINQ-to-Wiki/blob/master/LinqToWiki.Samples/Program.cs).
 
 Generating configuration for a wiki
 -----------------------------------
+
+To generate a configuration assembly for a certain wiki, you can use the `linqtowiki-codegen` command-line application
+(see [the LinqToWiki.Codegen.App project](https://github.com/svick/LINQ-to-Wiki/tree/master/LinqToWiki.Codegen.App)).
+If you run it without parameters, it will show you basic usage, along with some examples:
+
+```
+Usage:    linqtowiki-codegen url-to-api [namespace [output-name]] [-d output-directory] [-p props-file-path]
+Examples: linqtowiki-codegen en.wikipedia.org LinqToWiki.Enwiki linqtowiki-enwiki -d C:\Temp -p props-defaults-sample.xml
+          linqtowiki-codegen https://en.wikipedia.org/w/api.php
+```
+
+The application retrieves information about the API from the API itself,
+using the URL you gave as a first parameter.
+This requires information about properties of results of the API,
+that was not previously available from the API, and was added there because of this library.
+This was done quite recently (on 12 June 2012),
+so it's not available in the most recent public version of MediaWiki (1.19.1)
+or the version currently in use on Wikipedia (1.20wmf5).
+Hopefull, this will change soon.
+
+If you don't have recent enough version of MediaWiki (which right now is more than likely),
+you can use a workaround: get the necessary information from a file.
+The file looks almost the same as an API response in XML format that would contain the information.
+There is [a sample of the file](https://github.com/svick/LINQ-to-Wiki/blob/master/LinqToWiki.Codegen.App/props-defaults-sample.xml)
+available, which will most likely work for you out of the box.
+
+You don't have to generate a separate assembly for each wiki,
+if the methods you want to use look the same on all of them.
+In that case, don't forget to specify which wiki do you want to use
+in the constructor of the `Wiki` class.
+
+If you want to access multiple wikis with different configuration assemblies
+from one program, you can, if you generate each of them into a different namespace
+(the default namespace is `LinqToWiki.Generated`).
+
+If you want to do something more complicated regarding generating the configuration assemblies
+(for example, create a bunch of C# files that you can modify by hand and then compile into a configuration assembly),
+you can use [the LinqToWiki.Codegen library](https://github.com/svick/LINQ-to-Wiki/tree/master/LinqToWiki.Codegen) directly from your own application.
+
+Developer documentation
+-----------------------
+
+If you want to modify this code (patches are welcome) or just have a look at the implementation,
+here is a short overview of the projects (more details are in the project directories):
+
+* [LinqToWiki.Core](https://github.com/svick/LINQ-to-Wiki/tree/master/LinqToWiki.Core)
+ – The core of the library. This project is referenced by all other projects and contains types necessary for acessing the API, processing LINQ expressions, etc.
+* [LinqToWiki.Codegen](https://github.com/svick/LINQ-to-Wiki/tree/master/LinqToWiki.Codegen)
+ – Handles generating code using Roslyn.
+* [LinqToWiki.Codegen.App](https://github.com/svick/LINQ-to-Wiki/tree/master/LinqToWiki.Codegen.App)
+ – The `linqtowiki-codegen` command-line application, see [above](#generating-configuration-for-a-wiki). 
+* [LinqToWiki.Samples](https://github.com/svick/LINQ-to-Wiki/tree/master/LinqToWiki.Samples)
+ – Samples of code that uses this library.
+* [LinqToWiki.ManuallyGenerated](https://github.com/svick/LINQ-to-Wiki/tree/master/LinqToWiki.ManuallyGenerated)
+ – A manually written configuration assembly. You could use this as a template for your own configuration assembly, but otherwise it's mostly useless.
