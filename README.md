@@ -11,6 +11,9 @@ and much more.
 Querying the various lists available can be done using LINQ queries,
 which then get translated into efficient API reuqests.
 
+The library is strongly-typed, which means it should be hard to make invalid requests
+and it also makes it easy to discover available methods and properties though IntelliSense.
+
 Because the API can vary from wiki to wiki,
 [it's necessary to configure the library thorough an automatically generated assembly](#generating-configuration-for-a-wiki).
 
