@@ -18,7 +18,7 @@ This project can be used together with code generated using LinqToWiki.Codegen,
 or with manually written code.
 
 The LinqToWiki.Codegen project handles generating code based on information from the \texttt{paraminfo} module.
-It contains types that represent the results of that module, process them, generate C\# code and compile this code using Roslyn.
+It contains types that represent the results of that module, process them, generate C\# code and compile this code.
 This project also contains helper types for easier creating of Roslyn syntax trees.
 
 The LinqToWiki.Codegen.App compiles down to a simple console application called linqtowiki-codegen,
@@ -36,12 +36,13 @@ First run the linqtowiki-codegen application to generate a DLL library tailored 
 Then use the generated library together with LinqToWiki.Core in your C\# (or VB.NET) application to access that wiki.
 
 Other options are possible, though.
-For example, the linqtowiki-codegen application can be used to generate the code as a set of files containing C\# source code.
+For example, the LinqToWiki.Codegen library can be used to generate the code as a set of files containing C\# source code.
 Those files can then be modified and manually compiled.
 
 \section{The LinqToWiki.Core project}
 
-The LinqToWiki.Core project contains shared code that can be used when querying any MediaWiki wiki.
+The LinqToWiki.Core project contains shared code that can be used when querying any MediaWiki wiki
+that has the API enabled.
 It can be used together with code generated through LinqToWiki\allowbreak{}.Codegen,
 but it can also be used without it.
 
@@ -52,7 +53,7 @@ using manually written code.
 
 The \lstinline{QueryTypeProperties} class holds basic information about a “query type”,
 which corresponds to an API module.
-Those information include the prefix this module uses in its parameters,
+This information includes the prefix this module uses in its parameters,
 what type of module it is or mapping of its result properties to values accepted by the \texttt{prop} parameter.
 It is also able to parse XML elements this module returns.
 
@@ -62,7 +63,7 @@ Probably the most often used and certainly the most interesting queries are thos
 Such queries are represented by a group of types whose names start with \lstinline{WikiQuery}.
 
 Specifically, there are four such types:
-\lstinline{WikiQuery}, \lstinline{WikiQuerySortable}, \lstBreak{Wiki\-Query\-Generator} and \lstinline{WikiQuerySortableGenerator}.
+\lstinline{WikiQuery}, \lstinline{WikiQuerySortable}, \lstinline{Wiki}\lstBreak\lstinline{Query}\lstBreak\lstinline{Generator} and \lstinline{WikiQuerySortableGenerator}.
 If a module supports sorting, it is represented by a type with \lstinline{Sortable} in its name
 and if it supports being used as a generator for \texttt{prop} queries, it is represented by a type with \lstinline{Generator} in its name.
 
@@ -137,9 +138,11 @@ then \lstinline{TOrderBy} would be a type that contains two properties with thos
 Because of this, a query like \lstinline{query.OrderBy(x => x.Title)} would compile and execute fine,
 but \lstinline{query.Orderby(x => x.Name)} would fail to compile.
 
-Because of the way lambda expressions work, queries like \lstBreak{query.OrderBy(x => x.Title.Substring(1))} or \lstBreak{query.OrderBy(x => random.Next())} would compile fine.
+Because of the way lambda expressions work, queries like \lstinline[breaklines=true]{query.OrderBy(x => x.Title.Substring(1))} or \lstinline{query.OrderBy(x => random.Next())} would compile fine.
 But because there is no way to efficiently execute such queries using the MediaWiki API,
 they will fail with an exception at runtime.
+
+% maybe say more about that here?
 
 \medskip
 

@@ -43,7 +43,7 @@
    \lstset{#1}}
 {\endminipage}
 
-\newcommand{\lstBreak}[1]{\lstinline[breaklines=true,literate={\-}{}{0\discretionary{-}{}{}}]{#1}}
+\newcommand{\lstBreak}{\discretionary{\lstinline{-}}{}{}}
 
 \lstset{language=CSharp,basicstyle=\ttfamily}
 
