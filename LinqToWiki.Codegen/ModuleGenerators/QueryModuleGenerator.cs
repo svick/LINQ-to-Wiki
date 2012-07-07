@@ -130,7 +130,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
                 parameters.Select(p => GenerateProperty(p.Name, p.Type, multi: p.Multi, description: p.Description));
 
             return SyntaxEx.ClassDeclaration(m_whereClassName, propertyDeclarations)
-                .WithPrivateConstructor();
+                .AddPrivateConstructor();
         }
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
                     ((EnumParameterType)sortParameter.Type).Values.Select(v => GenerateProperty(v, propertyTypes[v]));
 
             return SyntaxEx.ClassDeclaration(m_orderByClassName, propertyDeclarations)
-                .WithPrivateConstructor();
+                .AddPrivateConstructor();
         }
 
         protected override IEnumerable<Tuple<string, string>> GetBaseParameters(Module module)

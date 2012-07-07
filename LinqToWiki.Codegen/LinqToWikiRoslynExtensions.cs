@@ -10,10 +10,11 @@ namespace LinqToWiki.Codegen
         /// <summary>
         /// Returns the given class with a private parameterless constructor added.
         /// </summary>
-        public static ClassDeclarationSyntax WithPrivateConstructor(this ClassDeclarationSyntax classDeclaration)
+        public static ClassDeclarationSyntax AddPrivateConstructor(this ClassDeclarationSyntax classDeclaration)
         {
-            return classDeclaration.WithAdditionalMembers(
-                SyntaxEx.ConstructorDeclaration(new[] { SyntaxKind.PrivateKeyword }, classDeclaration.Identifier.ValueText));
+            return classDeclaration.AddMembers(
+                SyntaxEx.ConstructorDeclaration(
+                    new[] { SyntaxKind.PrivateKeyword }, classDeclaration.Identifier.ValueText));
         }
     }
 }

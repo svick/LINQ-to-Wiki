@@ -4,9 +4,9 @@ using System.Collections.Generic;
 namespace LinqToWiki.Codegen
 {
     /// <summary>
-    /// Extension methods for <see cref="IList{T}"/>.
+    /// Extension methods for collections
     /// </summary>
-    static class ListExtensions
+    static class CollectionExtensions
     {
         /// <summary>
         /// Removes items matching <see cref="predicate"/> from <see cref="list"/>
@@ -30,6 +30,19 @@ namespace LinqToWiki.Codegen
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Returns a collection that has
+        /// the given object added after each item in the original collection.
+        /// </summary>
+        public static IEnumerable<T> AddAfterEach<T>(this IEnumerable<T> collection, T added)
+        {
+            foreach (var item in collection)
+            {
+                yield return item;
+                yield return added;
+            }
         }
     }
 }

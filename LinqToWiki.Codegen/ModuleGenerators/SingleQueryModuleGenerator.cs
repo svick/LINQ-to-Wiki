@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LinqToWiki.Codegen.ModuleInfo;
 using LinqToWiki.Collections;
+using Roslyn.Compilers;
 using Roslyn.Compilers.CSharp;
 using LinqToWiki.Internals;
 
@@ -40,10 +41,10 @@ namespace LinqToWiki.Codegen.ModuleGenerators
         {
             var resultClass = GenerateClassForProperties(ResultClassName, propertyGroups.SelectMany(g => g.Properties));
 
-            var parseMethodBody = resultClass.DescendentNodes()
+            var parseMethodBody = resultClass.DescendantNodes()
                 .OfType<MethodDeclarationSyntax>()
                 .Single(m => m.Identifier.ValueText == "Parse")
-                .BodyOpt;
+                .Body;
 
             var statements = parseMethodBody.Statements;
 

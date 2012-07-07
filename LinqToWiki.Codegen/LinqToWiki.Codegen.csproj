@@ -12,6 +12,8 @@
     <AssemblyName>LinqToWiki.Codegen</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,8 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Roslyn.Compilers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-    <Reference Include="Roslyn.Compilers.CSharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="Roslyn.Compilers, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="Roslyn.Compilers.CSharp, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="Roslyn.Services, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -43,7 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LinqToWikiRoslynExtensions.cs" />
-    <Compile Include="ListExtensions.cs" />
+    <Compile Include="CollectionExtensions.cs" />
     <Compile Include="ModuleGenerators\InfoModuleGenerator.cs" />
     <Compile Include="ModuleGenerators\QueryModuleGenerator.cs" />
     <Compile Include="ModuleGenerators\ModuleGenerator.cs" />
@@ -67,7 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LinqToWiki.Core\LinqToWiki.Core.csproj">
-      <Project>{98C63DD2-A2D0-4982-8C8B-ED5AF8AA1EDF}</Project>
+      <Project>{98c63dd2-a2d0-4982-8c8b-ed5af8aa1edf}</Project>
       <Name>LinqToWiki.Core</Name>
     </ProjectReference>
   </ItemGroup>

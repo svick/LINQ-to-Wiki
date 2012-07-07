@@ -10,6 +10,7 @@ using LinqToWiki.Collections;
 using LinqToWiki.Internals;
 using Microsoft.CSharp;
 using Roslyn.Compilers.CSharp;
+using Roslyn.Services;
 
 namespace LinqToWiki.Codegen
 {
@@ -110,7 +111,7 @@ namespace LinqToWiki.Codegen
         private void CreatePageClass()
         {
             var pageClass = SyntaxEx.ClassDeclaration(SyntaxKind.AbstractKeyword, Names.Page)
-                .WithPrivateConstructor();
+                .AddPrivateConstructor();
 
             Files.Add(
                 Names.Page,
@@ -378,7 +379,7 @@ namespace LinqToWiki.Codegen
             foreach (var file in Files)
             {
                 var path = Path.Combine(directoryPath, file.Item1 + Extension);
-                File.WriteAllText(path, file.Item2.Format().ToString());
+                File.WriteAllText(path, file.Item2.Format().GetFormattedRoot().ToString());
                 result.Add(path);
             }
 

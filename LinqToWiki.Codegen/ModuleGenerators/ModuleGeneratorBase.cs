@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LinqToWiki.Codegen.ModuleInfo;
 using LinqToWiki.Internals;
+using Roslyn.Compilers;
 using Roslyn.Compilers.CSharp;
 
 namespace LinqToWiki.Codegen.ModuleGenerators
@@ -55,10 +56,10 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             var propertiesArray = properties.ToArray();
 
             return SyntaxEx.ClassDeclaration(
-                className, baseType == null ? null : SyntaxEx.ParseTypeName(baseType),
+                className, baseType == null ? null : Syntax.ParseTypeName(baseType),
                 propertiesArray.Select(p => GenerateProperty(p.Name, p.Type, p.Nullable)))
-                .WithPrivateConstructor()
-                .WithAdditionalMembers(
+                .AddPrivateConstructor()
+                .AddMembers(
                     GenerateParseMethod(className, propertiesArray), GenerateToStringMethod(propertiesArray));
         }
 
@@ -358,7 +359,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             var file = Wiki.Files[fileName];
             var classDeclaration = file.SingleDescendant<ClassDeclarationSyntax>();
 
-            Wiki.Files[fileName] = file.ReplaceNode(classDeclaration, classDeclaration.WithAdditionalMembers(members));
+            Wiki.Files[fileName] = file.ReplaceNode(classDeclaration, classDeclaration.AddMembers(members));
         }
     }
 }

@@ -11,7 +11,8 @@
     <RootNamespace>LinqToWiki.Codegen.App</RootNamespace>
     <AssemblyName>linqtowiki-codegen</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -34,8 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Roslyn.Compilers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-    <Reference Include="Roslyn.Compilers.CSharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="Roslyn.Compilers, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="Roslyn.Compilers.CSharp, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="Roslyn.Services, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -53,7 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LinqToWiki.Codegen\LinqToWiki.Codegen.csproj">
-      <Project>{F6F46A9F-5C64-4C8B-9ABD-284AA3E6DFED}</Project>
+      <Project>{f6f46a9f-5c64-4c8b-9abd-284aa3e6dfed}</Project>
       <Name>LinqToWiki.Codegen</Name>
     </ProjectReference>
     <ProjectReference Include="..\LinqToWiki.Core\LinqToWiki.Core.csproj">

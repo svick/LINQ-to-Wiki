@@ -10,13 +10,14 @@ It also integrates itself into the Microsoft Visual Studio IDE
 (Integrated Development Environment), where it can be used to perform
 custom refactoring actions or to produce custom errors and warnings at compile-time.
 
-Roslyn is currently under development and its latest public version is a CTP
-(Community Technology Preview) from October 2011.
-In the CTP, the syntactic part of the library in completely implemented,
+Roslyn is currently under development and so far it had two public releases.
+Both were in the form of CTP (Community Technology Preview),
+the first one from October 2011, the second one from June 2012.
+
+In the second CTP, the syntactic part of the library in completely implemented,
 so for example the syntax tree can represent any construct of C\#
 and any syntax tree can be translated to and from source code.
-
-On the other hand, the semantic part of the library is not fully implemented in the CTP,
+On the other hand, the semantic part of the library is not fully implemented,
 which means that for example some syntax trees won't successfully compile,
 even if they represent valid C\# code.
 
@@ -57,9 +58,17 @@ Roslyn syntax trees are immutable and they can be created using factory methods 
 And while not all elements of the syntax tree have to be specified (like braces of a property accessor list),
 creating a syntax tree can be quite cumbersome.
 
-For an example of code to manually create the syntax tree from Figure~\ref{Syntax tree}, see Figure~\ref{Roslyn code}.
+The exact syntax for creating syntax trees changed between the two CTPs.
+In the October 2011 CTP, methods with many optional parameters were used.
+In the June 2012 CTP, the situation somewhat improved:
+the factory method now has parameters only for required children of the created node
+and optional child nodes can be added in a fluent manner using \lstinline{With*} methods.
 
-\begin{figure}[htbp]
+For an example of code to manually create the syntax tree from Figure~\ref{Syntax tree},
+see Figure~\ref{Roslyn code 2011} for the October 2011 CTP version and
+Figure~\ref{Roslyn code 2012} for the June 2012 CTP version.
+
+\begin{figure}[p]
 
 \begin{lstlisting}
 Syntax.PropertyDeclaration(
@@ -79,6 +88,29 @@ Syntax.PropertyDeclaration(
               Syntax.Token(SyntaxKind.SemicolonToken)))));
 \end{lstlisting}
 
-\caption{A sample code to manually create a Roslyn syntax tree}
-\label{Roslyn code}
+\caption{A sample code to manually create a Roslyn syntax tree using October 2011 CTP}
+\label{Roslyn code 2011}
+\end{figure}
+
+\begin{figure}[p]
+
+\begin{lstlisting}
+Syntax.PropertyDeclaration(
+  Syntax.ParseTypeName("CategoryInfoResult"),
+  "CategoryInfo")
+  .WithModifiers(
+    Syntax.TokenList(
+      Syntax.Token(SyntaxKind.PublicKeyword),
+      Syntax.Token(SyntaxKind.AbstractKeyword)))
+  .WithAccessorList(
+    Syntax.AccessorList(
+      Syntax.List(
+        Syntax.AccessorDeclaration(
+          SyntaxKind.GetAccessorDeclaration)
+          .WithSemicolonToken(
+            Syntax.Token(SyntaxKind.SemicolonToken)))));
+\end{lstlisting}
+
+\caption{A sample code to manually create a Roslyn syntax tree using June 2012 CTP}
+\label{Roslyn code 2012}
 \end{figure}

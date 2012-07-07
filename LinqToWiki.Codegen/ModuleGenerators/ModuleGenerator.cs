@@ -111,9 +111,9 @@ namespace LinqToWiki.Codegen.ModuleGenerators
         protected override TypeSyntax GenerateMethodResultType()
         {
             if (m_voidResult)
-                return SyntaxEx.ParseTypeName("void");
+                return Syntax.ParseTypeName("void");
 
-            var resultType = SyntaxEx.ParseTypeName(ResultClassName);
+            var resultType = Syntax.ParseTypeName(ResultClassName);
 
             if (m_listResult)
                 resultType = SyntaxEx.GenericName("IEnumerable", resultType);

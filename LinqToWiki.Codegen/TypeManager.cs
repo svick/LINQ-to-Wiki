@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LinqToWiki.Codegen.ModuleInfo;
 using LinqToWiki.Collections;
+using Roslyn.Compilers;
 using Roslyn.Compilers.CSharp;
 
 namespace LinqToWiki.Codegen
@@ -143,13 +144,13 @@ namespace LinqToWiki.Codegen
                 constructorInitializer: SyntaxEx.BaseConstructorInitializer((NamedNode)constructorParameter));
 
             var classDeclaration =
-                SyntaxEx.ClassDeclaration(typeName, SyntaxEx.ParseTypeName("StringValue"), contructor)
-                    .WithAdditionalMembers(members);
+                SyntaxEx.ClassDeclaration(typeName, Syntax.ParseTypeName("StringValue"), contructor)
+                    .AddMembers(members.ToArray<MemberDeclarationSyntax>());
 
             var namespaceDeclaration = m_wiki.Files[Wiki.Names.Enums].SingleDescendant<NamespaceDeclarationSyntax>();
 
             m_wiki.Files[Wiki.Names.Enums] = m_wiki.Files[Wiki.Names.Enums].ReplaceNode(
-                namespaceDeclaration, namespaceDeclaration.WithAdditionalMembers(classDeclaration));
+                namespaceDeclaration, namespaceDeclaration.AddMembers(classDeclaration));
 
             m_enumTypeNames.Add(moduleName, enumType, typeName);
 
