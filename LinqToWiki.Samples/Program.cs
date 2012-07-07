@@ -25,7 +25,7 @@ namespace LinqToWiki.Samples
 
         private static void Block(Wiki wiki)
         {
-            var token = wiki.block("Test", gettoken: true).blocktoken;
+            var token = wiki.tokens(new[] { tokenstype.block }).blocktoken;
             wiki.block("Test", token);
         }
 
@@ -507,8 +507,9 @@ namespace LinqToWiki.Samples
 
         private static void Backlinks(Wiki wiki)
         {
-            var result = (from bl in wiki.Query.backlinks("User:Svick")
-                          where bl.ns == Namespace.Project
+            var result = (from bl in wiki.Query.backlinks()
+                          where bl.title == "User:Svick"
+                                && bl.ns == Namespace.Project
                           select bl.title)
                 .ToEnumerable().Take(10);
 
@@ -552,8 +553,9 @@ namespace LinqToWiki.Samples
 
         private static void EmbeddedIn(Wiki wiki)
         {
-            var result = (from ei in wiki.Query.embeddedin("Template:WikiProject cleanup listing")
-                          where ei.filterredir == embeddedinfilterredir.nonredirects
+            var result = (from ei in wiki.Query.embeddedin()
+                          where ei.title == "Template:WikiProject cleanup listing"
+                                && ei.filterredir == embeddedinfilterredir.nonredirects
                           select new { ei.title, ei.redirect })
                 .ToEnumerable().Take(10);
 
@@ -572,7 +574,8 @@ namespace LinqToWiki.Samples
 
         private static void ImageUsage(Wiki wiki)
         {
-            var result = wiki.Query.imageusage("File:Indiafilm.svg")
+            var result = wiki.Query.imageusage()
+                .Where(iu => iu.title == "File:Indiafilm.svg")
                 .ToEnumerable().Take(10);
 
             Write(result);
