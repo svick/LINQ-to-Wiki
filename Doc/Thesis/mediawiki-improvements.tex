@@ -17,9 +17,10 @@ Further 5 modules do use the same response format as the other modules,
 but their response cannot be described in the type system used.
 There is also 17 modules that can be partially represented using this type system, but not completely.
 
-%TODO: update
-As of 10 May 2012, the patch that adds this ability to the \texttt{paraminfo} module and the necessary
-information to most other modules is waiting for review by MediaWiki developers.
+The patch that adds this ability to the \texttt{paraminfo} module and the necessary
+information to most other modules was reviewed by MediaWiki developers and merged into the official repository
+on 12 June.
+On 2 July, MediaWiki version 1.20wmf6 was deployed to all Wikimedia sites, including Wikipedias.
 
 An example of the added result information to the \texttt{paraminfo} response (here for the \texttt{categorymembers} module) is in Figure~\ref{paraminfo props}.
 
@@ -82,4 +83,5 @@ as of 10~May 2012, three of them are still waiting to be fixed.
 We also submitted eight patches to the MediaWiki code review system.
 Although only three of them actually fix behavior of the MediaWiki API,
 the rest are only fixes in documentation and other mostly insignificant changes.
-Of those three patches, one is still waiting for review, because it is a breaking change.
+Of those three patches, one is still waiting for review, because it is a breaking change,
+and most likely won't be accepted.
