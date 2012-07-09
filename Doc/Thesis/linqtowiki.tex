@@ -67,8 +67,60 @@ Specifically, there are four such types:
 If a module supports sorting, it is represented by a type with \lstinline{Sortable} in its name
 and if it supports being used as a generator for \texttt{prop} queries, it is represented by a type with \lstinline{Generator} in its name.
 
-For a state diagram of transitions between the \lstinline{WikiQuery} types and other related types, see Figure~\ref{WikiQuery types}
-(explanation of the \lstinline{PageSource} type is in Section~\ref{PageSource}).
+There is also a fifth type: \lstinline{WikiQueryResult}.
+It represents the whole query and can be used to execute it and get the results.
+All of the four preceding types inherit from \lstinline{WikiQueryResult},
+so it's possible  to execute the query using any one of them too.
+
+The type governs what operations are available.
+For example, if a type is one of the two \lstinline{Sortable} types,
+it will have an \lstinline{OrderBy()} method, but no other type has this method.
+Each method can also return a different type, as is necessary to form queries.
+
+\begin{itemize}
+\item \lstinline{Where()} only sets some parameter or parameters of a query,
+it always returns the same type.
+
+It is available on all four of the basic \lstinline{WikiQuery} types.
+
+\item \lstinline{Select()} is used to choose how the elements in the resulting collection should look like
+and what properties should they contain.
+Because the result of the lambda passed into this method can be an arbitrary type,
+it doesn't make sense to modify the query after calling it.
+Because of that, \lstinline{Select()} returns \lstinline{WikiQueryResult}.
+This also follows query expression syntax, where \lstinline{select} is the last clause of each query.
+
+It is available on all four of the \lstinline{WikiQuery} types.
+
+\item \lstinline{ToEnumerable()} and \lstinline{ToList()} are used to actually execute the query.
+The distinction between the two is that \lstinline{ToEnumerable()} returns an \lstinline{IEnumerable},
+that lazily loads new pages of results on demand.
+\lstinline{ToList()}, on the other hand, returns a \lstinline{List},
+that is immediatelly loaded with all of the results, possibly from many pages.
+
+These two methods are available on all of the \lstinline{WikiQuery} types, including \lstinline{WikiQueryResult}.
+
+\item \lstinline{OrderBy()} (and \lstinline{OrderByDescending()}) sets the ordering.
+Because it doesn't make sense to sort the same query multiple times
+and because no module supports sorting by multiple keys,
+this method returns the type with \lstinline{Sortable} removed.
+
+This method is available on the two \lstinline{Sortable} types.
+
+\item \lstinline{Pages} is property that returns a \lstinline{PageSource}
+that can then be used in a \texttt{prop} query.
+See Section~\ref{PageSource} for more information.
+
+This property is available on the two \lstinline{Generator} types.
+
+\end{itemize}
+
+% TODO: describe Select(id)
+
+\medskip
+
+For a state diagram of transitions between the \lstinline{WikiQuery} types and other related types,
+see Figure~\ref{WikiQuery types}.
 
 \begin{figure}[htbp]
 \begin{center}
@@ -77,16 +129,12 @@ For a state diagram of transitions between the \lstinline{WikiQuery} types and o
 \path (5,9) node(WQ) {\lstinline{WQ}};
 
 \path (5,6) node(WQR) {\lstinline{WQResult}};
-\path (9,7.5) node(List) {\lstinline{List}};
-\path (9,4.5) node(IE) {\lstinline{IEnumerable}};
 
 \path (0,3) node(WQSG) {\lstinline{WQSortableGenerator}};
 \path (5,3) node(WQG) {\lstinline{WQGenerator}};
 
 \path (0,0) node(PS) {\lstinline{PageSource}};
 \path (5,0) node(WQPR) {\lstinline{WQPageResult}};
-\path (9,1.5) node(PList) {\lstinline{List}};
-\path (9,-1.5) node(PIE) {\lstinline{IEnumerable}};
 
 \draw[->] (WQS) edge [out=188,in=172,looseness=5,auto] node {\lstinline{Where}} (WQS);
 \draw[->] (WQS) edge node[above] {\lstinline{OrderBy}} (WQ);
@@ -94,9 +142,6 @@ For a state diagram of transitions between the \lstinline{WikiQuery} types and o
 
 \draw[->] (WQ) edge [out=-20,in=20,looseness=8,right] node {\lstinline{Where}} (WQ);
 \draw[->] (WQ) edge node[right] {\lstinline{Select}} (WQR);
-
-\draw[->] (WQR) edge node[below right] {\lstinline{ToList}} (List);
-\draw[->] (WQR) edge node[above right] {\lstinline{ToEnumerable}} (IE);
 
 \draw[->] (WQSG) edge [out=185,in=175,looseness=5,auto] node {\lstinline{Where}} (WQSG);
 \draw[->] (WQSG) edge node[auto] {\lstinline{OrderBy}} (WQG);
@@ -109,8 +154,6 @@ For a state diagram of transitions between the \lstinline{WikiQuery} types and o
 \draw[->] (WQG) edge node[auto] {\lstinline{Pages}} (PS);
 
 \draw[->] (PS) edge node[auto] {\lstinline{Select}} (WQPR);
-\draw[->] (WQPR) edge node[below right] {\lstinline{ToList}} (PList);
-\draw[->] (WQPR) edge node[above right] {\lstinline{ToEnumerable}} (PIE);
 
 \end{tikzpicture}
 \end{center}
@@ -121,9 +164,8 @@ For a state diagram of transitions between the \lstinline{WikiQuery} types and o
 \end{figure}
 
 \medskip
-\pagebreak[0]
 
-% try explaining in more detail, including that OrderBy is only on Sortable
+% try explaining in more detail
 
 All of the \lstinline{WikiQuery}-related types are generic
 and their type parameters are used to decide what properties can be used in each operation.
@@ -146,8 +188,6 @@ they will fail with an exception at runtime.
 % maybe say more about that here?
 
 \medskip
-
-
 
 % WikiQuery
 % PageSources and types related to prop queries
