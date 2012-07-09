@@ -15,12 +15,12 @@ Of the 73~modules present in the MediaWiki core (that is, without any extensions
 because their result looks different than the result of other modules (for example, there are modules that produce RSS feeds).
 Further 5 modules do use the same response format as the other modules,
 but their response cannot be described in the type system used.
-There is also 17 modules that can be partially represented using this type system, but not completely.
+There are also 17 modules that can be partially represented using this type system, but not completely.
 
 The patch that adds this ability to the \texttt{paraminfo} module and the necessary
 information to most other modules was reviewed by MediaWiki developers and merged into the official repository
 on 12 June.
-On 2 July, MediaWiki version 1.20wmf6 was deployed to all Wikimedia sites, including Wikipedias.
+On 2 July, MediaWiki version 1.20wmf6, which includes changes from this patch, was deployed to all Wikimedia sites, including Wikipedias.
 
 An example of the added result information to the \texttt{paraminfo} response (here for the \texttt{categorymembers} module) is in Figure~\ref{paraminfo props}.
 
@@ -80,7 +80,7 @@ Because of this, we reported eight bugs to the WikiMedia bug-tracking system.
 Three of them turned out to be duplicates of already reported bugs and,
 as of 10~May 2012, three of them are still waiting to be fixed.
 
-We also submitted eight patches to the MediaWiki code review system.
+We also submitted eight additional patches to the MediaWiki code review system.
 Although only three of them actually fix behavior of the MediaWiki API,
 the rest are only fixes in documentation and other mostly insignificant changes.
 Of those three patches, one is still waiting for review, because it is a breaking change,

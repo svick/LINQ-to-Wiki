@@ -24,7 +24,7 @@ using the HTTP protocol.
 
 \medskip
 
-Parameters for the API request are given in the query string of a GET request or in the body of a POST request
+Parameters for an API request are given in the query string of a GET request or in the body of a POST request
 (modules that perform modifications require the use of POST).
 The body of the POST request is usually formatted as \path{application/x-www-form-urlencoded},
 but file uploads require the use of \path{multipart/form-data}.
@@ -48,14 +48,14 @@ The response can be in one of the several available formats, the most widely use
 The representation of most data types in the response is nothing unusual:
 \texttt{string}s are formatted as strings, \texttt{integer}s as decimal numbers,
 \texttt{timestamp}s are formatted according to ISO 8601.
-Only \texttt{boolean}s have possibly unexpected representation:
+Only \texttt{boolean}s have a possibly unexpected representation:
 if the property is \texttt{false}, it is not present in the result at all,
 and if its value is \texttt{true}, it is represented as an empty string.
 
 If there is some problem executing a request, for example if a parameter has an invalid value,
 a warning will be returned along with the result of the operation.
 In the case of a fatal problem, such as when the user doesn't have the right to perform an action,
-error alone is returned.
+an error is returned, without any results.
 
 \medskip
 
@@ -64,7 +64,7 @@ The API is divided into modules and there are two kinds of modules:
 
 Non-query modules are usually used to perform some action.
 For example the \texttt{edit} module can be used to edit a page
-and the \texttt{block} module can be used to block a user (it can be used only by a user with sufficient privileges).
+and the \texttt{block} module can be used to block another user (it can be used only by users with sufficient privileges).
 
 Query modules are used for retrieving information about the wiki. There are three types of query modules:
 
@@ -81,7 +81,7 @@ For example the \texttt{userinfo} module can be used to retrieve information abo
 For \texttt{prop} modules, the set of pages they operate on can be specified directly using page titles or page IDs.
 
 Another option is to use some other module (usually a \texttt{list} module) as a so called “generator”.
-This way, one can for example retrieve the categories of all pages in a specific category,
+This way, one can for example retrieve all categories of pages in a specific category,
 by using the \texttt{categorymembers} module as a generator for the \texttt{categories} module.
 
 Because more than one module can be used in one request,
@@ -90,7 +90,7 @@ For example, the prefix for the \texttt{categorymembers} module is \texttt{cm}.
 So, setting its \texttt{limit} parameter to the value of~5 can be achieved by
 adding \texttt{cmlimit=5} to the query string of a GET request or to the body of a POST request.
 
-The API is also extensible: MediaWiki extensions can add their own modules and modify some behavior of the existing modules.
+The API is also extensible: MediaWiki extensions can add their own modules and modify some behavior of existing modules.
 
 An example of an API request URI and a response in the XML format is in Figure \ref{API example}.
 
@@ -263,14 +263,14 @@ The \texttt{query-continue} elements are not shown in the figure.
 
 The situation is even more complicated with the \texttt{prop} module \texttt{revisions}.
 It can be used to retrieve information about revisions of pages, including their text
-and it is the only module that can be used to get the text of a page.
+and it is the only module that can be used to get the text of a set of pages.
 
 For other modules, when no \texttt{limit} parameter is specified, a default value is used (usually 10)
 and a \texttt{query-continue} element is present in the response, to access the remaining items.
 
 But for the \texttt{revisions} module, not specifying the \texttt{limit} parameter means that only the most
 recent revision will be shown and no \texttt{query-continue} will be present.
-Also, when \texttt{limit} is specified, the module can operate only on one revision at a time,
+Also, when \texttt{limit} is specified, the module can operate only on one page at a time,
 so for example one has to set the \texttt{limit} of a module used as a generator to~1.
 
 \subsection{The \texttt{paraminfo} module}

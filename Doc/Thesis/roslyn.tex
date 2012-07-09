@@ -54,7 +54,7 @@ public abstract CategoryInfoResult CategoryInfo { get; }
 
 \pagebreak[0]
 
-Roslyn syntax trees are immutable and they can be created using factory methods from the \lstinline{Syntax} class.
+Roslyn syntax trees are immutable and can be created using factory methods from the \lstinline{Syntax} class.
 And while not all elements of the syntax tree have to be specified (like braces of a property accessor list),
 creating a syntax tree can be quite cumbersome.
 
@@ -88,7 +88,7 @@ Syntax.PropertyDeclaration(
               Syntax.Token(SyntaxKind.SemicolonToken)))));
 \end{lstlisting}
 
-\caption{A sample code to manually create a Roslyn syntax tree using October 2011 CTP}
+\caption{A sample code to manually create a Roslyn syntax tree \\ using October 2011 CTP}
 \label{Roslyn code 2011}
 \end{figure}
 
@@ -111,6 +111,6 @@ Syntax.PropertyDeclaration(
             Syntax.Token(SyntaxKind.SemicolonToken)))));
 \end{lstlisting}
 
-\caption{A sample code to manually create a Roslyn syntax tree using June 2012 CTP}
+\caption{A sample code to manually create a Roslyn syntax tree \\ using June 2012 CTP}
 \label{Roslyn code 2012}
 \end{figure}
