@@ -231,7 +231,7 @@ including the exception for the \texttt{revisions} module.
 
 Thanks to the fact that both kinds of page sources for \texttt{prop} queries are represented by the same
 (abstract) type, the user of this library can use the same code to work with any source,
-which could lead to repetitive code otherwise.
+thus avoiding repetitive code.
 
 \medskip
 
@@ -242,10 +242,23 @@ This type is the same for all queries on the same wiki, but could be different f
 Inside the lambda, properties and methods of the \lstinline{TPage} type can be accessed.
 Each of them represents a \texttt{prop} module and all of the methods return one of the \lstinline{WikiQuery} types,
 which can then be queried as usual, with one condition:
-The \lstinline{WikiQuery} types can't ``leak'' outside of the query, so one has to use \lstinline{ToEnumerable()} or \lstinline{ToList()} inside the lambda.
+the \lstinline{WikiQuery} types can't ``leak'' outside of the query, so one has to use \lstinline{ToEnumerable()} or \lstinline{ToList()} inside the lambda.
+
+There is a special case for the \texttt{revisions} module,
+which can be also used with the \lstinline{FirstOrDefault()} method,
+which means only the most recent revision for each page is selected.
 
 If a \texttt{prop} module has a single result (not a collection), it is represented as a property
 that directly returns this result, no querying is possible.
+
+\medskip
+
+The methods of these \texttt{prop} queries are inside a lambda expression,
+so they are not actually executed unless the expression was compiled and the resulting delegate invoked.
+Because of this, processing them is not as simple as with normal queries.
+For more details, see Section~\ref{ltw expressions}.
+
+\medskip
 
 For an example of \lstinline{PagesSource} query, see Figure~\ref{PS query}.
 
@@ -272,9 +285,90 @@ pagesSource.Select(
 
 \end{figure}
 
-% PageSources and types related to prop queries
+\subsection{\texorpdfstring{\lstinline{QueryParameters}}{QueryParameters}}
+
+The \lstinline{QueryParameters} type contains the parameters of a query:
+
+\begin{itemize}
+\item sort direction and parameter by which to sort,
+\item list of properties to select and a delegate that uses them to construct the result object,
+\item list of other parameters, as key-value pairs.
+\end{itemize}
+
+\lstinline{QueryParameters} is an immutable type,
+so that one beginning of a query can be safely used repeatedly, as is the case with LINQ to objects.
+The list of other parameters is a functional-style immutable linked list.
+
+\medskip
+
+The \lstinline{PropQueryParameters} type derives from \lstinline{QueryParameters}
+and is used to store information about a single module in a \texttt{prop} query.
+Apart from inherited members, it also contains the name of the module
+and a special value indicating whether to retrieve only the first item,
+which corresponds to the usage of the \lstinline{FirstOrDefault()} method.
+
+A related type is \lstinline{PageQueryParameters},
+which represents a whole \texttt{prop} query.
+That means it contains a list of \lstinline{PropQueryParameters} objects
+and also information about the source of the query.
+
+\subsection{\texorpdfstring{\lstinline{ExpressionParser}}{ExpressionParser}}
+\label{ltw expressions}
+
+The \lstinline{ExpressionParser} static class is used process expression trees
+and store the results in \lstinline{QueryParameters}.
+
+Common for all expression tree processing is that closed-over local variables contained in the lambda,
+that are represented as members of a compiler-generated closure class,
+have to be first replaced by their actual value.
+This is done using \lstinline{PartialEvaluator} written by Matt Warren \cite{warren}.
+
+Also, some property names have to be translated from their C\# version to their API version.
+For details and the reason why this is necessary, see Section~\ref{ltwc}.
+% TODO: more specific ref?
+
+\medskip
+
+Each of the methods requires different processing. Specifically:
+
+\begin{itemize}
+\item Expression trees from \lstinline{Where()} are first split into one or more subexpressions
+that are \emph{and}ed together (\lstinline{x => subexpr1 && subexpr2 && ...}; \emph{or} is not supported by the API)
+and each of the subexpressions is then added as a key-value pair to the result.
+
+Each subexpression has to be in the form \lstinline{x.Property == Value},
+where \lstinline{Value} is a constant, possibly from an evaluated closed-over variable.
+The reverse order (\lstinline{Value == obj.Property}) is also allowed.
+An alternative for boolean properties is accessing the property directly (\lstinline{x.Property})
+or negated (\lstinline{!x.Property}).
+
+\item Processing \lstinline{OrderBy()} expression trees is the simplest:
+they can either be identities (\lstinline{x => x}), which means default sorting will be used
+(which is the only possibility for some modules),
+or they can be simple property accesses (\lstinline{x => x.Property}),
+which means the result will be sorted by that property.
+
+The order of sorting (ascending or descending) is decided by the method used:
+whether it was \lstinline{OrderBy()} or \lstinline{OrderByDescending()}.
+
+\item Expression trees from \lstinline{Select()} are processed in two steps.
+First, the expression is scanned for usages of its parameter.
+If any of its properties are used, it means those properties have to be retrieved from the API.
+If the parameter was used directly, without accessing its properties,
+it means all of the properties have to be retrieved, because it is impossible to say which of them will be used.
+
+For example, the expression \lstinline|x => new { x.Property1, x.Property2 }|
+means only \lstinline{Property1} and \lstinline{Property2} have to be retrieved.
+On the other hand, \lstinline{x => SomeMethod(x)} means all of the properties have to be retrieved.
+
+Second step is compiling the expression into a delegate,
+which will then be executed for each item coming from the API.
+
+Put together, these two steps mean that \lstinline{Select()} can be used with any expression
+and only properties that are actually needed will be returned by the API.
+\end{itemize}
+
 % ExpressionParser
-% QueryParameters
 % QueryProcessor, its helpers
 
 \subsection{\texorpdfstring{\lstinline{Downloader}}{Downloader}}
@@ -296,6 +390,7 @@ which is common when making requests to the API.
 % TODO: maybe some conclusion?
 
 \section{The LinqToWiki.Codegen project}
+\label{ltwc}
 
 \section{The linqtowiki-codegen application}
 
