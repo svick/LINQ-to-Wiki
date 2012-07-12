@@ -315,11 +315,11 @@ and also information about the source of the query.
 \subsection{\texorpdfstring{\lstinline{ExpressionParser}}{ExpressionParser}}
 \label{ltw expressions}
 
-The \lstinline{ExpressionParser} static class is used process expression trees
-and store the results in \lstinline{QueryParameters}.
+The \lstinline{ExpressionParser} static class is used process expression trees from LINQ methods
+and store the processed query parameters in \lstinline{QueryParameters}.
 
-Common for all expression tree processing is that closed-over local variables contained in the lambda,
-that are represented as members of a compiler-generated closure class,
+Common for all expression tree processing is that closed-over local variables contained in the processed lambda,
+which are represented as members of a compiler-generated closure class,
 have to be first replaced by their actual value.
 This is done using \lstinline{PartialEvaluator} written by Matt Warren \cite{warren}.
 
@@ -342,7 +342,7 @@ The reverse order (\lstinline{Value == obj.Property}) is also allowed.
 An alternative for boolean properties is accessing the property directly (\lstinline{x.Property})
 or negated (\lstinline{!x.Property}).
 
-\item Processing \lstinline{OrderBy()} expression trees is the simplest:
+\item Processing \lstinline{OrderBy()} expression trees is simple:
 they can either be identities (\lstinline{x => x}), which means default sorting will be used
 (which is the only possibility for some modules),
 or they can be simple property accesses (\lstinline{x => x.Property}),
@@ -354,7 +354,7 @@ whether it was \lstinline{OrderBy()} or \lstinline{OrderByDescending()}.
 \item Expression trees from \lstinline{Select()} are processed in two steps.
 First, the expression is scanned for usages of its parameter.
 If any of its properties are used, it means those properties have to be retrieved from the API.
-If the parameter was used directly, without accessing its properties,
+If the parameter is used directly, without accessing its properties,
 it means all of the properties have to be retrieved, because it is impossible to say which of them will be used.
 
 For example, the expression \lstinline|x => new { x.Property1, x.Property2 }|
