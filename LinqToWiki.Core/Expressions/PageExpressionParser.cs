@@ -39,7 +39,6 @@ namespace LinqToWiki.Expressions
         private static readonly IEnumerable<string> NonInfoProperties =
             new[] { "pageid", "ns", "title", "missing", "invalid", "special" };
 
-        private static readonly MethodInfo PageDataGetInfoMethod = typeof(PageData).GetMethod("GetInfo");
         private static readonly MethodInfo PageDataGetDataMethod = typeof(PageData).GetMethod("GetData");
 
         private readonly ParameterExpression m_pageParameter;
@@ -57,8 +56,7 @@ namespace LinqToWiki.Expressions
 
             m_infoType = pageParameter.Type.GetProperty("info").PropertyType;
 
-            m_pageDataGetInfoCall = Expression.Call(
-                m_pageDataParameter, PageDataGetInfoMethod.MakeGenericMethod(m_infoType));
+            m_pageDataGetInfoCall = CreateGetDataExpression(m_infoType, "info");
         }
 
         public override Expression Visit(Expression node)
@@ -79,21 +77,24 @@ namespace LinqToWiki.Expressions
             if (node.Expression == m_pageParameter)
             {
                 var memberName = node.Member.Name;
-                if (memberName == "info")
-                    return m_pageDataGetInfoCall;
 
                 if (!m_parameters.ContainsKey(memberName))
                     m_parameters.Add(memberName, new PropQueryParameters(memberName));
 
-                return Expression.Call(
-                    typeof(Enumerable), "SingleOrDefault", new[] { node.Type },
-                    Expression.Call(
-                        m_pageDataParameter,
-                        PageDataGetDataMethod.MakeGenericMethod(node.Type),
-                        Expression.Constant(memberName)));
+                return CreateGetDataExpression(node.Type, memberName);
             }
 
             return base.VisitMember(node);
+        }
+
+        private MethodCallExpression CreateGetDataExpression(Type type, string memberName)
+        {
+            return Expression.Call(
+                typeof(Enumerable), "SingleOrDefault", new[] { type },
+                Expression.Call(
+                    m_pageDataParameter,
+                    PageDataGetDataMethod.MakeGenericMethod(type),
+                    Expression.Constant(memberName)));
         }
 
         protected override Expression VisitMethodCall(MethodCallExpression node)
@@ -218,9 +219,7 @@ namespace LinqToWiki.Expressions
 
             var parameters = visitor.m_parameters;
 
-            if (gatherer.UsedDirectly)
-                parameters.Add("info", new PropQueryParameters("info"));
-            else if (gatherer.UsedProperties.Any(p => !NonInfoProperties.Contains(p)))
+            if (!gatherer.UsedDirectly && gatherer.UsedProperties.Any(p => !NonInfoProperties.Contains(p)))
             {
                 var propQueryParameters = new PropQueryParameters("info").WithProperties(gatherer.UsedProperties);
 
@@ -232,10 +231,10 @@ namespace LinqToWiki.Expressions
                 if (tokens.Any())
                     propQueryParameters = propQueryParameters.AddSingleValue("token", tokens.ToQueryString());
 
-                parameters.Add("info", propQueryParameters);
+                parameters["info"] = propQueryParameters;
             }
 
-            processedExpression =
+	        processedExpression =
                 Expression.Lambda<Func<PageData, TResult>>(body, visitor.m_pageDataParameter).Compile();
 
             return parameters.Values;

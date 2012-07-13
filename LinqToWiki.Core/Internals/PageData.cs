@@ -15,13 +15,6 @@ namespace LinqToWiki.Internals
         private readonly PagingManager m_pagingManager;
 
         /// <summary>
-        /// The info object with information about the current page.
-        /// The type is <see cref="object"/>, because the info type is generated
-        /// and can be different for different wikis.
-        /// </summary>
-        private readonly object m_info;
-
-        /// <summary>
         /// Contains named data lists.
         /// Each data list contains data for given property (e.g. <c>categories</c>) from already retrieved
         /// secondary paging.
@@ -36,7 +29,7 @@ namespace LinqToWiki.Internals
             m_pageProperties = pageProperties;
             m_pagingManager = pagingManager;
 
-            m_info = m_pageProperties["info"].Parser(element, wiki);
+            GetOrCreateDataList("info").Add(m_pageProperties["info"].Parser(element, wiki));
 
             var pageIdAttribute = element.Attribute("pageid");
 
@@ -88,14 +81,6 @@ namespace LinqToWiki.Internals
                 m_data.Add(name, dataList);
             }
             return dataList;
-        }
-
-        /// <summary>
-        /// Returns the info object for the current page.
-        /// </summary>
-        public TInfo GetInfo<TInfo>()
-        {
-            return (TInfo)m_info;
         }
 
         /// <summary>

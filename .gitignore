@@ -1,5 +1,6 @@
 *.suo
 *.user
 _ReSharper*/
+*.DotSettings
 bin/
 obj/
