@@ -256,7 +256,7 @@ that directly returns this result, no querying is possible.
 The methods of these \texttt{prop} queries are inside a lambda expression,
 so they are not actually executed unless the expression was compiled and the resulting delegate invoked.
 Because of this, processing them is not as simple as with normal queries.
-For more details, see Section~\ref{ltw expressions}.
+For more details, see Section~\ref{PageExpressionParser}.
 
 \medskip
 
@@ -313,9 +313,8 @@ That means it contains a list of \lstinline{PropQueryParameters} objects
 and also information about the source of the query.
 
 \subsection{\texorpdfstring{\lstinline{ExpressionParser}}{ExpressionParser}}
-\label{ltw expressions}
 
-The \lstinline{ExpressionParser} static class is used process expression trees from LINQ methods
+The \lstinline{ExpressionParser} static class is used to process expression trees from LINQ methods
 and store the processed query parameters in \lstinline{QueryParameters}.
 
 Common for all expression tree processing is that closed-over local variables contained in the processed lambda,
@@ -368,7 +367,62 @@ Put together, these two steps mean that \lstinline{Select()} can be used with an
 and only properties that are actually needed will be returned by the API.
 \end{itemize}
 
-% ExpressionParser
+\subsection{\texorpdfstring{\lstinline{PageExpressionParser}}{PageExpressionParser}}
+\label{PageExpressionParser}
+
+The class \lstinline{PageExpressionParser} is used to process
+the \lstinline{Select()} lambda in \lstinline{PagesSource} queries.
+The difficulty there is that the direct approach of building the query step-by-step,
+used in normal queries, will not work.
+That is because the expression has to be analyzed before there is any page object
+that it expects as its parameter.
+
+The result of this analysis is twofold:
+the set of parameters needed for all of the \lstinline{prop} queries,
+as a collection of \lstinline{PropQueryParameters},
+and a delegate that can be used to get the result object for each page in the API response.
+
+\medskip
+
+Because the subquery for each \texttt{prop} module has to end with a call to \lstinline{To}\lstBreak\lstinline{Enumerable()} or \lstinline{ToList()},
+the parameters can be extracted by invoking the part of the subquery before that call.
+At the beginning of each subquery is invoking a module-specific method on the page object.
+But because there is no page object to use, that invocation is first replaced by an appropriate \lstinline{WikiQuery} object.
+
+For example, for the query in Figure~\ref{PS query}, the invoked code is (where \lstinline{wikiQuery} is the appropriate \lstinline{WikiQuery} object):
+
+\begin{lstlisting}
+wikiQuery.Where(c => c.Show == Show.NotHidden)
+	  .Select(c => new { c.Title, c.SortKeyPrefix })
+\end{lstlisting}
+
+\medskip
+
+To get the delegate, all calls to \lstinline{Where()} and \lstinline{OrderBy()} are removed,
+because their only purpose is to modify the query parameters.
+Then the single parameter of type \lstinline{TPage} is replaced by a parameter of type \lstinline{PageData}
+and calls to module methods are replaced by calls to \lstinline{GetData()},
+with a type parameter specifying the type of the result and a parameter specifying the name of the module.
+
+The \lstinline{GetData()} method returns a collection,
+so for modules that return only a single item, like \texttt{info},
+a call to \lstinline{Single}\lstBreak\lstinline{Or}\lstBreak\lstinline{Default()} is also added.
+
+For example the expression in the query in Figure~\ref{PS query} is transformed into:
+
+\begin{lstlisting}
+pageData =>
+new
+{
+    Info = pageData.GetData<InfoResult>("info")
+    		     .SingleOrDefault(),
+    Categories =
+    	pageData.GetData<CategoriesSelect>("categories")
+    		 .Select(c => new { c.Title, c.SortKeyPrefix })
+    		 .Take(10)
+}
+\end{lstlisting}
+
 % QueryProcessor, its helpers
 
 \subsection{\texorpdfstring{\lstinline{Downloader}}{Downloader}}
