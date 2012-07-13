@@ -1,2 +1,25 @@
 \section{The LinqToWiki.Codegen project}
 \label{ltwc}
+
+The LinqToWiki.Codegen project contains code that retrieves information about API modules in some wiki,
+then uses that information to generate C\# code to access those modules using Roslyn
+and finally compiles the code into a library.
+
+\medskip
+
+Roslyn was chosen, because it is superior when compared with common approaches for code generation in .Net,
+namely Reflection.Emit and CodeDOM.
+
+Reflection.Emit \cite{reflection-emit} is a set of types that allow code generation of code at runtime.
+The generated code can then be directly executed or saved as an assembly (.dll or .exe) to disk.
+The distinguishing feature is that it uses the low-level Common Intermediate Language (CIL),
+which means writing any code beyond the simplest methods can be very tedious and error-prone.
+
+CodeDOM \cite{codedom} can be used to generate code and compile it to an assembly.
+It uses language-independent model, which can be converted to various .Net languages,
+including C\# and VB.NET.
+This model is also the biggest disadvantage of CodeDOM, because it means it doesn't support all features of C\#.
+For example, even such basic thing as writing a \lstinline{static} class is impossible in the CodeDOM model
+without using various ``hacks''.
+
+\medskip
