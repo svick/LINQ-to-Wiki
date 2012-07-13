@@ -14,6 +14,12 @@
 % \openright zařídí, aby následující text začínal na pravé straně knihy
 \let\openright=\clearpage
 
+\let\sectionnobreak = \section
+\renewcommand{\section}[1]{
+	\pagebreak
+	\sectionnobreak{#1}
+}
+
 \usepackage[utf8]{inputenc}
 
 %% Ostatní balíčky
@@ -31,6 +37,8 @@
 \usepackage{lmodern}
 
 \usepackage[center]{caption}
+
+\usepackage{needspace}
 
 \lstdefinelanguage{CSharp}[Sharp]{C}
 {morekeywords={from,where,join,on,equals,orderby,descending,group,by,let,select},columns=flexible,showstringspaces=false}
