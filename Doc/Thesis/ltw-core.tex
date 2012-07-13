@@ -1,0 +1,409 @@
+\section{The LinqToWiki.Core project}
+
+The LinqToWiki.Core project contains shared code that can be used when querying any MediaWiki wiki
+that has the API enabled.
+It can be used together with code generated through LinqToWiki\allowbreak{}.Codegen,
+but it can also be used without it.
+
+In fact, LinqToWiki.\allowbreak{}Codegen internally uses LinqToWiki.Core to access the \texttt{paraminfo} module
+using manually written code.
+
+\subsection{\texorpdfstring{\lstinline{QueryTypeProperties}}{QueryTypeProperties}}
+
+The \lstinline{QueryTypeProperties} class holds basic information about a “query type”,
+which corresponds to an API module.
+This information includes the prefix this module uses in its parameters,
+what type of module it is or mapping of its result properties to values accepted by the \texttt{prop} parameter.
+It is also able to parse XML elements this module returns.
+
+\subsection{\texorpdfstring{\lstinline{WikiQuery}}{WikiQuery}}
+
+Probably the most often used and certainly the most interesting queries are those using \texttt{list} query modules.
+Such queries are represented in LinqToWiki by a group of types whose names start with \lstinline{WikiQuery}.
+
+Specifically, there are four such types:
+\lstinline{WikiQuery}, \lstinline{WikiQuerySortable}, \lstinline{Wiki}\lstBreak\lstinline{Query}\lstBreak\lstinline{Generator} and \lstinline{WikiQuerySortableGenerator}.
+If a module supports sorting, it is represented by a type with \lstinline{Sortable} in its name
+and if it supports being used as a generator for \texttt{prop} queries, it is represented by a type with \lstinline{Generator} in its name.
+
+There is also a fifth type: \lstinline{WikiQueryResult}.
+This type by itself represents a query that can't be modified anymore,
+but can be used to execute it and get the results.
+All of the four preceding types inherit from \lstinline{WikiQueryResult},
+so it is possible  to execute the query using any one of them too.
+
+The type governs what operations are available.
+For example, if a type is one of the two \lstinline{Sortable} types,
+it will have an \lstinline{OrderBy()} method, but no other type has this method.
+Each method can also return a different type, as is necessary to form queries.
+
+\medskip
+
+All of the \lstinline{WikiQuery}-related types are generic
+and their type parameters are used to decide what properties can be used in each operation.
+For example, the type parameter \lstinline{TOrderBy} of \lstinline{WikiQuerySortable}
+decides what properties can be used in the parameter of the \lstinline{OrderBy} method.
+
+The way this is achieved is that \lstinline{TOrderBy} is a type that contains the properties that can be
+used for sorting in the module \lstinline{WikiQuerySortable} represents
+and the \lstinline{OrderBy} method accepts lambda expressions whose parameter is of this type.
+
+For example, if some module supported sorting by \lstinline{PageId} and \lstinline{Title},
+then \lstinline{TOrderBy} would be a type that contains two properties with those names.
+Because of this, a query like \lstinline{source.OrderBy(x => x.Title)} would compile and execute fine,
+but \lstinline{source.OrderBy(x => x.Name)} would fail to compile.
+
+Because of the way lambda expressions work, queries like \lstinline[breaklines=true]{source.OrderBy(x => x.Title.Substring(1))} or \lstinline{source.OrderBy(x => random.Next())} would compile fine.
+But because there is no way to efficiently execute such queries using the MediaWiki API,
+they will fail with an exception at runtime.
+
+\medskip
+
+The various methods available on the \lstinline{WikiQuery} types are:
+
+\begin{itemize}
+\item \lstinline{Where()} only sets some parameter or parameters of a query,
+it always returns the same type.
+
+It is available on all four of the basic \lstinline{WikiQuery} types
+and uses the generic type parameter \lstinline{TWhere}.
+
+\item \lstinline{Select()} is used to choose how the elements in the resulting collection should look like
+and what properties should they contain.
+Because the result of the lambda passed into this method can be an arbitrary type,
+it doesn't make sense to modify the query after calling this method.
+Because of that, \lstinline{Select()} returns \lstinline{WikiQueryResult}.
+This also follows query expression syntax, where \lstinline{select} is the last clause of each query.
+
+It is available on all four of the \lstinline{WikiQuery} types
+and uses the type parameter \lstinline{TSelect}.
+
+\item \lstinline{ToEnumerable()} and \lstinline{ToList()} are used to actually execute the query.
+The distinction between the two methods is that \lstinline{ToEnumerable()} returns an \lstinline{IEnumerable},
+that lazily loads new pages of results on demand.
+\lstinline{ToList()}, on the other hand, returns a \lstinline{List},
+that is immediately loaded with all of the results, possibly from many pages.
+
+These two methods are available on all of the \lstinline{WikiQuery} types, including \lstinline{WikiQueryResult}
+and return the result based on the type parameter \lstinline{TSource} for most of the types.
+And exception is \lstinline{WikiQueryResult}, which uses a separate \lstinline{TResult} type parameter.
+
+\item \lstinline{OrderBy()} (and \lstinline{OrderByDescending()}) sets the ordering.
+Because it doesn't make sense to sort the same query multiple times
+and because no module supports sorting by multiple keys,
+this method returns the type with \lstinline{Sortable} removed.
+
+This method is available on the two \lstinline{Sortable} types
+and uses the type parameter \lstinline{TOrderBy}.
+
+\item \lstinline{Pages} is a property that returns a \lstinline{PagesSource}
+that can then be used in a \texttt{prop} query.
+See Section~\ref{PagesSource} for more information.
+
+This property is available on the two \lstinline{Generator} types
+and uses the type parameter \lstinline{TPage}.
+
+\end{itemize}
+
+For a state diagram of transitions between the \lstinline{WikiQuery} types and other related types,
+see Figure~\ref{WikiQuery types}.
+
+\begin{figure}[htbp]
+\begin{center}
+\begin{tikzpicture}[>=angle 90]
+\path (0,9) node(WQS) {\lstinline{WQSortable}};
+\path (5,9) node(WQ) {\lstinline{WQ}};
+
+\path (5,6) node(WQR) {\lstinline{WQResult}};
+
+\path (0,3) node(WQSG) {\lstinline{WQSortableGenerator}};
+\path (5,3) node(WQG) {\lstinline{WQGenerator}};
+
+\path (0,0) node(PS) {\lstinline{PagesSource}};
+\path (5,0) node(WQPR) {\lstinline{WQPageResult}};
+
+\draw[->] (WQS) edge [out=188,in=172,looseness=5,auto] node {\lstinline{Where}} (WQS);
+\draw[->] (WQS) edge node[above] {\lstinline{OrderBy}} (WQ);
+\draw[->] (WQS) edge node[below left] {\lstinline{Select}} (WQR);
+
+\draw[->] (WQ) edge [out=-20,in=20,looseness=8,right] node {\lstinline{Where}} (WQ);
+\draw[->] (WQ) edge node[right] {\lstinline{Select}} (WQR);
+
+\draw[->] (WQSG) edge [out=185,in=175,looseness=5,auto] node {\lstinline{Where}} (WQSG);
+\draw[->] (WQSG) edge node[auto] {\lstinline{OrderBy}} (WQG);
+\draw[->] (WQSG) edge node[above left] {\lstinline{Select}} (WQR);
+
+\draw[->] (WQG) edge [out=-8,in=8,looseness=5,right] node {\lstinline{Where}} (WQG);
+\draw[->] (WQG) edge node[right] {\lstinline{Select}} (WQR);
+
+\draw[->] (WQSG) edge node[auto] {\lstinline{Pages}} (PS);
+\draw[->] (WQG) edge node[auto] {\lstinline{Pages}} (PS);
+
+\draw[->] (PS) edge node[auto] {\lstinline{Select}} (WQPR);
+
+\end{tikzpicture}
+\end{center}
+
+\caption{State diagram of \lstinline{WikiQuery}-related types \\ (\lstinline{WikiQuery} is shortened to \lstinline{WQ} to save space)}
+\label{WikiQuery types}
+
+\end{figure}
+
+\subsection{\texorpdfstring{\lstinline{PagesSource}}{PagesSource}}
+\label{PagesSource}
+
+The \lstinline{PagesSource} type represents a collection of pages that can be used in \texttt{prop} queries,
+to get information about those pages.
+This information can be for example a list of categories for each page in the collection.
+
+There are two kinds of \lstinline{PagesSource}s: generator-based and list-based.
+
+\medskip
+
+List-based sources use a static list of pages, given as a collection of page titles, page IDs or revision IDs.
+
+Because the number of pages given this way in a single API request is fairly limited (usually to 50),
+large lists have to be queried multiple times.
+\lstinline{PagesSource} handles this transparently, so the user can input as many pages as he wants and doesn't have to worry about the limit.
+
+One exception is if the limit is different than the default of 50 for the current user on the current wiki.
+In that case, the user should change the limit by setting the static property \lstinline{ListPagesCollection.MaxLimit}.%
+\footnote{In all other cases where limits are important in this library, they limit the output, not the input.
+That is why simply setting \texttt{limit=max} works in those other cases, but doesn't work here.}
+
+If the collection used to create a \lstinline{PagesSource} is lazy, it is iterated in a lazy manner.
+For example, it could be the result of another LinqToWiki query, with additional processing by LINQ to objects,
+that is not possible using LinqToWiki alone.
+Or it could the result of a query from another wiki.
+In such cases, the original query will only make as many requests as necessary for the follow-up query.
+
+\medskip
+
+Generator-based sources represent a dynamic list of pages that is the result of another API query,
+like the list of all pages on a wiki from the \texttt{allpages} module.
+This way, the list of pages doesn't have to be retrieved separately, only to be sent back.
+
+Generator queries also have to handle paging, as described in Section~\ref{mw paging},
+including the exception for the \texttt{revisions} module.
+
+\medskip
+
+Thanks to the fact that both kinds of page sources for \texttt{prop} queries are represented by the same
+(abstract) type, the user of this library can use the same code to work with any source,
+thus avoiding repetitive code.
+
+\medskip
+
+To actually create a \texttt{prop} query for a page source, one uses the \lstinline{Select()} method.
+Its parameter is a lambda, whose parameter is the type parameter \lstinline{TPage} of \lstinline{PagesSource}.
+This type is the same for all queries on the same wiki, but could be different for differnt wikis.
+
+Inside the lambda, properties and methods of the \lstinline{TPage} type can be accessed.
+Each of them represents a \texttt{prop} module and all of the methods return one of the \lstinline{WikiQuery} types,
+which can then be queried as usual, with one condition:
+the \lstinline{WikiQuery} types can't ``leak'' outside of the query, so one has to use \lstinline{ToEnumerable()} or \lstinline{ToList()} inside the lambda.
+
+There is a special case for the \texttt{revisions} module,
+which can be also used with the \lstinline{FirstOrDefault()} method,
+which means only the most recent revision for each page is selected.
+
+If a \texttt{prop} module has a single result (not a collection), it is represented as a property
+that directly returns this result, no querying is possible.
+
+\medskip
+
+The methods of these \texttt{prop} queries are inside a lambda expression,
+so they are not actually executed unless the expression was compiled and the resulting delegate invoked.
+Because of this, processing them is not as simple as with normal queries.
+For more details, see Section~\ref{PageExpressionParser}.
+
+\medskip
+
+For an example of \lstinline{PagesSource} query, see Figure~\ref{PS query}.
+
+\begin{figure}[htbp]
+
+\begin{lstlisting}
+pagesSource.Select(
+    p =>
+    new
+    {
+        p.Info,
+        Categories =
+            p.Categories()
+            .Where(c => c.Show == Show.NotHidden)
+            .Select(c => new { c.Title, c.SortKeyPrefix })
+            .ToEnumerable()
+            .Take(10)
+	}
+)
+\end{lstlisting}
+
+\caption{An example of  \lstinline{PagesSource} query that uses the \texttt{info} and \texttt{categories} modules}
+\label{PS query}
+
+\end{figure}
+
+\needspace{5\baselineskip}
+
+\subsection{\texorpdfstring{\lstinline{QueryParameters}}{QueryParameters}}
+
+The \lstinline{QueryParameters} type contains the parameters of a query:
+
+\begin{itemize}
+\item sort direction and parameter by which to sort,
+\item list of properties to select and a delegate that uses them to construct the result object,
+\item list of other parameters, as key-value pairs.
+\end{itemize}
+
+\lstinline{QueryParameters} is an immutable type,
+so that one beginning of a query can be safely used repeatedly, as is the case with LINQ to objects.
+The list of other parameters is a functional-style immutable linked list.
+
+\medskip
+
+The \lstinline{PropQueryParameters} type derives from \lstinline{QueryParameters}
+and is used to store information about a single module in a \texttt{prop} query.
+Apart from inherited members, it also contains the name of the module
+and a special value indicating whether to retrieve only the first item,
+which corresponds to the usage of the \lstinline{FirstOrDefault()} method.
+
+A related type is \lstinline{PageQueryParameters},
+which represents a whole \texttt{prop} query.
+That means it contains a list of \lstinline{PropQueryParameters} objects
+and also information about the source of the query.
+
+\subsection{\texorpdfstring{\lstinline{ExpressionParser}}{ExpressionParser}}
+
+The \lstinline{ExpressionParser} static class is used to process expression trees from LINQ methods
+and store the processed query parameters in \lstinline{QueryParameters}.
+
+Common for all expression tree processing is that closed-over local variables contained in the processed lambda,
+which are represented as members of a compiler-generated closure class,
+have to be first replaced by their actual value.
+This is done using \lstinline{PartialEvaluator} written by Matt Warren \cite{warren}.
+
+Also, some property names have to be translated from their C\# version to their API version.
+For details and the reason why this is necessary, see Section~\ref{ltwc}.
+% TODO: more specific ref?
+
+\medskip
+
+Each of the methods requires different processing. Specifically:
+
+\begin{itemize}
+\item Expression trees from \lstinline{Where()} are first split into one or more subexpressions
+that are \emph{and}ed together (\lstinline{x => subexpr1 && subexpr2 && ...}; \emph{or} is not supported by the API)
+and each of the subexpressions is then added as a key-value pair to the result.
+
+Each subexpression has to be in the form \lstinline{x.Property == Value},
+where \lstinline{Value} is a constant, possibly from an evaluated closed-over variable.
+The reverse order (\lstinline{Value == obj.Property}) is also allowed.
+An alternative for boolean properties is accessing the property directly (\lstinline{x.Property})
+or negated (\lstinline{!x.Property}).
+
+\item Processing \lstinline{OrderBy()} expression trees is simple:
+they can either be identities (\lstinline{x => x}), which means default sorting will be used
+(which is the only possibility for some modules),
+or they can be simple property accesses (\lstinline{x => x.Property}),
+which means the result will be sorted by that property.
+
+The order of sorting (ascending or descending) is decided by the method used:
+whether it was \lstinline{OrderBy()} or \lstinline{OrderByDescending()}.
+
+\item Expression trees from \lstinline{Select()} are processed in two steps.
+First, the expression is scanned for usages of its parameter.
+If any of its properties are used, it means those properties have to be retrieved from the API.
+If the parameter is used directly, without accessing its properties,
+it means all of the properties have to be retrieved, because it is impossible to say which of them will be used.
+
+For example, the expression \lstinline|x => new { x.Property1, x.Property2 }|
+means only \lstinline{Property1} and \lstinline{Property2} have to be retrieved.
+On the other hand, \lstinline{x => SomeMethod(x)} means all of the properties have to be retrieved.
+
+Second step is compiling the expression into a delegate,
+which will then be executed for each item coming from the API.
+
+Put together, these two steps mean that \lstinline{Select()} can be used with any expression
+and only properties that are actually needed will be returned by the API.
+\end{itemize}
+
+\subsection{\texorpdfstring{\lstinline{PageExpressionParser}}{PageExpressionParser}}
+\label{PageExpressionParser}
+
+The class \lstinline{PageExpressionParser} is used to process
+the \lstinline{Select()} lambda in \lstinline{PagesSource} queries.
+The difficulty there is that the direct approach of building the query step-by-step,
+used in normal queries, will not work.
+That is because the expression has to be analyzed before there is any page object
+that it expects as its parameter.
+
+The result of this analysis is twofold:
+the set of parameters needed for all of the \lstinline{prop} queries,
+as a collection of \lstinline{PropQueryParameters},
+and a delegate that can be used to get the result object for each page in the API response.
+
+\medskip
+
+Because the subquery for each \texttt{prop} module has to end with a call to \lstinline{To}\lstBreak\lstinline{Enumerable()} or \lstinline{ToList()},
+the parameters can be extracted by invoking the part of the subquery before that call.
+At the beginning of each subquery is invoking a module-specific method on the page object.
+But because there is no page object to use, that invocation is first replaced by an appropriate \lstinline{WikiQuery} object.
+
+For example, for the query in Figure~\ref{PS query}, the invoked code is (where \lstinline{wikiQuery} is the appropriate \lstinline{WikiQuery} object):
+
+\begin{lstlisting}
+wikiQuery.Where(c => c.Show == Show.NotHidden)
+	  .Select(c => new { c.Title, c.SortKeyPrefix })
+\end{lstlisting}
+
+\medskip
+
+To get the delegate, all calls to \lstinline{Where()} and \lstinline{OrderBy()} are removed,
+because their only purpose is to modify the query parameters.
+Then the single parameter of type \lstinline{TPage} is replaced by a parameter of type \lstinline{PageData}
+and calls to module methods are replaced by calls to \lstinline{GetData()},
+with a type parameter specifying the type of the result and a parameter specifying the name of the module.
+
+The \lstinline{GetData()} method returns a collection,
+so for modules that return only a single item, like \texttt{info},
+a call to \lstinline{Single}\lstBreak\lstinline{Or}\lstBreak\lstinline{Default()} is also added.
+
+\needspace{11\baselineskip}
+
+For example the expression in the query in Figure~\ref{PS query} is transformed into:
+
+\begin{lstlisting}
+pageData =>
+new
+{
+    Info = pageData.GetData<InfoResult>("info")
+    		     .SingleOrDefault(),
+    Categories =
+    	pageData.GetData<CategoriesSelect>("categories")
+    		 .Select(c => new { c.Title, c.SortKeyPrefix })
+    		 .Take(10)
+}
+\end{lstlisting}
+
+\subsection{Other types}
+
+The \lstinline{QueryProcessor} type manages downloading the result and transforming it from XML to objects.
+For queries whose result is a collection, it also handles returning the pages in a lazy manner
+and downloading the follow-up pages when necessary.
+
+The \lstinline{QueryPageProcessor} type does the same for \lstinline{PagesSource} queries.
+
+\medskip
+
+The \lstinline{Downloader} type takes care of forming the query string, executing the request and
+returning the result as an \lstinline{XDocument}.
+\lstinline{XDocument} is a part of LINQ to XML, a part of .Net framework for manipulating XML documents.
+
+\lstinline{Downloader} always uses POST and formats its requests as \path{application/x-www-form-urlencoded}.
+This means that all modules work, including those that require POST.
+On the other hand, uploads of files don't work, because they require \path{multipart/form-data}.
+
+The decision to use \path{application/x-www-form-urlencoded} follows from the fact that
+\path{multipart/form-data} is very inefficient when sending multiple parameters with short values,
+which is common when making requests to the API.
