@@ -425,13 +425,19 @@ new
 
 % QueryProcessor, its helpers
 
-\subsection{\texorpdfstring{\lstinline{Downloader}}{Downloader}}
+\subsection{Other types}
 
-% TODO: reword
-Probably the most basic type in this project is \lstinline{Downloader}.
-It takes care of forming the query string, executing the request and
+The \lstinline{QueryProcessor} type manages downloading the result and transforming it from XML to objects.
+For queries whose result is a collection, it also handles returning the pages in a lazy manner
+and downloading the follow-up pages when necessary.
+
+The \lstinline{QueryPageProcessor} type does the same for \lstinline{PagesSource} queries.
+
+\medskip
+
+The \lstinline{Downloader} type takes care of forming the query string, executing the request and
 returning the result as an \lstinline{XDocument}.
-\lstinline{XDocument} is part of LINQ to XML, a part of .Net framework for manipulating XML documents.
+\lstinline{XDocument} is a part of LINQ to XML, a part of .Net framework for manipulating XML documents.
 
 \lstinline{Downloader} always uses POST and formats its requests as \path{application/x-www-form-urlencoded}.
 This means that all modules work, including those that require POST.
