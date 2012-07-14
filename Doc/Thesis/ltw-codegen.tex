@@ -57,14 +57,14 @@ Our answers to these questions are in the following couple of sections.
 
 \subsection{Naming of generated types and members}
 
-Let's start with the last question: Should the generated members follow .Net naming conventions?
+Let us start with the last question: Should the generated members follow .Net naming conventions?
 The .Net naming guidelines \cite{guidelines-for-names},
 that are widely followed by various .Net libraries and the .Net framework itself,
 state that names of types and public members should use PascalCase,
 that is, each word of an identifier should start with a capital letter
 and the identifier should not contain any delimiters (such as underscores).
 
-We would prefer to follow these naming conventions, but unfortunately it is not possible.
+We would prefer to follow these naming conventions, but, unfortunately, it is not possible.
 That is because the names of modules, parameters, result properties and almost all enumerated types in the API
 use names that are all lowercase, without delimiters between words.
 That means there is no way to figure out which letters in an identifier should be capitalized
@@ -77,3 +77,66 @@ A human can see that the proper name for that value using PascalCase would be \l
 but a computer cannot.
 (Actually, it is possible that the words could be reliably separated using natural language processing,
 but doing that is outside the scope of this work.)
+
+\medskip
+
+Because different .Net languages have different sets of reserved identifier names
+(usually, those are the language keywords)
+and because libraries written in one language should be usable from other languages,
+.Net languages provide a way to use their keywords as identifiers.
+In the case of C\#, this is done by prefixing the identifier with an at sign.
+So, for example, to use \texttt{new} as an identifier, one has to write \lstinline{@new}.
+
+Thanks to this, using keyword-named identifiers is still possible,
+although slightly less convenient than with normal identifiers.
+Also, the naming guidelines suggest avoiding keywords as identifiers.
+
+In MediaWiki core API modules, there are four identifiers that are also C\# keywords:
+\texttt{namespace}, \texttt{new}, \texttt{true}, \texttt{false}.
+Out of these, we decided to shorten \texttt{namespace} to \lstinline{ns},
+which is a common abbreviation, so the meaning should not be lost.
+The other three have to be written with \lstinline{@} (\lstinline{@new}, \lstinline{@true} and \lstinline{@false}) in C\#,
+because we did not find a reasonable alternative for them.
+
+\medskip
+
+As for special characters, the delimiters hyphen (\texttt{-}), slash (\texttt{/}) and space
+appear in some names in the API, but are not allowed in .Net identifiers,
+so they are replaced by underscores (\texttt{\_}).
+
+Some names also start with the exclamation mark~(\texttt{!}), to indicate negation.
+Such names are translated by prefixing \lstinline{not_}.
+So for example, \texttt{!minor} (which means that an edit is not a minor edit)
+is translated into \lstinline{not_minor}.
+
+One more special case is that some enumerated types allow an empty value.
+Such value is then represented by the identifier \lstinline{none}.
+
+\medskip
+
+Another question is how to name the generated types.
+There two kinds of generated types:
+those that represent some enumerated type and those that represent parameters or results of some module.
+
+For the latter kind, it is simple to come up with a convention like naming them by the module name,
+suffixed by the specific kind of the type
+(e.g. \lstinline{blockResult} for the result of the \texttt{block} module
+or \lstinline{categorymembersWhere} for the type representing \lstinline{Where()} parameters for the \texttt{categorymembers} module).
+
+But for the former kind, the situation is more complicated.
+Enumerated types do not have names by themselves, they are part of a parameter or property that has a name.
+The problem is that different modules often have parameters and properties with the same name,
+while their type sometimes is the same and sometimes it is not.
+
+So, there are two options: either let the types that look the same actually be the same generated type,
+or let each parameter and property have its own distinct type.
+If we merge the types that look the same, we should not use the module name in their name,
+because one type can be used with different modules.
+But that means we need to distinguish different types in another way, like a number.
+But names like \lstinline{token5} are not very helpful for the user.
+
+Because of that, we chose the other option, which means including the name of the module in the type name.
+But doing it this way does not eliminate conflicts completely:
+In the case when a module has a parameter and a property with the name,
+their types still have to be distinguished.
+An example of such type name is \lstinline{recentchangestype2}.
