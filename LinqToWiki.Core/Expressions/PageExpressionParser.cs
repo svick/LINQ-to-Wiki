@@ -78,6 +78,9 @@ namespace LinqToWiki.Expressions
             {
                 var memberName = node.Member.Name;
 
+                if (memberName == "info")
+                    return m_pageDataGetInfoCall;
+
                 if (!m_parameters.ContainsKey(memberName))
                     m_parameters.Add(memberName, new PropQueryParameters(memberName));
 
