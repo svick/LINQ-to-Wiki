@@ -86,7 +86,7 @@ Syntax.PropertyDeclaration(
           Syntax.AccessorDeclaration(
             SyntaxKind.GetAccessorDeclaration,
             semicolonTokenOpt:
-              Syntax.Token(SyntaxKind.SemicolonToken)))));
+              Syntax.Token(SyntaxKind.SemicolonToken)))))
 \end{lstlisting}
 
 \caption{A sample code to manually create a Roslyn syntax tree \\ using October 2011 CTP}
@@ -109,7 +109,7 @@ Syntax.PropertyDeclaration(
         Syntax.AccessorDeclaration(
           SyntaxKind.GetAccessorDeclaration)
           .WithSemicolonToken(
-            Syntax.Token(SyntaxKind.SemicolonToken)))));
+            Syntax.Token(SyntaxKind.SemicolonToken)))))
 \end{lstlisting}
 
 \caption{A sample code to manually create a Roslyn syntax tree \\ using June 2012 CTP}

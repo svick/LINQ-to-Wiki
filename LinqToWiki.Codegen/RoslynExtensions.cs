@@ -298,23 +298,23 @@ namespace LinqToWiki.Codegen
 
         public static PropertyDeclarationSyntax AutoPropertyDeclaration(
             IEnumerable<SyntaxKind> modifiers, string typeName, string propertyName,
-            SyntaxKind? setModifier = null, SyntaxKind? getModifier = null)
+            SyntaxKind? setModifier = null, SyntaxKind? getModifier = null, bool isAbstract = false)
         {
             return AutoPropertyDeclaration(
-                modifiers, Syntax.ParseTypeName(typeName), propertyName, setModifier, getModifier);
+                modifiers, Syntax.ParseTypeName(typeName), propertyName, setModifier, getModifier, isAbstract);
         }
 
         public static PropertyDeclarationSyntax AutoPropertyDeclaration(
             IEnumerable<SyntaxKind> modifiers, TypeSyntax type, string propertyName,
-            SyntaxKind? setModifier = null, SyntaxKind? getModifier = null, bool isAbstarct = false)
+            SyntaxKind? setModifier = null, SyntaxKind? getModifier = null, bool isAbstract = false)
         {
             var accesors = new List<AccessorDeclarationSyntax>();
-            if (!(isAbstarct && getModifier == SyntaxKind.PrivateKeyword))
+            if (!(isAbstract && getModifier == SyntaxKind.PrivateKeyword))
                 accesors.Add(
                     Syntax.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
                     .WithModifiers(TokenList(getModifier))
                     .WithSemicolonToken(Syntax.Token(SyntaxKind.SemicolonToken)));
-            if (!(isAbstarct && setModifier == SyntaxKind.PrivateKeyword))
+            if (!(isAbstract && setModifier == SyntaxKind.PrivateKeyword))
                 accesors.Add(
                     Syntax.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
                         .WithModifiers(TokenList(setModifier))

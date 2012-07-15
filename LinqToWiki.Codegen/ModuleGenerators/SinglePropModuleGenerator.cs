@@ -36,7 +36,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
             return SyntaxEx.AutoPropertyDeclaration(
                 new[] { SyntaxKind.PublicKeyword, SyntaxKind.AbstractKeyword }, GenerateMethodResultType(),
-                ClassNameBase, isAbstarct: true, setModifier: SyntaxKind.PrivateKeyword)
+                ClassNameBase, isAbstract: true, setModifier: SyntaxKind.PrivateKeyword)
                 .WithLeadingTrivia(Syntax.Trivia(SyntaxEx.DocumentationComment(summary)));
         }
 

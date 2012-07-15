@@ -271,3 +271,58 @@ this includes generating \lstinline{Where}, \lstinline{Select} and possibly \lst
 method in the \lstinline{QueryAction} class
 (which is returned by the \lstinline{Query} property of the \lstinline{Wiki} class)
 and types for all its enumerated types.
+
+Each of the generated types and methods also has XML documentation comment attached,
+based on description from \texttt{paraminfo}.
+This means that a user of this library does not have to guess what each method or property means,
+his IDE will show him description for it.
+
+These descriptions sometimes contain references to details of the API that this library abstracts away.
+For example, the description for the \texttt{unique} parameter of the \lstinline{alllinks} module says:
+“Only show unique links. Cannot be used with generator or alprop=ids.”
+The reference to \texttt{alprop} makes sense to someone who uses the API directly,
+but would be very confusing for a user of LinqToWiki.
+Not only does LinqToWiki abstract away module prefixes (\texttt{al}),
+it also doesn't expose the \texttt{prop} parameter directly
+(the \lstinline{Select()} method is used instead).
+
+\subsection{\texorpdfstring{\lstinline{SyntaxEx}}{SyntaxEx}}
+
+As described in Section~\ref{roslyn}, creating Roslyn syntax trees can be cumbersome.
+The \lstinline{SyntaxEx} class makes doing that easier by adding simpler alternatives
+to the factory methods in Roslyn's \lstinline{Syntax} class.
+The \lstinline{SyntaxEx} methods do not handle more complex cases,
+so for those, using \lstinline{Syntax} is still necessary.
+
+For example of how the code from Figure~\ref{Roslyn code 2012} can be written using \lstinline{SyntaxEx},
+see Figure~\ref{SyntaxEx code}.
+
+\begin{figure}[htbp]
+
+\begin{lstlisting}
+SyntaxEx.AutoPropertyDeclaration(
+  new[]
+  {
+    SyntaxKind.PublicKeyword,
+    SyntaxKind.AbstractKeyword
+  },
+  "CategoryInfoResult",
+  "CategoryInfo",
+  setModifier: SyntaxKind.PrivateKeyword,
+  isAbstract: true)
+\end{lstlisting}
+
+\caption{A sample code to manually create a Roslyn syntax tree \\ using \lstinline{SyntaxEx}}
+\label{SyntaxEx code}
+\end{figure}
+
+\medskip
+
+Another improvement is that syntax nodes that represent declaration of property, field, parameter or variable
+can be used to refer to them in later code, for example when assigning the value of a parameter to a property.
+This is achieved by using implicit conversions and a helper type \lstinline{NamedNode}.
+In Roslyn without this extension, it is necessary to extract the name of the syntax node
+and use that to create \lstinline{IdentifierNameSyntax}.
+
+As with \lstinline{SyntaxEx}, this can make simple cases simpler, but cannot handle evything.
+Because of that, complex cases still have to directly use Roslyn.
