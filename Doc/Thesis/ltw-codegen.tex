@@ -49,7 +49,7 @@ Should they all go into \lstinline{Where()} or somewhere else? Where?
 LINQ methods are not suitable for them, because they are meant to work with collections.
 \item How to name the generated types and members?
 Specifically, how to represent names that can't be used (like those containing special characters)
-and names that are undesirable (those that conflict with a C\# keyword).
+and names that are undesirable (those that conflict with C\# keywords).
 Also, should the generated members follow .Net naming conventions?
 \end{itemize}
 
@@ -140,3 +140,62 @@ But doing it this way does not eliminate conflicts completely:
 In the case when a module has a parameter and a property with the name,
 their types still have to be distinguished.
 An example of such type name is \lstinline{recentchangestype2}.
+
+\subsection{Structure of generated code}
+
+%TODO: describe methods and Query
+
+With modules that don't return lists, the situation is mostly simple:
+there are no parameters to sort or filter the result (because it's not a list)
+and most of those modules also don't have parameters to choose the result properties.
+
+Because of that, a method for each such module, that directly returns the result object is enough.
+This method has parameters corresponding to the parameters of the module,
+where required parameters of the module are mapped as normal method parameters
+and parameters that are not required are mapped as optional parameters.
+The code of this method builds \lstinline{QueryParameters} from the method parameters
+and then executes the query using \lstinline{QueryProcessor}.
+
+\medskip
+
+On the other hand, list modules can have several kinds of parameters:
+
+\begin{itemize}
+\item Those that affect order of the items in the list. They are naturally mapped as \lstinline{OrderBy()}.
+The parameters \texttt{sort} and \texttt{dir} belong here.
+\item Those that choose what properties appear in the result. They are naturally mapped as \lstinline{Select()}.
+Only the parameter \texttt{prop} belongs here.
+\item Those that filter what items appear in the result. They are naturally mapped as \lstinline{Where()}.
+For example, the parameters \texttt{namespace} and \texttt{startsortkey}
+of the \texttt{categorymembers} module belong here.
+\item Various other parameters. They do not naturally map to any LINQ method.
+For example, the parameter \texttt{title} (that decides which category to enumerate)
+of the \texttt{categorymembers} module belongs here.
+\end{itemize}
+
+The first two kinds are not a problem, because it is clear which parameters belong to them.
+The second two kinds are a problem, because there is no clear way to automatically distinguish between the two.
+One exception is if a parameter is required (as indicated in its description),
+then it means it belongs to the other parameters.
+
+Required parameters are given as parameters of the module methods,
+but we decided to treat all non-required parameters that do not belong to the first two kinds,
+as if they were \lstinline{Where()} parameters.
+Unfortunately, this means that some queries do not logically make sense,
+if we consider that the \lstinline{Where()} method should only filter the results.
+
+For example, consider this query:
+
+\begin{lstlisting}
+wiki.Query.categorymembers()
+    .Where(cm => cm.title == "Category:Query languages")
+\end{lstlisting}
+
+There, the \lstinline{title} property does not actually represent filtering
+by the title of the category member, it decides which category to enumerate.
+And without it, the query would not even execute successfully
+(the parameter \texttt{title} is not marked as required, because the parameter \texttt{pageid} can be used instead of it).
+
+Proper solution to this problem would require human interaction when generating the code,
+to choose which parameters belong to \lstinline{Where()} and which do not.
+As an alternative, the description of each parameter in the \texttt{paraminfo} module could contain its kind.
