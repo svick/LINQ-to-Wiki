@@ -143,7 +143,13 @@ An example of such type name is \lstinline{recentchangestype2}.
 
 \subsection{Structure of generated code}
 
-%TODO: describe methods and Query
+At the start of each query is the \lstinline{Wiki} type.
+It contains methods for non-query modules as well as methods to create list-based \lstinline{PagesSource}s.
+It also contains the property \lstinline{Query} that returns an object that contains methods for
+\texttt{list} and \texttt{meta} query modules.
+(\texttt{prop} query modules work differently, for more information, see Section~\ref{PagesSource}.)
+
+\medskip
 
 With modules that don't return lists, the situation is mostly simple:
 there are no parameters to sort or filter the result (because it's not a list)
