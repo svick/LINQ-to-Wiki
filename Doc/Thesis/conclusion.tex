@@ -1,2 +1,12 @@
 \chapter*{Conclusion}
 \addcontentsline{toc}{chapter}{Conclusion}
+
+The goal of this work was to implement a C\# library to access the MediaWiki API
+in a way that is readable, discoverable, strongly-typed and flexible.
+
+These goals were successfully accomplished using a custom LINQ provider and code generation with Roslyn.
+
+The actions available through the LINQ provider closely match those that are available from the API
+by intentionally not supporting all LINQ operators, and using different set of properties for each operator.
+
+TODO: continue here
