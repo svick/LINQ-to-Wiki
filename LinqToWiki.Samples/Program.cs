@@ -11,14 +11,11 @@ namespace LinqToWiki.Samples
         {
             Downloader.LogDownloading = true;
 
-            /**/
             var wiki = new Wiki("en.wikipedia.org", "/w/api.php");
-            /*/
-            var wiki = new Wiki("localhost/wiki/", "api.php");
-            Login(wiki, "Svick", "heslo");
-            /**/
+            // Login(wiki, "username", "password");
 
-            EmptyCategoriesFaster(wiki);
+            Compare(wiki);
+            // Categories(TitlePages(wiki));
         }
 
         #region Simple methods
@@ -726,7 +723,7 @@ namespace LinqToWiki.Samples
 
         #endregion
 
-        #region Real-life complex query
+        #region Real-world complex query
 
         // http://en.wikipedia.org/wiki/Wikipedia_talk:Categorization/Archive_14#Unused_categories
         private static void EmptyCategoriesFaster(Wiki wiki)
@@ -767,10 +764,10 @@ namespace LinqToWiki.Samples
                         p.info.title,
                         p.categoryinfo,
                         softRedirectCategory =
-                        p.categories()
-                        .Where(c => c.categories == "Category:Wikipedia soft redirected categories")
-                        .Select(c => c.title)
-                        .ToEnumerable()
+                            p.categories()
+                            .Where(c => c.categories == "Category:Wikipedia soft redirected categories")
+                            .Select(c => c.title)
+                            .ToEnumerable()
                     })
                 .ToEnumerable()
                 .Where(c => (c.categoryinfo == null || c.categoryinfo.size == 0) && !c.softRedirectCategory.Any())
