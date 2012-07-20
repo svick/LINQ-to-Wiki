@@ -157,7 +157,7 @@ This requires information about properties of results of the API,
 that was not previously available from the API, and was added there because of this library.
 This was done quite recently (on 12 June 2012),
 so it's not available in the most recent public version of MediaWiki (1.19.1)
-or the version currently in use on Wikipedia (1.20wmf5).
+but it is available in the version currently in use on Wikipedia (1.20wmf7).
 Hopefull, this will change soon.
 
 If you don't have recent enough version of MediaWiki (which right now is more than likely),
