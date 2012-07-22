@@ -10,7 +10,7 @@ and finally compiles the code into a library.
 Roslyn was chosen, because it is superior when compared with common approaches for code generation in .Net,
 namely Reflection.Emit and CodeDOM.
 
-Reflection.Emit \cite{reflection-emit} is a set of types that allow code generation of code at runtime.
+Reflection.Emit \cite{reflection-emit} is a set of types that allow generation of code at runtime.
 The generated code can then be directly executed or saved as an assembly (.dll or .exe) to disk.
 The distinguishing feature is that it uses the low-level Common Intermediate Language (CIL),
 which means writing any code beyond the simplest methods can be very tedious and error-prone.
@@ -152,9 +152,9 @@ It also contains the property \lstinline{Query} that returns an object that cont
 
 \medskip
 
-With modules that don't return lists, the situation is mostly simple:
-there are no parameters to sort or filter the result (because it's not a list)
-and most of those modules also don't have parameters to choose the result properties.
+With modules that do not return lists, the situation is mostly simple:
+there are no parameters to sort or filter the result (because it is not a list)
+and most of those modules also do not have parameters to choose the result properties.
 
 Because of that, a method for each such module, that directly returns the result object is enough.
 This method has parameters corresponding to the parameters of the module,
@@ -275,7 +275,7 @@ and types for all its enumerated types.
 Each of the generated types and methods also has XML documentation comment attached,
 based on description from \texttt{paraminfo}.
 This means that a user of this library does not have to guess what each method or property means,
-his IDE will show him description for it.
+his IDE can show him description for it.
 
 These descriptions sometimes contain references to details of the API that this library abstracts away.
 For example, the description for the \texttt{unique} parameter of the \lstinline{alllinks} module says:
