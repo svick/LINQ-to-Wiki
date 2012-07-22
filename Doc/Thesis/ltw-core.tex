@@ -1,7 +1,7 @@
 \section{The LinqToWiki.Core project}
 
 The LinqToWiki.Core project contains shared code that can be used when querying any MediaWiki wiki
-that has the API enabled.
+that has the \ac{API} enabled.
 It can be used together with code generated through LinqToWiki\allowbreak{}.Codegen,
 but it can also be used without it.
 
@@ -11,10 +11,10 @@ using manually written code.
 \subsection{\texorpdfstring{\lstinline{QueryTypeProperties}}{QueryTypeProperties}}
 
 The \lstinline{QueryTypeProperties} class holds basic information about a “query type”,
-which corresponds to an API module.
+which corresponds to an \ac{API} module.
 This information includes the prefix this module uses in its parameters,
 what type of module it is or mapping of its result properties to values accepted by the \texttt{prop} parameter.
-It is also able to parse XML elements this module returns.
+It is also able to parse \ac{XML} elements this module returns.
 
 \subsection{\texorpdfstring{\lstinline{WikiQuery}}{WikiQuery}}
 
@@ -54,7 +54,7 @@ Because of this, a query like \lstinline{source.OrderBy(x => x.Title)} would com
 but \lstinline{source.OrderBy(x => x.Name)} would fail to compile.
 
 Because of the way lambda expressions work, queries like \lstinline[breaklines=true]{source.OrderBy(x => x.Title.Substring(1))} or \lstinline{source.OrderBy(x => random.Next())} would compile fine.
-But because there is no way to efficiently execute such queries using the MediaWiki API,
+But because there is no way to efficiently execute such queries using the MediaWiki \ac{API},
 they will fail with an exception at runtime.
 
 \medskip
@@ -163,26 +163,26 @@ There are two kinds of \lstinline{PagesSource}s: generator-based and list-based.
 
 List-based sources use a static list of pages, given as a collection of page titles, page IDs or revision IDs.
 
-Because the number of pages given this way in a single API request is fairly limited (usually to 50),
+Because the number of pages given this way in a single \ac{API} request is fairly limited (usually to 50),
 large lists have to be queried multiple times.
-\lstinline{PagesSource} handles this transparently, so the user can input as many pages as he wants and doesn't have to worry about the limit.
+\lstinline{PagesSource} handles this transparently, so the user can input as many pages as he wants and does not have to worry about the limit.
 
 One exception is if the limit is different than the default of 50 for the current user on the current wiki.
 In that case, the user should change the limit by setting the static property \lstinline{ListPagesCollection.MaxLimit}.%
 \footnote{In all other cases where limits are important in this library, they limit the output, not the input.
-That is why simply setting \texttt{limit=max} works in those other cases, but doesn't work here.}
+That is why simply setting \texttt{limit=max} works in those other cases, but does not work here.}
 
 If the collection used to create a \lstinline{PagesSource} is lazy, it is iterated in a lazy manner.
-For example, it could be the result of another LinqToWiki query, with additional processing by LINQ to objects,
+For example, it could be the result of another LinqToWiki query, with additional processing by \ac{LINQ} to objects,
 that is not possible using LinqToWiki alone.
 Or it could the result of a query from another wiki.
 In such cases, the original query will only make as many requests as necessary for the follow-up query.
 
 \medskip
 
-Generator-based sources represent a dynamic list of pages that is the result of another API query,
+Generator-based sources represent a dynamic list of pages that is the result of another \ac{API} query,
 like the list of all pages on a wiki from the \texttt{allpages} module.
-This way, the list of pages doesn't have to be retrieved separately, only to be sent back.
+This way, the list of pages does not have to be retrieved separately, only to be sent back.
 
 Generator queries also have to handle paging, as described in Section~\ref{mw paging},
 including the exception for the \texttt{revisions} module.
@@ -197,7 +197,7 @@ thus avoiding repetitive code.
 
 To actually create a \texttt{prop} query for a page source, one uses the \lstinline{Select()} method.
 Its parameter is a lambda, whose parameter is the type parameter \lstinline{TPage} of \lstinline{PagesSource}.
-This type is the same for all queries on the same wiki, but could be different for differnt wikis.
+This type is the same for all queries on the same wiki, but could be different for different wikis.
 
 Inside the lambda, properties and methods of the \lstinline{TPage} type can be accessed.
 Each of them represents a \texttt{prop} module and all of the methods return one of the \lstinline{WikiQuery} types,
@@ -276,7 +276,7 @@ and also information about the source of the query.
 
 \subsection{\texorpdfstring{\lstinline{ExpressionParser}}{ExpressionParser}}
 
-The \lstinline{ExpressionParser} static class is used to process expression trees from LINQ methods
+The \lstinline{ExpressionParser} static class is used to process expression trees from \ac{LINQ} methods
 and store the processed query parameters in \lstinline{QueryParameters}.
 
 Common for all expression tree processing is that closed-over local variables contained in the processed lambda,
@@ -284,7 +284,7 @@ which are represented as members of a compiler-generated closure class,
 have to be first replaced by their actual value.
 This is done using \lstinline{PartialEvaluator} written by Matt Warren \cite{warren}.
 
-Also, some property names have to be translated from their C\# version to their API version.
+Also, some property names have to be translated from their C\# version to their \ac{API} version.
 For details and the reason why this is necessary, see Section~\ref{ltwc}.
 % TODO: more specific ref?
 
@@ -294,7 +294,7 @@ Each of the methods requires different processing. Specifically:
 
 \begin{itemize}
 \item Expression trees from \lstinline{Where()} are first split into one or more subexpressions
-that are \emph{and}ed together (\lstinline{x => subexpr1 && subexpr2 && ...}; \emph{or} is not supported by the API)
+that are \emph{and}ed together (\lstinline{x => subexpr1 && subexpr2 && ...}; \emph{or} is not supported by the \ac{API})
 and each of the subexpressions is then added as a key-value pair to the result.
 
 Each subexpression has to be in the form \lstinline{x.Property == Value},
@@ -314,7 +314,7 @@ whether it was \lstinline{OrderBy()} or \lstinline{OrderByDescending()}.
 
 \item Expression trees from \lstinline{Select()} are processed in two steps.
 First, the expression is scanned for usages of its parameter.
-If any of its properties are used, it means those properties have to be retrieved from the API.
+If any of its properties are used, it means those properties have to be retrieved from the \ac{API}.
 If the parameter is used directly, without accessing its properties,
 it means all of the properties have to be retrieved, because it is impossible to say which of them will be used.
 
@@ -323,10 +323,10 @@ means only \lstinline{Property1} and \lstinline{Property2} have to be retrieved.
 On the other hand, \lstinline{x => SomeMethod(x)} means all of the properties have to be retrieved.
 
 Second step is compiling the expression into a delegate,
-which will then be executed for each item coming from the API.
+which will then be executed for each item coming from the \ac{API}.
 
 Put together, these two steps mean that \lstinline{Select()} can be used with any expression
-and only properties that are actually needed will be returned by the API.
+and only properties that are actually needed will be returned by the \ac{API}.
 \end{itemize}
 
 \subsection{\texorpdfstring{\lstinline{PageExpressionParser}}{PageExpressionParser}}
@@ -342,7 +342,7 @@ that it expects as its parameter.
 The result of this analysis is twofold:
 the set of parameters needed for all of the \lstinline{prop} queries,
 as a collection of \lstinline{PropQueryParameters},
-and a delegate that can be used to get the result object for each page in the API response.
+and a delegate that can be used to get the result object for each page in the \ac{API} response.
 
 \medskip
 
@@ -389,7 +389,7 @@ new
 
 \subsection{Other types}
 
-The \lstinline{QueryProcessor} type manages downloading the result and transforming it from XML to objects.
+The \lstinline{QueryProcessor} type manages downloading the result and transforming it from \ac{XML} to objects.
 For queries whose result is a collection, it also handles returning the pages in a lazy manner
 and downloading the follow-up pages when necessary.
 
@@ -399,7 +399,7 @@ The \lstinline{QueryPageProcessor} type does the same for \lstinline{PagesSource
 
 The \lstinline{Downloader} type takes care of forming the query string, executing the request and
 returning the result as an \lstinline{XDocument}.
-\lstinline{XDocument} is a part of LINQ to XML, a part of .Net framework for manipulating XML documents.
+\lstinline{XDocument} is a part of LINQ to XML, a part of .NET Framework for manipulating \ac{XML} documents.
 
 \lstinline{Downloader} always uses POST and formats its requests as \path{application/x-www-form-urlencoded}.
 This means that all modules work, including those that require POST.
@@ -407,6 +407,6 @@ On the other hand, uploads of files don't work, because they require \path{multi
 
 The decision to use \path{application/x-www-form-urlencoded} follows from the fact that
 \path{multipart/form-data} is very inefficient when sending multiple parameters with short values,
-which is common when making requests to the API.
+which is common when making requests to the \ac{API}.
 
 % TODO: Namespace type?

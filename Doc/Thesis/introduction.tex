@@ -1,18 +1,18 @@
 \chapter*{Introduction}
 \addcontentsline{toc}{chapter}{Introduction}
 
-Wiki websites running on the MediaWiki software (such as Wikipedia) offer an API (Application programming interface)
+Wiki websites running on the MediaWiki software (such as Wikipedia) offer an \ac{API}
 for programmatic access to their database.
-Since MediaWiki contains many functions, the API is quite extensive too: the core installation contains over seventy “modules”
+Since MediaWiki contains many functions, the \ac{API} is quite extensive too: the core installation contains over seventy “modules”
 and more are available through extensions. Each module accepts parameters in the form of key-value pairs
-and returns a structured response in one of the possible formats, including XML.
+and returns a structured response in one of the possible formats, including \acs{XML}.
 
 Because of the size of the API, accessing it from some programming language is not very simple.
 Two basic approchaches are possible: static and dynamic.
 
 The dynamic approach is to create a thin library around the API modules:
 let the user specify the names of the parameters and their types and return the response
-in a dynamic manner, possibly as an associative array, or something like XML DOM.
+in a dynamic manner, possibly as an associative array, or something like \acs{XML} \ac{DOM}.
 
 This way, the user is responsible for the correctness of his query and for correct processing
 of the response.
@@ -41,15 +41,15 @@ A list of strings representing the chosen properties might be suitable for the d
 \medskip
 
 This work introduces the LinqToWiki library that tries to solve all those problems
-in the form of a .Net library.
+in the form of a .NET library.
 
 The dynamic vs. static issues are solved by automatically generating statically typed
 code based on the metadata the API provides about itself.
 The code generation is performed using Roslyn,
 which is a new implementation of a compiler for the C\# language written in C\#.
 
-The problems specific to the static approach are solved by using LINQ (Language integrated query):
-a set of features of the C\# language and the .Net framework,
+The problems specific to the static approach are solved by using \ac{LINQ}:
+a set of features of the C\# language and the .NET Framework,
 that is useful for representing queries and their translation into another form.
 
-The library also abstracts away some other aspects of the API, like paging of the results.
+The library also abstracts away some other aspects of the \ac{API}, like paging of the results.

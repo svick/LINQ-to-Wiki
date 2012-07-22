@@ -2,20 +2,20 @@
 \label{roslyn}
 
 Microsoft Roslyn is a new implementation of the C\# compiler written in C\#
-(and a VB.NET compiler written in VB.NET) \cite{roslyn}.
+(and a \ac{VB.NET} compiler written in \ac{VB.NET}) \cite{roslyn}.
 Its main distinguishing characteristic is that it is “open”:
 it can be used for example to convert between text and a syntax tree,
 to manipulate the syntax tree or to interrogate semantic information.
 
-It also integrates itself into the Microsoft Visual Studio IDE
-(Integrated Development Environment), where it can be used to perform
+It also integrates itself into the Microsoft Visual Studio \ac{IDE},
+where it can be used to perform
 custom refactoring actions or to produce custom errors and warnings at compile-time.
 
 Roslyn is currently under development and so far it had two public releases.
-Both were in the form of CTP (Community Technology Preview),
+Both were in the form of \ac{CTP},
 the first one from October 2011, the second one from June 2012.
 
-In the second CTP, the syntactic part of the library in completely implemented,
+In the second \ac{CTP}, the syntactic part of the library in completely implemented,
 so for example the syntax tree can represent any construct of C\#
 and any syntax tree can be translated to and from source code.
 On the other hand, the semantic part of the library is not fully implemented,
@@ -28,7 +28,7 @@ This includes “trivia”: parts of code that are not significant for the compi
 such as whitespace and comments.
 
 Trivia can also be “structured”, that is, it can form a small syntax tree of its own.
-An example of structured trivia are XML documentation comments,
+An example of structured trivia are \ac{XML} documentation comments,
 that can be used to provide documentation for a piece of code,
 which can then be automatically processed.
 
@@ -60,15 +60,15 @@ Roslyn syntax trees are immutable and can be created using factory methods from 
 And while not all elements of the syntax tree have to be specified (like braces of a property accessor list),
 creating a syntax tree can be quite cumbersome.
 
-The exact syntax for creating syntax trees changed between the two CTPs.
-In the October 2011 CTP, methods with many optional parameters were used.
-In the June 2012 CTP, the situation somewhat improved:
+The exact syntax for creating syntax trees changed between the two \acp{CTP}.
+In the October 2011 \ac{CTP}, methods with many optional parameters were used.
+In the June 2012 \ac{CTP}, the situation somewhat improved:
 the factory method now has parameters only for required children of the created node
 and optional child nodes can be added in a fluent manner using \lstinline{With*} methods.
 
 For an example of code to manually create the syntax tree from Figure~\ref{Syntax tree},
-see Figure~\ref{Roslyn code 2011} for the October 2011 CTP version and
-Figure~\ref{Roslyn code 2012} for the June 2012 CTP version.
+see Figure~\ref{Roslyn code 2011} for the October 2011 \ac{CTP} version and
+Figure~\ref{Roslyn code 2012} for the June 2012 \ac{CTP} version.
 
 \begin{figure}[p]
 
@@ -90,7 +90,7 @@ Syntax.PropertyDeclaration(
               Syntax.Token(SyntaxKind.SemicolonToken)))))
 \end{lstlisting}
 
-\caption{Sample code to manually create a Roslyn syntax tree \\ using October 2011 CTP}
+\caption{Sample code to manually create a Roslyn syntax tree \\ using October 2011 \ac{CTP}}
 \label{Roslyn code 2011}
 \end{figure}
 
@@ -113,6 +113,6 @@ Syntax.PropertyDeclaration(
             Syntax.Token(SyntaxKind.SemicolonToken)))))
 \end{lstlisting}
 
-\caption{Sample code to manually create a Roslyn syntax tree \\ using June 2012 CTP}
+\caption{Sample code to manually create a Roslyn syntax tree \\ using June 2012 \ac{CTP}}
 \label{Roslyn code 2012}
 \end{figure}

@@ -12,9 +12,9 @@ but there are also other improvements that could have larger impact on the usage
 \begin{itemize}
 \item \emph{F\# implementation}
 
-The upcoming version 3.0 of the .Net-based functional language F\# has its own alternative to LINQ,
+The upcoming version 3.0 of the .NET-based functional language F\# has its own alternative to \ac{LINQ},
 called query expressions.
-Query expressions use their own set of types, so they are incompatible with C\# LINQ,
+Query expressions use their own set of types, so they are incompatible with C\# \ac{LINQ},
 but they offer similar capabilities.
 Unlike C\#, they also support creating custom operators,
 which could provide better syntax for \lstinline{PagesSource} queries.
@@ -29,13 +29,13 @@ The current version of LinqToWiki is completely synchronous,
 which means there is always a thread blocked, while an application waits for a network response.
 Better support for asynchrony is the main feature of the upcoming C\# 5.0,
 but LinqToWiki could be made asynchronous even without it.
-This could be useful especially in GUI applications, where the main thread should not be blocked for long periods of time.
+This could be useful especially in \ac{GUI} applications, where the main thread should not be blocked for long periods of time.
 
 A big part of LinqToWiki is working with modules that return lists,
 but there is no single idiomatic way of representing asynchronous collections,
 with or without C\# 5.0 improvements.
 There are several possibilities, including a lazy collection of \lstinline{Task}s,
-Rx \lstinline{IObservable} or TPL Dataflow \lstinline{ISourceBlock}.
+\acs{Rx} \lstinline{IObservable} or \acs{TPL} Dataflow \lstinline{ISourceBlock}.
 
 Another way how asynchrony could be used in LinqToWiki is if the following page was being retrieved
 even before the user finished processing the preceding page.
@@ -50,7 +50,7 @@ including enhanced compile-time checking.
 
 In the case of LinqToWiki, this could be used to verify that queries that compile are actually correct.
 If not, a custom error would show in the list of errors.
-Such checking would be also useful for other LINQ providers, such as LINQ to SQL,
+Such checking would be also useful for other \acs{LINQ} providers, such as LINQ to SQL,
 but each provider has its own rules about what is an error and what is a correct query.
 
 % extensions?

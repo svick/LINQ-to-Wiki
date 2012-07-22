@@ -1,28 +1,28 @@
 \chapter*{Conclusion}
 \addcontentsline{toc}{chapter}{Conclusion}
 
-The goal of this work was to implement a C\# library to access the MediaWiki API
+The goal of this work was to implement a C\# library to access the MediaWiki \ac{API}
 in a way that is readable, discoverable, strongly-typed and flexible.
 
-These goals were successfully accomplished using a custom LINQ provider and code generation with Roslyn CTP:
+These goals were successfully accomplished using a custom \acs{LINQ} provider and code generation with Roslyn \ac{CTP}:
 
 \begin{itemize}
 \item Code written using LinqToWiki is readable:
 non-query modules are accessed using simple methods,
 with parameters usually given as named parameters of the method.
 
-Query modules use LINQ methods or LINQ query expressions,
+Query modules use \acs{LINQ} methods or \acs{LINQ} query expressions,
 which should be readable to any C\# programmer.
 Although the fact that even parameters that do not filter the results go into \lstinline{Where()} can be confusing.
 
-The syntax for \texttt{prop} modules, with LINQ queries inside \lstinline{Select()},
-usually following another LINQ query, can be quite complicated,
+The syntax for \texttt{prop} modules, with \acs{LINQ} queries inside \lstinline{Select()},
+usually following another \acs{LINQ} query, can be quite complicated,
 but we believe it describes the meaning of the code quite well,
 so it should still be fairly readable.
 
 \item The various actions possible through LinqToWiki are highly discoverable:
 every action begins in a single point – the \lstinline{Wiki} class.
-An IDE, such as Microsoft Visual Studio,
+An \ac{IDE}, such as Microsoft Visual Studio,
 can then show the user the available actions, along with their description,
 through autocompletion (called IntelliSense in Visual Studio).
 
@@ -34,7 +34,7 @@ This is because actual types with methods, method parameters and properties are 
 
 Thanks to this, the chance for user error when using this library is greatly lowered.
 
-\item The library is flexible: If some module in the API of a wiki changes
+\item The library is flexible: If some module in the \ac{API} of a wiki changes
 (which happens regularly), the library should be still usable.
 This is achieved by regenerating code for the wiki.
 
@@ -45,7 +45,7 @@ If the modules in several wikis differ, code can be generated for each wiki sepa
 \medskip
 
 Probably the biggest difference between the original goal and the final library is naming.
-Names of types, methods, method parameters and properties should follow the .Net naming guidelines,
-but this was not done, because we could not separate names from the API into words.
+Names of types, methods, method parameters and properties should follow the .NET naming guidelines,
+but this was not done, because we could not separate names from the \ac{API} into words.
 
 %TODO some asctual conclusion?

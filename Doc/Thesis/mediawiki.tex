@@ -1,7 +1,7 @@
 \sectionnobreak{MediaWiki API}
 
 MediaWiki is an open source wiki system.
-It is written in the PHP programming language and uses a relational database to store its data, usually MySQL.
+It is written in the \acs{PHP} programming language and uses a relational database to store its data, usually MySQL.
 It is maintained by the Wikimedia Foundation, who also runs some of the biggest wikis, including Wikipedia and Wiktionary.
 It is also used by many others, including Wikia, who runs many small wikis for various interests and
 the unofficial wiki of the Faculty of Mathematics and Physics, $\upomega\upiota\upkappa\upiota$.matfyz.cz.
@@ -9,7 +9,7 @@ the unofficial wiki of the Faculty of Mathematics and Physics, $\upomega\upiota\
 \medskip
 
 There are several ways to programmatically access the database of some MediaWiki wiki.
-First, it's possible to directly access the database using SQL.
+First, it's possible to directly access the database using \ac{SQL}.
 This usually requires access to the server that runs the database, so it's not available in many cases.
 For Wikimedia wikis, a read-only access to most data, but excluding article texts,
 is available for registered users of Toolserver, run by Wikimedia Deutschland.
@@ -19,12 +19,12 @@ dumps of some tables of the wikis. Their disadvantages are that the newest dump 
 and that the files can be huge, which is impractical for getting information about a small number of pages.
 
 Last, but not least, is the MediaWiki API \cite{mediawiki-api}.
-It can be used to remotely access any MediaWiki wiki (unless the API is disabled in the configuration)
-using the HTTP protocol.
+It can be used to remotely access any MediaWiki wiki (unless the \ac{API} is disabled in the configuration)
+using \ac{HTTP}.
 
 \medskip
 
-Parameters for an API request are given in the query string of a GET request or in the body of a POST request
+Parameters for an \ac{API} request are given in the query string of a GET request or in the body of a POST request
 (modules that perform modifications require the use of POST).
 The body of the POST request is usually formatted as \path{application/x-www-form-urlencoded},
 but file uploads require the use of \path{multipart/form-data}.
@@ -43,7 +43,7 @@ whether it should be ascending or descending.
 \item The \texttt{sort} parameter decides which property will be used to order the results of the query.
 \end{itemize}
 
-The response can be in one of the several available formats, the most widely used ones are XML and JSON.
+The response can be in one of the several available formats, the most widely used ones are \ac{XML} and \ac{JSON}.
 
 The representation of most data types in the response is nothing unusual:
 \texttt{string}s are formatted as strings, \texttt{integer}s as decimal numbers,
@@ -59,7 +59,7 @@ an error is returned, without any results.
 
 \medskip
 
-The API is divided into modules and there are two kinds of modules:
+The \ac{API} is divided into modules and there are two kinds of modules:
 “normal” modules (called “non-query modules” in this work) and query modules.
 
 Non-query modules are usually used to perform some action.
@@ -90,9 +90,9 @@ For example, the prefix for the \texttt{categorymembers} module is \texttt{cm}.
 So, setting its \texttt{limit} parameter to the value of~5 can be achieved by
 adding \texttt{cmlimit=5} to the query string of a GET request or to the body of a POST request.
 
-The API is also extensible: MediaWiki extensions can add their own modules and modify some behavior of existing modules.
+The \ac{API} is also extensible: MediaWiki extensions can add their own modules and modify some behavior of existing modules.
 
-An example of an API request URI and a response in the XML format is in Figure \ref{API example}.
+An example of an \ac{API} request \ac{URL} and a response in the \ac{XML} format is in Figure \ref{API example}.
 
 \begin{figure}[htbp]
 \texttt{http://en.wikipedia.org/w/api.php}~\texttt{?}\
@@ -123,14 +123,14 @@ An example of an API request URI and a response in the XML format is in Figure \
 </api>
 \end{lstlisting}
 
-\caption{Example of API request and response}
+\caption{Example of \ac{API} request and response}
 \label{API example}
 \end{figure}
 
 \subsection{Paging}
 \label{mw paging}
 
-Because the results of the API queries can contain thousands and sometimes even millions of entries,
+Because the results of the \ac{API} queries can contain thousands and sometimes even millions of entries,
 the responses are limited.
 For most modules, the default limit (when it is not specified as a parameter) is ten entries per page
 and the default maximum is 500~entries for normal users.
@@ -147,7 +147,7 @@ The advantage of this system when compared with the conventional paging systems 
 or using numeric offsets is that it avoids missing entries and duplicates when the result
 changes while retrieving the pages.
 
-The API has no notion of transactions, so it is not possible to get fully consistent results
+The \ac{API} has no notion of transactions, so it is not possible to get fully consistent results
 that would correspond to an exact moment in time.
 But thanks to this paging system, one can be certain that an entry that should be in the result set
 during retrieving of all of the pages will actually be present in the result set exactly once.

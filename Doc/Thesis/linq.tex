@@ -1,15 +1,15 @@
 \section{LINQ and expression trees}
 
-LINQ, short for Language Integrated Query, is a feature of the C\# programming language%
-\footnote{Visual Basic .Net also supports LINQ, with slightly different syntax
+\acs{LINQ}, short for Language Integrated Query, is a feature of the C\# programming language%
+\footnote{\ac{VB.NET} also supports \ac{LINQ}, with slightly different syntax
 and capabilities, but uses the same types.}
-and the .Net framework that can be used for querying of various data sources
+and the .NET Framework that can be used for querying of various data sources
 and appeared in the version 3.0 of the language \cite{cs-in-depth}.
 It uses higher-order functions and lambda expressions to achieve a readable declarative syntax.
 
-LINQ consists of a set of so called “standard query operators”:
+\ac{LINQ} consists of a set of so called “standard query operators”:
 methods that are used to perform the query operations on a given source.
-Also, a special syntax (called “query expressions”), similar to SQL queries, is available
+Also, a special syntax (called “query expressions”), similar to \ac{SQL} queries, is available
 for some of those operators.
 The compiler translates a query expression into a set of calls to standard query operators,
 using lambda expressions and anonymous types.
@@ -48,9 +48,9 @@ allProducts
 
 The parameter~\lstinline,t, is called “transparent identifier”. It is used to transfer a set of variables from one method call to another.
 
-The LINQ library also contains methods that do not have a corresponding representation in query expressions. Some examples of those are \lstinline,Aggregate(),, \lstinline,Sum(), and \lstinline,ToList(),.
+The \ac{LINQ} library also contains methods that do not have a corresponding representation in query expressions. Some examples of those are \lstinline,Aggregate(),, \lstinline,Sum(), and \lstinline,ToList(),.
 
-Many of the basic query operators also correspond to a well-known higher-order functions from functional programming. See Figure \ref{LINQ methods} for comparison of some of the LINQ query operators, query expression clauses, and higher-order functions.
+Many of the basic query operators also correspond to a well-known higher-order functions from functional programming. See Figure \ref{LINQ methods} for comparison of some of the \ac{LINQ} query operators, query expression clauses, and higher-order functions.
 
 \begin{figure}[htbp]
 \begin{tabular}{lll}
@@ -67,7 +67,7 @@ query operator & query expression clause & higher-order function \\
 \lstinline,ToList(), \\
 \end{tabular}
 
-\caption{Comparison between LINQ query operators, query expression clauses, and higher-order functions}
+\caption{Comparison between \ac{LINQ} query operators, query expression clauses, and higher-order functions}
 \label{LINQ methods}
 \end{figure}
 
@@ -75,14 +75,14 @@ Usually, lambda expressions are compiled into normal methods and passed to the q
 (which are similar to function pointers in~C or first-class functions in functional languages).
 But this would not be suitable for querying of sources that are not in-memory collections.
 This is because the query has to be translated into another form,
-like an SQL query or a set of parameters for the MediaWiki API.
+like an \ac{SQL} query or a set of parameters for the MediaWiki \ac{API}.
 
 Because of this, a lambda expression in C\# can be also compiled into another form:
 an expression tree.
 Expression tree is an object that represents the given lambda expression
 in a form similar to an abstract syntax tree.
 This object can be programmatically accessed and manipulated,
-which allows translation of LINQ queries into other forms, such as SQL queries.
+which allows translation of \ac{LINQ} queries into other forms, such as \ac{SQL} queries.
 An expression tree can also be compiled into a delegate.
 
 For an example of an expression tree, see Figure \ref{Expression tree}.
@@ -102,20 +102,20 @@ For an example of an expression tree, see Figure \ref{Expression tree}.
 \label{Expression tree}
 \end{figure}
 
-The .Net framework contains two implementations of the query expression pattern:
+The .NET Framework contains two implementations of the query expression pattern:
 the interfaces \lstinline,IEnumerable<T>, and \lstinline,IQueryable<T>,.
-This means that any object that implements one of these two interfaces can be used in a LINQ query.
+This means that any object that implements one of these two interfaces can be used in a \ac{LINQ} query.
 
 These two types implement the query expression pattern completely,
-so they can be used with any LINQ operator.
+so they can be used with any \ac{LINQ} operator.
 Other custom types can implement only part of the query expression pattern,
-which would mean only a subset of the LINQ operators are available for such types.
+which would mean only a subset of the \ac{LINQ} operators are available for such types.
 
 The \lstinline,IEnumerable<T>, interface usually represents an in-memory collection,
-so its implementation of the LINQ operators use delegates.
+so its implementation of the \ac{LINQ} operators use delegates.
 The \lstinline,IQueryable<T>, interface is usually used to represent a remote collection
 (such as a table in a relational database),
-so its version of the LINQ operators use expression trees.
+so its version of the \ac{LINQ} operators use expression trees.
 
 The \lstinline,IQueryable<T>, interface doesn't perform any translation of expression trees
 into the target query language.

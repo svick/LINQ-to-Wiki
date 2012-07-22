@@ -6,3 +6,5 @@
 *.nav
 *.snm
 *.vrb
+*.lof
+*/img/*.pdf
