@@ -1,18 +1,24 @@
 \sectionnobreak{MediaWiki API}
 
-MediaWiki is an open source wiki system.
-It is written in the \acs{PHP} programming language and uses a relational database to store its data, usually MySQL.
-It is maintained by the Wikimedia Foundation, who also runs some of the biggest wikis, including Wikipedia and Wiktionary.
+MediaWiki \cite{mediawiki} is an open source wiki system.
+It is written in the \acs{PHP} programming language and uses a relational database to store its data,
+usually MySQL.
+It is maintained by the Wikimedia Foundation,
+who also runs some of the biggest wiki sites (or “wikis” for short),
+including Wikipedia and Wiktionary.
 It is also used by many others, including Wikia, who runs many small wikis for various interests and
 the unofficial wiki of the Faculty of Mathematics and Physics, $\upomega\upiota\upkappa\upiota$.matfyz.cz.
 
 \medskip
 
 There are several ways to programmatically access the database of some MediaWiki wiki.
-First, it's possible to directly access the database using \ac{SQL}.
-This usually requires access to the server that runs the database, so it's not available in many cases.
-For Wikimedia wikis, a read-only access to most data, but excluding article texts,
-is available for registered users of Toolserver, run by Wikimedia Deutschland.
+First, it is possible to directly access the database using \ac{SQL}.
+This usually requires access to the server that runs the database, so it is not available in many cases.
+For Wikimedia wikis, this data is accessible through the Toolserver.
+The Toolserver is a cluster of servers that contains replicated read-only databases of Wikimedia wikis,
+primarily for use by various tools.
+These copies of the databases do not contain article texts.
+The Toolserver is run by Wikimedia Deutschland.
 
 Mostly specific to Wikimedia wikis is also another option: database dumps. These are files that contain
 dumps of some tables of the wikis. Their disadvantages are that the newest dump is usually several days or weeks old
@@ -38,17 +44,17 @@ There are some parameters that are common to many modules:
 \item The \texttt{prop} parameter is used to determine what properties will be present in the response.
 The values of this parameter don't map directly to the properties of the response,
 so for example specifying \texttt{prop=ids} might cause the property \texttt{pageid} to appear in the result.
+\item The \texttt{sort} parameter decides which property will be used to order the results of the query.
 \item The \texttt{dir} parameter is used to determine the order of the results:
 whether it should be ascending or descending.
-\item The \texttt{sort} parameter decides which property will be used to order the results of the query.
 \end{itemize}
 
 The response can be in one of the several available formats, the most widely used ones are \ac{XML} and \ac{JSON}.
 
-The representation of most data types in the response is nothing unusual:
+The representation of most data types in the response is standard:
 \texttt{string}s are formatted as strings, \texttt{integer}s as decimal numbers,
 \texttt{timestamp}s are formatted according to ISO 8601.
-Only \texttt{boolean}s have a possibly unexpected representation:
+Only \texttt{boolean}s have an unexpected representation:
 if the property is \texttt{false}, it is not present in the result at all,
 and if its value is \texttt{true}, it is represented as an empty string.
 
@@ -164,6 +170,7 @@ To retrieve the next set of items from the generator, one has to use the \texttt
 To retrieve the next set of results for the items from the first result,
 one has to use the \texttt{query-continue} for the \texttt{prop} module (called “secondary paging” here).
 
+\needspace{3\baselineskip}
 For an example, see Figure \ref{paging}.
 It shows how the paging might work when using the \texttt{allpages} module as a generator,
 together with the \texttt{prop} module \texttt{categories}.
@@ -266,27 +273,28 @@ The situation is even more complicated with the \texttt{prop} module \texttt{rev
 It can be used to retrieve information about revisions of pages, including their text
 and it is the only module that can be used to get the text of a set of pages.
 
-For other modules, when no \texttt{limit} parameter is specified, a default value is used (usually 10)
-and a \texttt{query-continue} element is present in the response, to access the remaining items.
-
-But for the \texttt{revisions} module, not specifying the \texttt{limit} parameter means that only the most
+For this module, not specifying the \texttt{limit} parameter means that only the most
 recent revision will be shown and no \texttt{query-continue} will be present.
 Also, when \texttt{limit} is specified, the module can operate only on one page at a time,
 so for example one has to set the \texttt{limit} of a module used as a generator to~1.
 
+But for other modules, when no \texttt{limit} parameter is specified, a default value is used (usually 10)
+and a \texttt{query-continue} element is present in the response, to access the remaining items.
+
 \subsection{The \texttt{paraminfo} module}
 \label{paraminfo}
 
-A special importance for this work has the \texttt{meta} query module \texttt{paraminfo}.
-This module can be used to retrieve information about modules,
+The \texttt{meta} query module \texttt{paraminfo} is of a special importance for this work.
+It can be used to retrieve information about modules,
 which is necessary for generating code to access those modules in a static fashion.
 
-Before this work, the \texttt{paraminfo} module provided some general information about the module
-and, most importantly, information about parameters, their data types and a short description,
-useful as a documentation for the generated code.
+Prior to an improvement implemented in our work,
+the \texttt{paraminfo} module provided only general information about the module
+and, most importantly, information about parameters, their data types and a short description.
 
 The data type of a parameter is either a simple type (e.g. \texttt{integer} or \texttt{string}),
 or an enumeration of possible values.
+And the description is useful as a documentation for the generated code.
 
 A shortened example of a response from the \texttt{paraminfo} module
 for the \texttt{categorymembers} module is in Figure~\ref{paraminfo sample}.

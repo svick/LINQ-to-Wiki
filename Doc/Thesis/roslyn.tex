@@ -5,7 +5,7 @@ Microsoft Roslyn is a new implementation of the C\# compiler written in C\#
 (and a \ac{VB.NET} compiler written in \ac{VB.NET}) \cite{roslyn}.
 Its main distinguishing characteristic is that it is “open”:
 it can be used for example to convert between text and a syntax tree,
-to manipulate the syntax tree or to interrogate semantic information.
+to manipulate the syntax tree or to retrieve semantic information.
 
 It also integrates itself into the Microsoft Visual Studio \ac{IDE},
 where it can be used to perform
@@ -19,7 +19,7 @@ In the second \ac{CTP}, the syntactic part of the library in completely implemen
 so for example the syntax tree can represent any construct of C\#
 and any syntax tree can be translated to and from source code.
 On the other hand, the semantic part of the library is not fully implemented,
-which means that for example some syntax trees won't successfully compile,
+which means that for example some syntax trees will not successfully compile,
 even if they represent valid C\# code.
 
 Because of its close relation with Visual Studio,

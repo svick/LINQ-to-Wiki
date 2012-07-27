@@ -1,19 +1,22 @@
 \chapter{Problem analysis}
 \label{goal}
 
-The goal of the LinqToWiki library is to be able to express requests to the MediaWiki \ac{API}
+The goal of the LinqToWiki library is to be able to express requests using the MediaWiki \ac{API}
 in a way that is readable, discoverable, checked by the compiler for correctness as much as possible and also flexible with regards to changes.
 
 This is achieved by generating classes specific for each module and using them in LINQ queries.
 
-The two most commonly used variants of \ac{LINQ} are LINQ to Objects, and various versions of LINQ for \ac{SQL} databases.
+\paragraph{Querying data in C\#}
+
+\ac{LINQ} is a way of querying various data sources from the C\# language.
+The two most commonly used variants are LINQ to Objects, and various versions of LINQ for \ac{SQL} databases.
 LINQ to Objects is used for querying in-memory data, like arrays.
 There are several widely-used libraries for accessing \ac{SQL} databases using LINQ, including LINQ to SQL, LINQ to Entities and NHibernate.
 
 In all versions of \ac{LINQ}, the queries look the same. For example:
 
 \begin{lstlisting}
-from product in allProducts
+from product in products
 where product.Price > 500
    && product.InStock
 join category in categories on product.Category equals category
@@ -25,26 +28,28 @@ A query like this is translated into a sequence of method calls that take their 
 For example, the \lstinline{where} part of the above query is translated into:
 
 \begin{lstlisting}
-Where(product => product.Price > 500 && product.InStock)
+products.Where(product => product.Price > 500 && product.InStock)
 \end{lstlisting}
 
 The commonalities between LINQ to Objects and SQL LINQ libraries are that the full range of operators is available
 and that all properties of the queried type are available in all of them.
 
+\paragraph{Querying MediaWIki}
+
 The situation with the MediaWiki \ac{API} is different in several ways:
 
 \begin{enumerate}
-\item It doesn't support queries represented by many of the LINQ operators, including \lstinline{join} and \lstinline{group by}.
-\item Some of the modules don't support sorting, some do. Of those that do support sorting, some allow specifying the sort key, others only direction.
+\item It does not support queries represented by many of the LINQ operators, including \lstinline{join} and \lstinline{group by}.
+\item Some of the modules do not support sorting, some do. Of those that do support sorting, some allow specifying the sort key, others only the direction.
 \item The sets of properties that are available for filtering, sorting and selecting are all different.
 \item There are modules used for queries about a set of pages. Those pages can be from a hard-coded list or a result from some other module.
-\item There are also parameters that don't fit into the LINQ model well. Some of them are required, some are not.
+\item There are also parameters that do not fit into the LINQ model well. Some of them are required, some are not.
 \end{enumerate}
 
 The goal is to be able to represent all valid queries, while invalid queries should cause a compile-time error.
 
 Specifically, unsupported operators (like \lstinline{join} and \lstinline{group by}) should cause an error for all modules,
-while the \lstinline{orderby} clause should cause an error only for the modules that don't support sorting.
+while the \lstinline{orderby} clause should cause an error only for the modules that do not support sorting.
 
 Also, all operators should support only those properties that are actually supported by the \ac{API}.
 So, for example for the \verb,blocks, module, the following query should compile and execute fine:
@@ -56,7 +61,13 @@ orderby block descending
 select block.ById
 \end{lstlisting}
 
-While the following query should cause three errors:
+This is because
+\begin{compactitem}
+\item limiting the query by the blocked \ac{IP} address,
+\item sorting without specifying the key and
+\item selecting the ID of the user who performed the block
+\end{compactitem}
+are all allowed, while the following query should cause three errors:
 
 \begin{lstlisting}
 from block in wiki.Blocks()
@@ -65,6 +76,12 @@ orderby block.Expiry descending
 select block.Ip
 \end{lstlisting}
 
-This is because limiting the query by the blocked \ac{IP} address, sorting without specifying the key and selecting the ID of the user who performed the block are all allowed.
-On the other hand, limiting by the ID of the user who performed the block, sorting by the expiration date and selecting the \ac{IP} address are all impossible.
-(Actually selecting the \ac{IP} address of the blocked user is possible, but the information is contained in properties with different names.)
+Here,
+\begin{compactitem}
+\item limiting by the ID of the user who performed the block,
+\item sorting by the expiration date and
+\item selecting the \ac{IP} address
+\end{compactitem}
+are all impossible.
+(Actually selecting the \ac{IP} address of the blocked user is possible,
+but the information is contained in properties with different names.)

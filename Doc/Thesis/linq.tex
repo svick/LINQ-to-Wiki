@@ -3,7 +3,7 @@
 \acs{LINQ}, short for Language Integrated Query, is a feature of the C\# programming language%
 \footnote{\ac{VB.NET} also supports \ac{LINQ}, with slightly different syntax
 and capabilities, but uses the same types.}
-and the .NET Framework that can be used for querying of various data sources
+and the .NET Framework that can be used for querying various data sources
 and appeared in the version 3.0 of the language \cite{cs-in-depth}.
 It uses higher-order functions and lambda expressions to achieve a readable declarative syntax.
 
@@ -14,7 +14,7 @@ for some of those operators.
 The compiler translates a query expression into a set of calls to standard query operators,
 using lambda expressions and anonymous types.
 
-Anonymous types are types that don't have to be explicitly declared;
+Anonymous types are types that do not have to be explicitly declared;
 they are used in similar situations as tuples in functional programming.
 An instance of an anonymous type is created by using the \lstinline{new} keyword
 without specifying the type of the object to create.
@@ -24,7 +24,7 @@ For example the following query expression (as seen in Chapter \ref{goal}):
 \nopagebreak
 
 \begin{code}
-from product in allProducts
+from product in products
 where product.Price > 500
    && product.InStock
 join category in categories on product.Category equals category
@@ -35,7 +35,7 @@ select product.Name
 Is translated into the following method calls:
 
 \begin{code}
-allProducts
+products
     .Where(product => product.Price > 500 && product.InStock)
     .Join(
         categories,
@@ -54,20 +54,22 @@ Many of the basic query operators also correspond to a well-known higher-order f
 
 \begin{figure}[htbp]
 \begin{tabular}{lll}
-query operator & query expression clause & higher-order function \\
+query operator & query expression clause & functional name \\
+\hline
 \lstinline,Select(), & \lstinline,select,, \lstinline,let, & map \\
 \lstinline,Where(), & \lstinline,where, & filter \\
 \lstinline,SelectMany(), & second and following \lstinline,from, & bind \\
 \lstinline,Aggregate(), & & fold \\
 \lstinline,Join(), & \lstinline,join, & \\
-\lstinline,OrderBy(),,\cr \lstinline,OrderByDescending(), & \lstinline,orderby, & \\
+\lstinline,OrderBy(),,\cr \lstinline,OrderByDescending(), & \lstinline,orderby, & sort \\
 \lstinline,GroupBy(), & \lstinline,group by, & \\
 \lstinline,Sum(), \\
-\lstinline,First(), \\
+\lstinline,First(), & & head \\
 \lstinline,ToList(), \\
 \end{tabular}
 
-\caption{Comparison between \ac{LINQ} query operators, query expression clauses, and higher-order functions}
+\caption{Comparison between \ac{LINQ} query operators, query expression clauses
+and functions in functional languages}
 \label{LINQ methods}
 \end{figure}
 
@@ -117,9 +119,9 @@ The \lstinline,IQueryable<T>, interface is usually used to represent a remote co
 (such as a table in a relational database),
 so its version of the \ac{LINQ} operators use expression trees.
 
-The \lstinline,IQueryable<T>, interface doesn't perform any translation of expression trees
+The \lstinline,IQueryable<T>, interface does not perform any translation of expression trees
 into the target query language.
-What it does is to combine the whole query into one expression tree,
+Instead, it combines the whole query into one expression tree,
 which is then passed to an implementation of \lstinline,IQueryProvider,.
 
 The query provider is then responsible for processing the expression tree
