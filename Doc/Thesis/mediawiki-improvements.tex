@@ -5,10 +5,11 @@ As mentioned in Section~\ref{paraminfo}, to generate types for each module of th
 it is necessary to know the properties contained in the module response
 and how do they map to the values of the \texttt{prop} parameter.
 
-Because this information was not available, as a part of this work,
-the \texttt{paraminfo} module was extended to be able to provide information about result properties
+This information was not available, in MediaWiki previously.
+For this reason, we extended the \texttt{paraminfo} module
+to be able to provide information about result properties
 of the \ac{API} modules, using the same type system already used to describe parameters.
-Also, most of the \ac{API} modules were changed so that they can provide this information to the \texttt{paraminfo} module.
+Also, most of the \ac{API} modules were changed so that they provide this information to the \texttt{paraminfo} module.
 
 Of the 73~modules present in the MediaWiki core (that is, without any extensions),
 5 are not suitable for having their result properties described,
@@ -19,8 +20,8 @@ There are also 17 modules that can be partially represented using this type syst
 
 The patch that adds this ability to the \texttt{paraminfo} module and the necessary
 information to most other modules was reviewed by MediaWiki developers and merged into the official repository
-on 12 June.
-On 2 July, MediaWiki version 1.20wmf6, which includes changes from this patch, was deployed to all Wikimedia sites, including Wikipedias.
+on 12 June 2012.
+On 2 July 2012, MediaWiki version 1.20wmf6, which includes changes from this patch, was deployed to all Wikimedia sites, including Wikipedias.
 
 An example of the added result information to the \texttt{paraminfo} response (here for the \texttt{categorymembers} module) is in Figure~\ref{paraminfo props}.
 
@@ -84,4 +85,4 @@ We also submitted eight additional patches to the MediaWiki code review system.
 Although only three of them actually fix behavior of the MediaWiki \ac{API},
 the rest are only fixes in documentation and other mostly insignificant changes.
 Of those three patches, one is still waiting for review, because it is a breaking change,
-and most likely won't be accepted.
+and most likely will not be accepted.

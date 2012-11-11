@@ -40,15 +40,15 @@ There are some decisions that were already made in LinqToWiki.Core
 the \texttt{prop} parameter maps to \lstinline{Select()}),
 but several other decisions still remain:\footnote{
 Obviously, both libraries were written alongside each other, to work well together, not one after the other.
-But we think it's better to describe them this way, separately.}
+But we think it is better to describe them this way, separately.}
 
 \begin{itemize}
 \item How should the remaining parameters be mapped?
 Should they all go into \lstinline{Where()} or somewhere else? Where?
-\item How should the modules that don't return lists be mapped?
+\item How should the modules that do not return lists be mapped?
 \ac{LINQ} methods are not suitable for them, because they are meant to work with collections.
 \item How to name the generated types and members?
-Specifically, how to represent names that can't be used (like those containing special characters)
+Specifically, how to represent names that cannot be used (like those containing special characters)
 and names that are undesirable (those that conflict with C\# keywords).
 Also, should the generated members follow .NET naming conventions?
 \end{itemize}
@@ -56,6 +56,7 @@ Also, should the generated members follow .NET naming conventions?
 Our answers to these questions are in the following couple of sections.
 
 \subsection{Naming of generated types and members}
+\label{ltwc-naming}
 
 Let us start with the last question: Should the generated members follow .NET naming conventions?
 The .NET naming guidelines \cite{guidelines-for-names},
@@ -115,7 +116,7 @@ Such value is then represented by the identifier \lstinline{none}.
 \medskip
 
 Another question is how to name the generated types.
-There two kinds of generated types:
+There are two kinds of generated types:
 those that represent some enumerated type and those that represent parameters or results of some module.
 
 For the latter kind, it is simple to come up with a convention like naming them by the module name,
@@ -137,7 +138,7 @@ But names like \lstinline{token5} are not very helpful for the user.
 
 Because of that, we chose the other option, which means including the name of the module in the type name.
 But doing it this way does not eliminate conflicts completely:
-In the case when a module has a parameter and a property with the name,
+In the case when a module has a parameter and a property with the same name,
 their types still have to be distinguished.
 An example of such type name is \lstinline{recentchangestype2}.
 
@@ -182,8 +183,9 @@ of the \texttt{categorymembers} module belongs here.
 
 The first two kinds are not a problem, because it is clear which parameters belong to them.
 The second two kinds are a problem, because there is no clear way to automatically distinguish between the two.
-One exception is if a parameter is required (as indicated in its description),
-then it means it belongs to the other parameters.
+One exception, where the distinction is clear,
+is if a parameter is required (as indicated in its description),
+because it then means it belongs among “other parameters”.
 
 Required parameters are given as parameters of the module methods,
 but we decided to treat all non-required parameters that do not belong to the first two kinds,
@@ -198,7 +200,7 @@ wiki.Query.categorymembers()
     .Where(cm => cm.title == "Category:Query languages")
 \end{lstlisting}
 
-There, the \lstinline{title} property does not actually represent filtering
+Here, the \lstinline{title} property does not actually represent filtering
 by the title of the category member, it decides which category to enumerate.
 And without it, the query would not even execute successfully
 (the parameter \texttt{title} is not marked as required, because the parameter \texttt{pageid} can be used instead of it).
