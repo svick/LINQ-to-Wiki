@@ -20,6 +20,14 @@
 	\sectionnobreak{#1}
 }
 
+\makeatletter
+\renewcommand{\paragraph}{%
+  \@startsection{paragraph}{4}%
+  {\z@}{1.5ex \@plus 1ex \@minus .2ex}{-1em}%
+  {\normalfont\normalsize\bfseries}%
+}
+\makeatother
+
 \usepackage[utf8]{inputenc}
 
 %% Ostatní balíčky

@@ -19,6 +19,8 @@ they are used in similar situations as tuples in functional programming.
 An instance of an anonymous type is created by using the \lstinline{new} keyword
 without specifying the type of the object to create.
 
+\paragraph{Query translation}
+
 For example the following query expression (as seen in Chapter \ref{goal}):
 
 \nopagebreak
@@ -50,6 +52,8 @@ The parameter~\lstinline,t, is called “transparent identifier”. It is used t
 
 The \ac{LINQ} library also contains methods that do not have a corresponding representation in query expressions. Some examples of those are \lstinline,Aggregate(),, \lstinline,Sum(), and \lstinline,ToList(),.
 
+\paragraph{Relationship with functional programming}
+
 Many of the basic query operators also correspond to well-known higher-order functions from functional programming. See Figure \ref{LINQ methods} for comparison of some of the \ac{LINQ} query operators, query expression clauses, and higher-order functions.
 
 \begin{figure}[htbp]
@@ -72,6 +76,8 @@ query operator & query expression clause & functional name \\
 and functions in functional languages}
 \label{LINQ methods}
 \end{figure}
+
+\paragraph{Expression trees}
 
 Usually, lambda expressions are compiled into normal methods and passed to the query operator methods as delegates
 (which are similar to function pointers in~C or first-class functions in functional languages).
@@ -103,6 +109,8 @@ For an example of an expression tree, see Figure \ref{Expression tree}.
 {The body of the expression tree for the lambda expression \lstinline,product => product.Price > 500 && product.InStock,}
 \label{Expression tree}
 \end{figure}
+
+\paragraph{Implementing the LINQ pattern}
 
 The .NET Framework contains two implementations of the query expression pattern:
 the interfaces \lstinline,IEnumerable<T>, and \lstinline,IQueryable<T>,.
