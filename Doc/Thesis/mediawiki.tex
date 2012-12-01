@@ -182,8 +182,8 @@ The \texttt{query-continue} elements are not shown in the figure.
 \begin{center}
 \begin{tikzpicture}
 \path (0,12) node(11) {
-\begin{minipage}{150pt}
-\begin{lstlisting}[language=xml,frame=single]
+\begin{adjustbox}{minipage=150pt,fbox}
+\begin{lstlisting}[language=xml]
 <query>
   <pages>
     <page title="A" />
@@ -196,10 +196,10 @@ The \texttt{query-continue} elements are not shown in the figure.
   </pages>
 </query>
 \end{lstlisting}
-\end{minipage}
+\end{adjustbox}
 } (7,12) node(12) {
-\begin{minipage}{150pt}
-\begin{lstlisting}[language=xml,frame=single]
+\begin{adjustbox}{minipage=150pt,fbox}
+\begin{lstlisting}[language=xml]
 <query>
   <pages>
     <page title="A">
@@ -212,12 +212,12 @@ The \texttt{query-continue} elements are not shown in the figure.
   </pages>
 </query>
 \end{lstlisting}
-\end{minipage}
+\end{adjustbox}
 } (11,12) node(13) {\dots};
 
 \path (0,4) node(21) {
-\begin{minipage}{150pt}
-\begin{lstlisting}[language=xml,frame=single]
+\begin{adjustbox}{minipage=150pt,fbox}
+\begin{lstlisting}[language=xml]
 <query>
   <pages>
     <page title="C">
@@ -230,10 +230,10 @@ The \texttt{query-continue} elements are not shown in the figure.
   </pages>
 </query>
 \end{lstlisting}
-\end{minipage}
+\end{adjustbox}
 } (7,4) node(22) {
-\begin{minipage}{150pt}
-\begin{lstlisting}[language=xml,frame=single]
+\begin{adjustbox}{minipage=150pt,fbox}
+\begin{lstlisting}[language=xml]
 <query>
   <pages>
     <page title="C">
@@ -249,18 +249,17 @@ The \texttt{query-continue} elements are not shown in the figure.
   </pages>
 </query>
 \end{lstlisting}
-\end{minipage}
+\end{adjustbox}
 };
 
 \path (0,0) node(31) {\dots};
 
-\draw[->] (11) -- (12);
-\draw[->] (12) -- (13);
-\draw[->] (11) -- (21);
-\draw[->] (21) -- (22);
-\draw[->] (21) -- (31);
+\draw[-triangle 45] (11) -- (12);
+\draw[-triangle 45] (12) -- (13);
+\draw[-triangle 45] (11) -- (21);
+\draw[-triangle 45] (21) -- (22);
+\draw[-triangle 45] (21) -- (31);
 
-%TODO: divné mezery
 \end{tikzpicture}
 \end{center}
 
