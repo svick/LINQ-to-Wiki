@@ -14,8 +14,8 @@ namespace LinqToWiki.Samples
             var wiki = new Wiki("en.wikipedia.org", "/w/api.php");
             // Login(wiki, "username", "password");
 
-            Compare(wiki);
-            // Categories(TitlePages(wiki));
+            UserContribs(wiki);
+            //Revisions(AllPagesSource(wiki));
         }
 
         #region Simple methods
@@ -35,7 +35,7 @@ namespace LinqToWiki.Samples
         private static void Delete(Wiki wiki)
         {
             string token = wiki.tokens(new[] { tokenstype.delete }).deletetoken;
-            wiki.delete("Test", token: token);
+            wiki.delete(token, "Test");
         }
 
         private static void Edit(Wiki wiki)
@@ -131,7 +131,7 @@ namespace LinqToWiki.Samples
 
             Console.WriteLine(recentChange);
 
-            var result = wiki.patrol(recentChange.rcid, recentChange.patroltoken);
+            var result = wiki.patrol(recentChange.patroltoken, recentChange.rcid);
 
             Console.WriteLine(result);
         }
@@ -140,7 +140,7 @@ namespace LinqToWiki.Samples
         {
             var token = wiki.tokens(new[] { tokenstype.protect }).protecttoken;
 
-            var result = wiki.protect(new[] { "edit=autoconfirmed", "move=sysop" }, "Test", token: token);
+            var result = wiki.protect(token, new[] { "edit=autoconfirmed", "move=sysop" }, "Test");
             Console.WriteLine(result);
         }
 
@@ -199,9 +199,9 @@ namespace LinqToWiki.Samples
         {
             var token = wiki.tokens(new[] { tokenstype.edit }).edittoken;
             var result = wiki.upload(
+                token,
                 "Flower.jpeg",
-                url: "http://upload.wikimedia.org/wikipedia/commons/4/4e/Hymensoporum_flavum_flowers.jpg",
-                token: token);
+                url: "http://upload.wikimedia.org/wikipedia/commons/4/4e/Hymensoporum_flavum_flowers.jpg");
 
             Console.WriteLine(result);
         }
@@ -209,7 +209,7 @@ namespace LinqToWiki.Samples
         private static void Watch(Wiki wiki)
         {
             var token = wiki.tokens(new[] { tokenstype.watch }).watchtoken;
-            var result = wiki.watch("Test", false, token);
+            var result = wiki.watch(token, "Test", false);
             Console.WriteLine(result);
         }
 
@@ -399,14 +399,12 @@ namespace LinqToWiki.Samples
 
         private static void Revisions(PagesSource<Page> pages)
         {
-            var source = pages.Select(p => PageResult.Create(p.info, p.revisions().ToEnumerable()))
-                .ToEnumerable();
+	        var source =
+		        pages.Select(
+			        p =>
+			        PageResult.Create(p.info, p.revisions().OrderBy(r => r).Select(r => r.user).ToEnumerable().First()))
+			        .ToEnumerable();
             Write(source);
-
-            var pageTexts = pages.Select(p => p.revisions().Select(r => r.value).FirstOrDefault())
-                .ToEnumerable()
-                .Take(3);
-            Write(pageTexts);
         }
 
         private static void Templates(PagesSource<Page> pages)
@@ -665,12 +663,11 @@ namespace LinqToWiki.Samples
         private static void UserContribs(Wiki wiki)
         {
             var result = from uc in wiki.Query.usercontribs()
-                         where uc.userprefix == "Svick"
-                         where uc.start == DateTime.Now.AddDays(-2)
-                         orderby uc
-                         select new { uc.user, uc.title, uc.timestamp, uc.comment };
+                         where uc.user == "Svick"
+                         //orderby uc
+                         select new { uc.title, uc.@new };
 
-            Write(result);
+            Write(result.ToEnumerable().Where(uc => uc.@new).Take(2));
         }
 
         private static void Users(Wiki wiki)
