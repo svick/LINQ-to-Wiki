@@ -4,3 +4,4 @@ _ReSharper*/
 *.DotSettings
 bin/
 obj/
+/Tools/LinqToWiki.Codegen.App/
