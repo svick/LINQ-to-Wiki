@@ -11,11 +11,11 @@ It also integrates itself into the Microsoft Visual Studio \ac{IDE},
 where it can be used to perform
 custom refactoring actions or to produce custom errors and warnings at compile-time.
 
-Roslyn is currently under development and so far it had two public releases.
-Both were in the form of \ac{CTP},
-the first one from October 2011, the second one from June 2012.
+Roslyn is currently under development and so far it had three public releases.
+All of them were in the form of \ac{CTP},
+the first one from October 2011, the second one from June 2012 and the third one from September 2012.
 
-In the second \ac{CTP}, the syntactic part of the library in completely implemented,
+In the \acp{CTP}, the syntactic part of the library in completely implemented,
 so for example the syntax tree can represent any construct of C\#
 and any syntax tree can be translated to and from source code.
 On the other hand, the semantic part of the library is not fully implemented,
@@ -54,21 +54,20 @@ public abstract CategoryInfoResult CategoryInfo { get; }
 \label{Syntax tree}
 \end{figure}
 
-\pagebreak[0]
-
 Roslyn syntax trees are immutable and can be created using factory methods from the \lstinline{Syntax} class.
 And while not all elements of the syntax tree have to be specified (like braces of a property accessor list),
 creating a syntax tree can be quite cumbersome.
 
-The exact syntax for creating syntax trees changed between the two \acp{CTP}.
+The exact syntax for creating syntax trees changed between the first two \acp{CTP}.
 In the October 2011 \ac{CTP}, methods with many optional parameters were used.
 In the June 2012 \ac{CTP}, the situation somewhat improved:
 the factory method now has parameters only for required children of the created node
 and optional child nodes can be added in a fluent manner using \lstinline{With*} methods.
+The syntax used did not change in the September 2012 \ac{CTP}.
 
 For an example of code to manually create the syntax tree from Figure~\ref{Syntax tree},
 see Figure~\ref{Roslyn code 2011} for the October 2011 \ac{CTP} version and
-Figure~\ref{Roslyn code 2012} for the June 2012 \ac{CTP} version.
+Figure~\ref{Roslyn code 2012} for the September 2012 \ac{CTP} version.
 
 \begin{figure}[p]
 
@@ -113,6 +112,6 @@ Syntax.PropertyDeclaration(
             Syntax.Token(SyntaxKind.SemicolonToken)))))
 \end{lstlisting}
 
-\caption{Sample code to manually create a Roslyn syntax tree \\ using June 2012 \ac{CTP}}
+\caption{Sample code to manually create a Roslyn syntax tree \\ using September 2012 \ac{CTP}}
 \label{Roslyn code 2012}
 \end{figure}
