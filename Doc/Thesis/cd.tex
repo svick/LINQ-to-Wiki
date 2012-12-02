@@ -1,0 +1,40 @@
+\chapter{Contents of the enclosed CD}
+
+The main part of the enclosed CD is the directory \texttt{LinqToWiki},
+which contains all of the source code of the LinqToWiki library.
+The same code is also available from the git repository of the library:
+\url{https://github.com/svick/LINQ-to-Wiki/}.
+
+The CD also contains this document (\texttt{thesis.pdf})
+and a short presentation about the library (\texttt{presentation.pdf}).
+
+\sectionnobreak{Using the library}
+
+As described in Chapter~\ref{ltw}, using the LinqToWiki consists of several steps.
+Here, they are described in detail:
+
+\begin{enumerate}
+\item Compile the \texttt{lintowiki-codegen} application.
+
+To do this, you need Microsoft Visual Studio 2012 with the September 2012 \ac{CTP} of Roslyn installed.
+In it, open \texttt{LinqToWiki.sln} and build the project LinqToWiki.Codegen.App.
+
+This step can be skipped, compiled version of \texttt{lintowiki-codegen} is included
+in the \texttt{Tools} directory on the enclosed CD.
+
+\item Run \texttt{lintowiki-codegen} to generate wiki-specific \ac{DLL}.
+
+Execute the application \texttt{lintowiki-codegen.exe} with a parameter specifying which wiki
+to use and optionally also other parameters altering the output. For further information, see Section~\ref{ltw-ca}.
+
+This step can also be skipped, the enclosed CD contains \ac{DLL} generated for the English Wikipedia
+in the directory \texttt{Lib\string\LinqToWiki.Generated}.
+
+\item Use the generated \ac{DLL} in your application.
+
+The LinqToWiki.Samples application (more details in Section~\ref{ltw-s}) is an example of application
+that uses the generated \ac{DLL} to perform queries.
+
+To build, execute and possibly modify it, open the solution file \texttt{LinqToWiki no codegen.sln}
+in Microsoft Visual Studio 2010 or 2012.
+\end{enumerate}
