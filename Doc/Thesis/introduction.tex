@@ -1,5 +1,4 @@
-\chapter*{Introduction}
-\addcontentsline{toc}{chapter}{Introduction}
+\chapwithtoc{Introduction}
 
 Wiki websites running on the MediaWiki software (such as Wikipedia) offer an \ac{API}
 for programmatic access to their database.
@@ -57,3 +56,18 @@ a set of features of the C\# language and the .NET Framework,
 that is useful for representing queries and their translation into another form.
 
 The library also abstracts away some other aspects of the \ac{API}, like paging of the results.
+
+\secwithtoc{Key contributions}
+
+The key characteristics that make the LinqToWiki library novel, when compared with similar querying libraries are:
+
+\begin{itemize}
+\item Using different types in different LINQ operators
+(specifically in \lstinline{select}, \lstinline{where} and \lstinline{orderby})
+\item Allowing different operators for different queries
+(i.e. allowing sorting and generator queries only for some modules and disallowing sorting twice in one query)
+\item Using code generation to achieve statically-typed queries
+\end{itemize}
+
+Another important aspect of this work was creating a patch for MediaWiki to describe results of \ac{API} modules,
+which was accepted by MediaWiki developers and is now running on all Wikimedia wikis, including Wikipedia.

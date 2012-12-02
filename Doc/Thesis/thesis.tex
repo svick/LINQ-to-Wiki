@@ -101,6 +101,11 @@
 \addcontentsline{toc}{chapter}{#1}
 }
 
+\def\secwithtoc#1{
+\sectionnobreak*{#1}
+\addcontentsline{toc}{section}{#1}
+}
+
 \begin{document}
 
 \hypersetup{pageanchor=false}
