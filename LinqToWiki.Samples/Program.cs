@@ -14,8 +14,8 @@ namespace LinqToWiki.Samples
             var wiki = new Wiki("en.wikipedia.org", "/w/api.php");
             // Login(wiki, "username", "password");
 
-            UserContribs(wiki);
-            //Revisions(AllPagesSource(wiki));
+            Compare(wiki);
+            // Categories(TitlePages(wiki));
         }
 
         #region Simple methods
