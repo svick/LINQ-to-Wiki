@@ -636,14 +636,14 @@ namespace LinqToWiki.Codegen
                 Syntax.TriviaList(), Environment.NewLine, Environment.NewLine, Syntax.TriviaList());
         }
 
-        public static DocumentationCommentSyntax DocumentationComment(params XmlElementSyntax[] elements)
+        public static DocumentationCommentTriviaSyntax DocumentationComment(params XmlElementSyntax[] elements)
         {
             return DocumentationComment((IEnumerable<XmlElementSyntax>)elements);
         }
 
-        public static DocumentationCommentSyntax DocumentationComment(IEnumerable<XmlElementSyntax> elements)
+        public static DocumentationCommentTriviaSyntax DocumentationComment(IEnumerable<XmlElementSyntax> elements)
         {
-            return Syntax.DocumentationComment(
+            return Syntax.DocumentationCommentTrivia(
                 elements.AddAfterEach<XmlNodeSyntax>(Syntax.XmlText(Syntax.TokenList(XmlTextNewLine())))
                     .ToSyntaxList());
         }
@@ -652,7 +652,7 @@ namespace LinqToWiki.Codegen
             string elementName, string text, IEnumerable<Tuple<string, string>> attributes = null)
         {
             var nameSyntax = XmlName(elementName);
-            var exteriorTrivia = Syntax.DocumentationCommentExteriorTrivia("///");
+            var exteriorTrivia = Syntax.DocumentationCommentExterior("///");
 
             string[] lines = text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -690,32 +690,12 @@ namespace LinqToWiki.Codegen
 
         private static SyntaxToken XmlText(string text)
         {
-            return Syntax.XmlText(new SyntaxTriviaList(), text, text, new SyntaxTriviaList());
+            return Syntax.XmlTextLiteral(new SyntaxTriviaList(), text, text, new SyntaxTriviaList());
         }
 
         private static XmlNameSyntax XmlName(string name)
         {
             return Syntax.XmlName(Syntax.Identifier(name));
-        }
-
-        public static AttributeDeclarationSyntax AttributeDeclaration(
-            string name, params AttributeArgumentSyntax[] arguments)
-        {
-            return Syntax.AttributeDeclaration(
-                new[]
-                {
-                    Syntax.Attribute(
-                        Syntax.IdentifierName(name),
-                        arguments.Length == 0
-                            ? null
-                            : Syntax.AttributeArgumentList(arguments.ToSeparatedList()))
-                }.ToSeparatedList());
-        }
-
-        public static AttributeArgumentSyntax AttributeArgument(ExpressionSyntax expression, string name = null)
-        {
-            var nameSyntax = name == null ? null : Syntax.NameEquals(name);
-            return Syntax.AttributeArgument(expression).WithNameEquals(nameSyntax);
         }
 
         public static SimpleLambdaExpressionSyntax LambdaExpression(string parameterName, SyntaxNode body)

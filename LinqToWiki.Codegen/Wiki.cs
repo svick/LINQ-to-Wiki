@@ -11,6 +11,7 @@ using LinqToWiki.Internals;
 using Microsoft.CSharp;
 using Roslyn.Compilers.CSharp;
 using Roslyn.Services;
+using Roslyn.Services.Formatting;
 
 namespace LinqToWiki.Codegen
 {
@@ -64,6 +65,8 @@ namespace LinqToWiki.Codegen
         /// </summary>
         internal static readonly TupleList<string, string> QueryBaseParameters =
             new TupleList<string, string> { { "action", "query" } };
+
+        private static readonly FormattingOptions FormattingOptions = new FormattingOptions(false, 4, 4);
 
         public Wiki(string baseUri, string apiPath, string ns = null, string propsFilePath = null)
         {
@@ -379,7 +382,8 @@ namespace LinqToWiki.Codegen
             foreach (var file in Files)
             {
                 var path = Path.Combine(directoryPath, file.Item1 + Extension);
-                File.WriteAllText(path, file.Item2.Format().GetFormattedRoot().ToString());
+                File.WriteAllText(
+                    path, file.Item2.Format(FormattingOptions).GetFormattedRoot().ToString());
                 result.Add(path);
             }
 
@@ -400,7 +404,7 @@ namespace LinqToWiki.Codegen
                     builder.AppendLine();
 
                 builder.AppendLine(file.Item1 + Extension + ':');
-                builder.AppendLine(file.Item2.Format().ToString());
+                builder.AppendLine(file.Item2.Format(FormattingOptions).ToString());
             }
 
             return builder.ToString();
