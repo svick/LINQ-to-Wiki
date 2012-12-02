@@ -27,7 +27,7 @@ If a module supports sorting, it is represented by a type with \lstinline{Sortab
 and if it supports being used as a generator for \texttt{prop} queries, it is represented by a type with \lstinline{Generator} in its name.
 
 There is also a fifth type: \lstinline{WikiQueryResult}.
-This type by itself represents a query that can't be modified anymore,
+This type by itself represents a query that cannot be modified anymore,
 but can be used to execute it and get the results.
 All of the four preceding types inherit from \lstinline{WikiQueryResult},
 so it is possible  to execute the query using any one of them too.
@@ -37,7 +37,7 @@ For example, if a type is one of the two \lstinline{Sortable} types,
 it will have an \lstinline{OrderBy()} method, but no other type has this method.
 Each method can also return a different type, as is necessary to form queries.
 
-\medskip
+\paragraph{\lstinline{WikiQuery} and generics}
 
 All of the \lstinline{WikiQuery}-related types are generic
 and their type parameters are used to decide what properties can be used in each operation.
@@ -59,9 +59,9 @@ they will fail with an exception at runtime.
 This is a well-known problem with LINQ that also affects LINQ to SQL \cite{linq-to-sql-functions}
 and other LINQ providers.
 
-\medskip
+\paragraph{\lstinline{WikiQuery} operations}
 
-The standard query operators available on the \lstinline{WikiQuery} types are:
+The standard query operators available on the \lstinline{Wiki}\lstBreak\lstinline{Query} types are:
 
 \begin{itemize}
 \item \lstinline{Where()} only sets some parameter or parameters of a query,
@@ -170,7 +170,7 @@ large lists have to be queried multiple times.
 \lstinline{PagesSource} handles this transparently, so the user can input as many pages as he wants and does not have to worry about the limit.
 
 One exception is if the limit is different than the default of 50 for the current user on the current wiki.
-In that case, the user should change the limit by setting the static property \lstinline{ListPagesCollection.MaxLimit}.%
+In that case, the user should change the limit by setting the property \lstinline{PagesSourcePageSize} on the \lstinline{Wiki} object.%
 \footnote{In all other cases where limits are important in this library, they limit the output, not the input.
 That is why simply setting \texttt{limit=max} works in those other cases, but does not work here.}
 
@@ -193,7 +193,7 @@ Thanks to the fact that both kinds of page sources for \texttt{prop} queries are
 (abstract) type, the user of this library can use the same code to work with any source,
 thus avoiding repetitive code.
 
-\medskip
+\paragraph{Structure of \texttt{prop} query}
 
 To actually create a \texttt{prop} query for a page source, one uses the \lstinline{Select()} method.
 Its parameter is a lambda, whose parameter is the type parameter \lstinline{TPage} of \lstinline{PagesSource}.
@@ -210,8 +210,6 @@ which means only the most recent revision for each page is selected.
 
 If a \texttt{prop} module has a single result (not a collection), it is represented as a property
 that directly returns this result, no querying is possible.
-
-\medskip
 
 The methods of these \texttt{prop} queries are inside a lambda expression,
 so they are not actually executed unless the expression was compiled and the resulting delegate invoked.

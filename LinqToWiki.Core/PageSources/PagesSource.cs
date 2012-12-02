@@ -12,7 +12,6 @@ namespace LinqToWiki
     /// Similar to <see cref="System.Collections.Generic.IEnumerable{T}"/>,
     /// when compared with <see cref="IPagesCollection"/>.
     /// </summary>
-    /// <remarks></remarks>
     public abstract class PagesSource<TPage>
     {
         private readonly QueryPageProcessor m_queryPageProcessor;

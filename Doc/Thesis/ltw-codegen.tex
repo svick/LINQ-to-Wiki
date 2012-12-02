@@ -5,7 +5,7 @@ The LinqToWiki.Codegen project contains code that retrieves information about \a
 then uses that information to generate C\# code to access those modules using Roslyn
 and finally compiles the code into a library.
 
-\medskip
+\paragraph{Alternatives to Roslyn}
 
 Roslyn was chosen, because it is superior when compared with common approaches for code generation in .NET,
 namely Reflection.Emit and \acs{CodeDOM}.
@@ -24,7 +24,7 @@ without using “hacks”.
 
 Detailed description of Roslyn is in Section~\ref{roslyn}.
 
-\medskip
+\paragraph{What to generate?}
 
 At this point, we have a library (LinqToWiki.Core) that can be used to access the MediaWiki \ac{API} the way we want
 from the final generated library.
@@ -33,7 +33,7 @@ And we have decided we want to use Roslyn to generate the final library.
 What remains is to decide what code to generate, how exactly to map the modules, their parameters
 and their results into the model of LinqToWiki.Core.
 
-% think about moving this before LTW.Core
+%TODO: think about moving this before LTW.Core
 
 There are some decisions that were already made in LinqToWiki.Core
 (the \texttt{sort} and \texttt{dir} parameters should map to \lstinline{OrderBy()};
@@ -79,7 +79,7 @@ but a computer cannot.
 (Actually, it is possible that the words could be reliably separated using natural language processing,
 but doing that is outside the scope of this work.)
 
-\medskip
+\paragraph{Reserved names}
 
 Because different .NET languages have different sets of reserved identifier names
 (usually, those are the language keywords)
@@ -99,13 +99,13 @@ which is a common abbreviation, so the meaning should not be lost.
 The other three have to be written with \lstinline{@} (\lstinline{@new}, \lstinline{@true} and \lstinline{@false}) in C\#,
 because we did not find a reasonable alternative for them.
 
-\medskip
+\paragraph{Special characters}
 
-As for special characters, the delimiters hyphen (\texttt{-}), slash (\texttt{/}) and space
+The characters hyphen~(\texttt{-}), slash~(\texttt{/}) and space
 appear in some names in the \ac{API}, but are not allowed in .NET identifiers,
 so they are replaced by underscores (\texttt{\_}).
 
-Some names also start with the exclamation mark~(\texttt{!}), to indicate negation.
+Some names also start with an exclamation mark~(\texttt{!}), to indicate negation.
 Such names are translated by prefixing \lstinline{not_}.
 So for example, \texttt{!minor} (which means that an edit is not a minor edit)
 is translated into \lstinline{not_minor}.
@@ -113,7 +113,7 @@ is translated into \lstinline{not_minor}.
 One more special case is that some enumerated types allow an empty value.
 Such value is then represented by the identifier \lstinline{none}.
 
-\medskip
+\paragraph{Naming types}
 
 Another question is how to name the generated types.
 There are two kinds of generated types:
@@ -151,7 +151,7 @@ It also contains the property \lstinline{Query} that returns an object that cont
 \texttt{list} and \texttt{meta} query modules.
 (\texttt{prop} query modules work differently, for more information, see Section~\ref{PagesSource}.)
 
-\medskip
+\paragraph{Simple modules}
 
 With modules that do not return lists, the situation is mostly simple:
 there are no parameters to sort or filter the result (because it is not a list)
@@ -164,7 +164,7 @@ and parameters that are not required are mapped as optional parameters.
 The code of this method builds \lstinline{QueryParameters} from the method parameters
 and then executes the query using \lstinline{QueryProcessor}.
 
-\medskip
+\paragraph{List modules}
 
 On the other hand, list modules can have several kinds of parameters:
 
@@ -209,7 +209,7 @@ Proper solution to this problem would require human interaction when generating 
 to choose which parameters belong to \lstinline{Where()} and which do not.
 As an alternative, the description of each parameter in the \texttt{paraminfo} module could contain its kind.
 
-\medskip
+\paragraph{Enumerated types}
 
 One more question is how to represent enumerated types.
 The answer is seemingly simple: make them \lstinline{enum}s
@@ -314,7 +314,7 @@ SyntaxEx.AutoPropertyDeclaration(
   isAbstract: true)
 \end{lstlisting}
 
-\caption{Sample code to manually create a Roslyn syntax tree \\ using \lstinline{SyntaxEx}}
+\caption{Sample code to manually create \\ a Roslyn syntax tree using \lstinline{SyntaxEx}}
 \label{SyntaxEx code}
 \end{figure}
 

@@ -10,25 +10,16 @@ namespace LinqToWiki
     /// </summary>
     class ListPagesCollection : IPagesCollection
     {
-        static ListPagesCollection()
-        {
-            MaxLimit = 50;
-        }
-
-        /// <summary>
-        /// How many pages should be in a single page. Defaults to 50.
-        /// Won't work correctly if set to more than the maximum set by the wiki.
-        /// </summary>
-        public static int MaxLimit { get; set; }
-
         private readonly string m_parameterName;
+        private readonly int m_pageSize;
         private readonly IEnumerator<string> m_enumerator;
         private bool m_iterating;
         private bool m_shouldMove = true;
 
-        public ListPagesCollection(string parameterName, IEnumerable<string> values)
+        public ListPagesCollection(string parameterName, IEnumerable<string> values, int pageSize)
         {
             m_parameterName = parameterName;
+            m_pageSize = pageSize;
             m_enumerator = values.GetEnumerator();
         }
 
@@ -53,7 +44,7 @@ namespace LinqToWiki
         public IEnumerable<Tuple<string, string>> GetNextPage(int limit)
         {
             if (limit == -1)
-                limit = MaxLimit;
+                limit = m_pageSize;
 
             var formattedValues = new List<string>();
             int i = 0;

@@ -30,8 +30,16 @@ namespace LinqToWiki.Internals
         /// </summary>
         public NamespaceInfo Namespaces { get; private set; }
 
+        /// <summary>
+        /// How many pages should be in a single page of a <see cref="PagesSource{TPage}"/>. Defaults to 50.
+        /// Won't work correctly if set to more than the maximum set by the wiki.
+        /// </summary>
+        public int PagesSourcePageSize { get; set; }
+
         public WikiInfo(string baseUrl = null, string apiPath = null, IEnumerable<Namespace> namespaces = null)
         {
+            PagesSourcePageSize = 50;
+
             if (baseUrl == null)
                 baseUrl = "en.wikipedia.org";
 

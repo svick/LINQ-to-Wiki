@@ -137,6 +137,14 @@ namespace LinqToWiki.Codegen
             var queryProperty = SyntaxEx.AutoPropertyDeclaration(
                 new[] { SyntaxKind.PublicKeyword }, Names.QueryAction, "Query", SyntaxKind.PrivateKeyword);
 
+            var pagesSourcePageSizePropertyName = "PagesSourcePageSize";
+            var wikiFieldPagesSourcePageSizeProperty = SyntaxEx.MemberAccess(wikiField, pagesSourcePageSizePropertyName);
+            var pagesSourcePageSizeProperty = SyntaxEx.PropertyDeclaration(
+                new[] { SyntaxKind.PublicKeyword }, Syntax.ParseTypeName("int"), pagesSourcePageSizePropertyName,
+                getStatements: new[] { SyntaxEx.Return(wikiFieldPagesSourcePageSizeProperty) },
+                setStatements:
+                    new[] { SyntaxEx.Assignment(wikiFieldPagesSourcePageSizeProperty, Syntax.IdentifierName("value")) });
+
             var baseUriParameter = SyntaxEx.Parameter("string", "baseUri", SyntaxEx.NullLiteral());
             var apiPathParameter = SyntaxEx.Parameter("string", "apiPath", SyntaxEx.NullLiteral());
 
@@ -155,7 +163,13 @@ namespace LinqToWiki.Codegen
                 new[] { baseUriParameter, apiPathParameter },
                 new StatementSyntax[] { wikiAssignment, queryAssignment });
 
-            var members = new List<MemberDeclarationSyntax> { wikiField, queryProperty, ctor };
+            var members = new List<MemberDeclarationSyntax>
+            {
+                wikiField,
+                queryProperty,
+                pagesSourcePageSizeProperty,
+                ctor
+            };
 
             members.AddRange(CreatePageSourceMethods(wikiField));
 

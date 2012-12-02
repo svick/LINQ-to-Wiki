@@ -29,7 +29,7 @@ namespace LinqToWiki.Internals
 
             var revisions = parameters.PropQueryParametersCollection.SingleOrDefault(p => p.PropName == "revisions");
 
-            int limit = revisions == null || revisions.OnlyFirst ? -1 : 1;
+            int limit = (revisions == null || revisions.OnlyFirst) ? -1 : 1;
             var pagesCollection = parameters.PagesCollection;
 
             do
