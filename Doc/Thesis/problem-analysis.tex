@@ -85,3 +85,58 @@ Here,
 are all impossible.
 (Actually selecting the \ac{IP} address of the blocked user is possible,
 but the information is contained in properties with different names.)
+
+\section{Sample queries}
+
+Following are samples of queries of different modules using LinqToWiki:
+
+\begin{lstlisting}
+string diff = wiki.compare(fromrev: 486474789,
+                              torev: 487063697)
+                    .value;
+\end{lstlisting}
+
+This query compares the text of two revisions and returns differences between them.
+It shows that queries for modules that return a single item take their parameters as named method parameters
+and directly return their result.
+
+\begin{lstlisting}
+var pages = wiki.Query.querypage(querypagepage.Uncategorizedpages)
+                  .ToList();
+\end{lstlisting}
+
+This query returns a list of uncategorized pages,
+as provided by the special page \texttt{Special:UncategorizedPages}.
+It shows that required parameters to list-returning modules are given as method parameters
+and that \lstinline{ToList()} (or, alternatively, \lstinline{ToEnumerable()})
+has to be called on the result before it can be used.
+
+\begin{lstlisting}
+var pages = (from cm in wiki.Query.categorymembers()
+	       where cm.title == "Category:Query languages"
+	           && cm.type == categorymemberstype.subcat
+	       select cm).Pages;
+\end{lstlisting}
+
+This query returns subcategories of the category \texttt{Query languages}.
+The result is not actually directly usable, but it can be used in so called \texttt{prop} queries.
+The query shows how LINQ can be used for querying list-returning modules
+and that the \lstinline{Pages} property is used to create source for further queries.
+
+\begin{lstlisting}
+var result = pages.Select(
+	p =>
+	new
+	{
+		Info = p.info,
+		Images = p.images().ToEnumerable()
+	})
+	.ToEnumerable();
+\end{lstlisting}
+
+This query returns information about images present on a list of pages specified by \lstinline{pages}
+(see previous query).
+It shows how the result of one query can be used as a source for another query,
+how the LINQ method \lstinline{Select()} is used in such queries,
+how anonymous types can be used to return the required information
+and how \lstinline{ToEnumerable()} (or \lstinline{ToList()}) has to be also used inside this kind of queries.
