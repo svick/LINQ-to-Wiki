@@ -15,9 +15,20 @@
 \let\openright=\clearpage
 
 \let\sectionnobreak = \section
-\renewcommand{\section}[1]{
+\makeatletter
+\renewcommand{\section}{\@ifstar
+                     \sectionStar%
+                     \sectionNoStar%
+}
+\makeatother
+\newcommand{\sectionNoStar}[1]{
 	\pagebreak
 	\sectionnobreak{#1}
+}
+\newcommand{\sectionStar}[1]{
+	\pagebreak
+	\sectionnobreak*{#1}
+	\addcontentsline{toc}{section}{#1}
 }
 
 \makeatletter
