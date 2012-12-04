@@ -52,7 +52,7 @@ Specifically, unsupported operators (like \lstinline{join} and \lstinline{group 
 while the \lstinline{orderby} clause should cause an error only for the modules that do not support sorting.
 
 Also, all operators should support only those properties that are actually supported by the \ac{API}.
-So, for example for the \verb,blocks, module, the following query should compile and execute fine:
+So, for example for the \texttt{blocks} module, the following query should compile and execute fine:
 
 \begin{lstlisting}
 from block in wiki.Blocks()
@@ -85,3 +85,82 @@ Here,
 are all impossible.
 (Actually selecting the \ac{IP} address of the blocked user is possible,
 but the information is contained in properties with different names.)
+
+\section{Alternatives}
+
+Using statically typed methods and custom LINQ provider is not the only way a library like this
+could be built in C\#.
+Some of the alternatives include:
+
+\begin{itemize}
+\item Using strings for everything
+
+This is probably the simplest way to write a library for MediaWiki API.
+It means parameters and their names (including those specifying which module to use) are specified
+as a collection of string key-value pairs.
+
+For example, the query from the previous section would look something like:
+
+\begin{lstlisting}
+wiki.Query(new Dictionary<string, string>
+    {
+        { "list", "blocks" },
+        { "bkip", "8.8.8.8" },
+        { "bkdir", "older" },
+        { "bkprop", "byid" }
+    })
+\end{lstlisting}
+
+The main disadvantage of this approach is there is no checking of the query:
+any mistake in the query won't be found out until the query is actually executed.
+It also means autocompletion cannot help the user in finding out which parameters are available.
+
+In such implementation, the result of the query will be also some sort of dictionary
+(indexed by names of result properties), which has the same kind of problems as using strings for parameter names.
+
+Some modifications are possible, for example having a special parameter for the module prefix
+(\texttt{bk} in the above example), which would make the code less repetitive.
+But such changes will not fix the fundamental problems with this approach.
+
+\item Using \lstinline{dynamic}
+
+C\# 4.0 supports dynamic typing using the special type \lstinline{dynamic}.
+When using that, C\# acts similarly as dynamic languages.
+This means methods and their parameters do not have to be declared before they can be used.
+
+For example, the same query used previously could look like this using \lstinline{dynamic}:
+
+\begin{lstlisting}
+dynamic wiki = ...;
+wiki.ListBlocks("bk",ip: "8.8.8.8",dir: "older",prop: "byid")
+\end{lstlisting}
+
+For this query to work,
+the library does not need any knowledge about the \texttt{blocks} module or its parameters.
+
+This query is much more succinct than the string version
+(although part of that is because of extracting the prefix,
+which could be done with strings too, as mentioned).
+But it suffers from the same issues: mistakes cannot be detected at compile time
+and autocomplete will not be able to help.
+
+In this case, the returned object will be also dynamic,
+with the same advantages and disadvantages.
+
+One interesting consequence of using \lstinline{dynamic} is that it means LINQ cannot be used.
+Some of the reasons for this are that dynamically invoked methods cannot have lambdas as their arguments
+(at least not directly) and that expression trees do not support \lstinline{dynamic}.
+
+\item Using \lstinline{IQueryable} instead of custom LINQ provider
+
+The \lstinline{IQueryable} interface is often used for implementing custom \ac{LINQ} sources,
+especially those for querying \ac{SQL} databases.
+
+The biggest disadvantage of using this approach is that \lstinline{IQueryable}
+supports all LINQ operators and all operators use the same set of properties.
+This is not suitable for MediaWiki \ac{API},
+because it does not support several LINQ operators,
+because ordering is available only for some modules
+and because filtering, sorting and projection all use different sets of properties.
+
+\end{itemize}
