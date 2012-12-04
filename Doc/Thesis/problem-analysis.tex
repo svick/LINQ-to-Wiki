@@ -87,6 +87,7 @@ are all impossible.
 but the information is contained in properties with different names.)
 
 \section{Alternatives}
+\label{alternatives}
 
 Using statically typed methods and custom LINQ provider is not the only way a library like this
 could be built in C\#.
@@ -132,7 +133,7 @@ For example, the same query used previously could look like this using \lstinlin
 
 \begin{lstlisting}
 dynamic wiki = ...;
-wiki.ListBlocks("bk",ip: "8.8.8.8",dir: "older",prop: "byid")
+wiki.ListBlocks("bk", ip:"8.8.8.8", dir:"older", prop:"byid")
 \end{lstlisting}
 
 For this query to work,
@@ -150,6 +151,17 @@ with the same advantages and disadvantages.
 One interesting consequence of using \lstinline{dynamic} is that it means LINQ cannot be used.
 Some of the reasons for this are that dynamically invoked methods cannot have lambdas as their arguments
 (at least not directly) and that expression trees do not support \lstinline{dynamic}.
+
+\item Manually written code for each module
+
+Here, code for each module would be written manually, instead of using code generation.
+This would be a significant amount of code which would have to be updated with every change of the API.
+Another problem is that each wiki can have different set of extensions, which add their own API modules,
+so distinct versions for some wikis would have to be maintained.
+
+The biggest advantage of this approach is that a human can understand the documentation of a module,
+so they can write code for a module better than a code generator such as LinqToWiki.Codegen could.
+This is because not all details of how a module works can be encoded into its machine readable description.
 
 \item Using \lstinline{IQueryable} instead of custom LINQ provider
 

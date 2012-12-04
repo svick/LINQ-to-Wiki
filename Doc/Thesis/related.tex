@@ -1,0 +1,58 @@
+\chapter{Related work}
+\label{related}
+
+Many libraries for accessing MediaWiki written in various languages already exist.
+Some relevant examples are included below.
+
+\begin{itemize}
+\item wikitools \cite{wikitools}
+
+wikitools is a library written in Python. It uses string-based dictionaries for parameters and results.
+For example, the \texttt{blocks} sample query used in Chapter~\ref{goal} would look like this:
+
+\begin{lstlisting}[language=python]
+params = {
+    'action':'query',
+    'list':'blocks',
+    'bkip':'8.8.8.8',
+    'bkdir':'older',
+    'bkprop':'byid'
+}
+request = api.APIRequest(site, params)
+request.query()
+\end{lstlisting}
+
+This is basically identical to the string-based approach mentioned in Section~\ref{alternatives},
+so it also shares all of its disadvantages.
+
+\item WikiFunctions \cite{wikifunctions}
+
+WikiFunctions is a .NET library used primarily in a semi-automated MediaWiki editor AutoWikiBrowser.
+It uses the manual approach for a small subset of available modules.
+This means the user does not have to know much about the API,
+but on the other hand, the user cannot use all of the functionality of the API.
+
+\item Linq to Wikipedia \cite{linq-to-wikipedia}
+
+Linq to Wikipedia is a .NET library that contains a simple \lstinline{IQueryable} provider for two modules
+(\texttt{search} and \texttt{opensearch}) from the MediaWiki API.
+A query using this library looks like this:
+
+\begin{lstlisting}
+from wikipedia in datacontext.OpenSearch
+where wikipedia.Keyword == "linq"
+select wikipedia
+\end{lstlisting}
+
+This query provider is very limited in that it supports
+only \lstinline{Where()}, \lstinline{Take()} and \lstinline{Skip()} methods
+(the \lstinline{select} clause in the above code is actually not compiled into a call to the \lstinline{Select()} method).
+Other LINQ methods are attempted to be ignored and often cause exceptions at runtime.
+
+Also, the \lstinline{where} clause has to be in a very specific shape:
+it can use only the \lstinline{Keyword} property, even though the query object has other properties.
+On the other hand, objects in the resulting collection have the \lstinline{Keyword} property,
+even though it is always \lstinline{null}.
+This is because with \lstinline{IQueryable}, the type of the result is the same as the type used in \lstinline{where}.
+
+\end{itemize}

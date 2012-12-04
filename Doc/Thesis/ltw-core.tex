@@ -400,7 +400,7 @@ returning the result as an \lstinline{XDocument}.
 
 \lstinline{Downloader} always uses POST and formats its requests as \path{application/x-www-form-urlencoded}.
 This means that all modules work, including those that require POST.
-On the other hand, uploads of files don't work, because they require \path{multipart/form-data}.
+On the other hand, uploads of files do not work, because they require \path{multipart/form-data}.
 
 The decision to use \path{application/x-www-form-urlencoded} follows from the fact that
 \path{multipart/form-data} is very inefficient when sending multiple parameters with short values,
