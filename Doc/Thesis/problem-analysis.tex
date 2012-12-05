@@ -48,8 +48,27 @@ The situation with the MediaWiki \ac{API} is different in several ways:
 \item It does not support queries represented by many of the LINQ operators, including \lstinline{join} and \lstinline{group by}.
 \item Some of the modules do not support sorting, some do. Of those that do support sorting, some allow specifying the sort key, others only the direction.
 \item The sets of properties that are available for filtering, sorting and selecting are all different.
+
+For example, the \texttt{blocks} module does support specifying the direction, but not the property to sort by.
+Its set of properties that can be used for filtering includes \lstinline{Ip}
+(the \ac{IP} address of the blocked user), but not \lstinline{ById}.
+On the other hand, properties that can be used for selecting include \lstinline{ById}
+(ID of the user who performed the block), but not \lstinline{Ip}.
+
 \item There are modules used for queries about a set of pages. Those pages can be from a hard-coded list or a result from some other module.
+
+An example of such module is \texttt{categories}, which returns the list of categories of each page
+specified in the input list.
+
 \item There are also parameters that do not fit into the LINQ model well. Some of them are required, some are not.
+
+These parameters usually modify which items appear in the output,
+but they are not just a filter from some larger lists.
+Examples of such parameters are the required parameter \texttt{search} of the \texttt{search} module
+(which specifies what string to search for)
+or the optional parameter \texttt{title} of the \texttt{categorymembers} module
+(which decides what category to enumerate;
+this parameter is not required, because the parameter \texttt{pageid} can be used instead of it).
 \end{enumerate}
 
 The goal is to be able to represent all valid queries, while invalid queries should cause a compile-time error.
