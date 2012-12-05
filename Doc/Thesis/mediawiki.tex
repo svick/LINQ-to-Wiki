@@ -285,7 +285,8 @@ during retrieving of all of the pages will actually be present in the result set
 
 \paragraph{Paging with \texttt{prop} modules}
 
-The situation gets more complicated when using a \texttt{prop} module with another module as a generator.
+The situation gets more complicated when using a \texttt{prop} module with another module as a generator
+(see Figure~\ref{API categories generator example} again for an example).
 That is because both modules have their own paging.
 
 When such a request is made, the first response will contain a limited number of items from the generator
@@ -295,17 +296,17 @@ To retrieve the next set of items from the generator, one has to use the \texttt
 To retrieve the next set of results for the items from the first result,
 one has to use the \texttt{query-continue} for the \texttt{prop} module (called “secondary paging” here).
 
-\needspace{3\baselineskip}
 For an example, see Figure \ref{paging}.
 It shows how the paging might work when using the \texttt{allpages} module as a generator,
 together with the \texttt{prop} module \texttt{categories}.
-The \texttt{query-continue} elements are not shown in the figure.
+The \texttt{query-continue} elements in the figure are just examples,
+actual values would be more complicated.
 
 \begin{figure}[tbp]
 \begin{center}
 \begin{tikzpicture}
-\path (0,12) node(11) {
-\begin{adjustbox}{minipage=150pt,fbox}
+\path (0,17) node(11) {
+\begin{adjustbox}{minipage=160pt,fbox}
 \begin{lstlisting}[language=xml]
 <query>
   <pages>
@@ -317,11 +318,17 @@ The \texttt{query-continue} elements are not shown in the figure.
       </categories>
     </page>
   </pages>
+  <query-continue>
+    <categorymembers
+      gcmcontinue="A|X" />
+    <allpages
+      apcontinue="C" />
+  </query-continue>
 </query>
 \end{lstlisting}
 \end{adjustbox}
-} (7,12) node(12) {
-\begin{adjustbox}{minipage=150pt,fbox}
+} (6.9,17) node(12) {
+\begin{adjustbox}{minipage=160pt,fbox}
 \begin{lstlisting}[language=xml]
 <query>
   <pages>
@@ -333,13 +340,19 @@ The \texttt{query-continue} elements are not shown in the figure.
     </page>
     <page title="B" />
   </pages>
+  <query-continue>
+    <categorymembers
+      gcmcontinue="A|Z" />
+    <allpages
+      apcontinue="C" />
+  </query-continue>
 </query>
 \end{lstlisting}
 \end{adjustbox}
-} (11,12) node(13) {\dots};
+} (11,17) node(13) {\dots};
 
-\path (0,4) node(21) {
-\begin{adjustbox}{minipage=150pt,fbox}
+\path (0,6) node(21) {
+\begin{adjustbox}{minipage=160pt,fbox}
 \begin{lstlisting}[language=xml]
 <query>
   <pages>
@@ -351,11 +364,17 @@ The \texttt{query-continue} elements are not shown in the figure.
     </page>
     <page title="D" />
   </pages>
+  <query-continue>
+    <categorymembers
+      gcmcontinue="C|Z" />
+    <allpages
+      apcontinue="E" />
+  </query-continue>  
 </query>
 \end{lstlisting}
 \end{adjustbox}
-} (7,4) node(22) {
-\begin{adjustbox}{minipage=150pt,fbox}
+} (6.9,6) node(22) {
+\begin{adjustbox}{minipage=160pt,fbox}
 \begin{lstlisting}[language=xml]
 <query>
   <pages>
@@ -370,6 +389,10 @@ The \texttt{query-continue} elements are not shown in the figure.
       </categories>
     </page>
   </pages>
+  <query-continue>
+    <allpages
+      apcontinue="E" />
+  </query-continue>  
 </query>
 \end{lstlisting}
 \end{adjustbox}
@@ -414,7 +437,7 @@ which is necessary for generating code to access those modules in a static fashi
 
 Prior to an improvement implemented in our work,
 the \texttt{paraminfo} module provided only general information about the module
-and, most importantly, information about parameters, their data types and a short description.
+and, most importantly, for each parameter information about its data type and a short description.
 
 The data type of a parameter is either a simple type (e.g. \texttt{integer} or \texttt{string}),
 or an enumeration of possible values.
@@ -424,7 +447,8 @@ A shortened example of a response from the \texttt{paraminfo} module
 for the \texttt{categorymembers} module is in Figure~\ref{paraminfo sample}.
 
 For code generation in LinqToWiki, another piece of information is necessary:
-knowing the properties of the response and how do they map to the values of the \texttt{prop} parameter.
+knowing the properties of the response and how do they map to the values of the \texttt{prop} parameter
+(which determines what properties are included in the response).
 For information about how we added them, see Chapter~\ref{mw improvements}.
 
 \begin{figure}[p]
