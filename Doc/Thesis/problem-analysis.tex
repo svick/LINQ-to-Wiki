@@ -24,7 +24,13 @@ orderby product.Price
 select product.Name
 \end{lstlisting}
 
-A query like this is translated into a sequence of method calls that take their parameters in the form of lambda expressions.
+A query like this is translated into a sequence of method calls that take their parameters in the form of lambda expressions.%
+\footnote{
+Lambda expressions are a way to create unnamed (anonymous) functions.
+Parameter list of the function is specified on the left side of the \lstinline{=>} operator,
+result of the function is computed by the expression on its right side.
+Types of the parameters and the return type do not have to be specified, if they can be inferred.
+}
 For example, the \lstinline{where} part of the above query is translated into:
 
 \begin{lstlisting}
