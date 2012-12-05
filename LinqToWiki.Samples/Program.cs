@@ -42,7 +42,7 @@ namespace LinqToWiki.Samples
         {
             var token = wiki.tokens(new[] { tokenstype.edit }).edittoken;
             var result = wiki.edit(
-                title: "Talk:Test2", section: "new", sectiontitle: "Hello", text: "Hello world! ~~~~",
+                title: "Wikipedia talk:Sandbox", section: "new", sectiontitle: "Hello", text: "Hello world! ~~~~",
                 summary: "greeting the world", token: token);
             Console.WriteLine(result);
         }

@@ -101,39 +101,161 @@ adding \texttt{cmlimit=5} to the query string of a GET request or to the body of
 
 The \ac{API} is also extensible: MediaWiki extensions can add their own modules and modify some behavior of existing modules.
 
-An example of an \ac{API} request \ac{URL} and a response in the \ac{XML} format is in Figure \ref{API example}.
+Examples of \ac{API} requests and responses are
+in Figures~\ref{API edit example} through \ref{API categories generator example}.
 
-\begin{figure}[htbp]
-\texttt{http://en.wikipedia.org/w/api.php}~\texttt{?}\
-\texttt{format}~\texttt{=}~\texttt{xml}~\texttt{\&}
-\texttt{action}~\texttt{=}~\texttt{query}~\texttt{\&}
-\texttt{list}~\texttt{=}~\texttt{categorymembers}~\texttt{\&}
-\texttt{cmtitle}~\texttt{=}~\texttt{Category:Query\%20languages}~\texttt{\&}
-\texttt{cmprop}~\texttt{=}~\texttt{title}~\texttt{\&}
-\texttt{cmtype}~\texttt{=}~\texttt{page}~\texttt{\&}
-\texttt{cmdir}~\texttt{=}~\texttt{descending}~\texttt{\&}
-\texttt{cmlimit}~\texttt{=}~\texttt{5}
+\begin{figure}[p]
+\texttt{POST:}
+\texttt{http://en.wikipedia.org/w/api.php}
+
+\ApiParameter{format}{xml}
+\ApiParameter{action}{edit}
+\ApiParameter{token}{\%2B\%5C}
+\ApiParameter{title}{Wikipedia:Sandbox}
+\ApiParameter{section}{new}
+\ApiParameter{sectiontitle}{Hello}
+\ApiParameter{text}{Hello\%20world!\textasciitilde\textasciitilde\textasciitilde\textasciitilde}
+\ApiParameterNoAmp{summary}{greeting\%20the\%20world}
+
+\begin{lstlisting}[language=xml]
+<?xml version="1.0"?>
+<api>
+  <edit result="Success" pageid="16283969"
+         title="Wikipedia:Sandbox" contentmodel="wikitext"
+         oldrevid="526507943" newrevid="526508868"
+         newtimestamp="2012-12-05T13:10:24Z" />
+</api>
+\end{lstlisting}
+
+\caption[API request to add a new section to a page and its response]{
+\ac{API} request to add a “Hello” section to the page \texttt{Wikipedia:\allowbreak Sandbox}, \\
+using the non-query module \texttt{edit} and its response}
+\label{API edit example}
+\end{figure}
+
+\begin{figure}[p]
+\texttt{GET:}
+\texttt{http://en.wikipedia.org/w/api.php}~\texttt{?}
+\ApiParameter{format}{xml}
+\ApiParameter{action}{query}
+\ApiParameter{list}{categorymembers}
+\ApiParameter{cmtitle}{Category:Query\%20languages}
+\ApiParameter{cmprop}{title}
+\ApiParameter{cmtype}{page}
+\ApiParameter{cmdir}{descending}
+\ApiParameterNoAmp{cmlimit}{5}
 
 \begin{lstlisting}[language=xml]
 <?xml version="1.0"?>
 <api>
   <query>
     <categorymembers>
-      <cm ns="0" title="YQL (programming language)" />
-      <cm ns="0" title="Yahoo! query language" />
+      <cm ns="0" title="Yahoo! Query Language" />
       <cm ns="0" title="XQuery" />
       <cm ns="0" title="XPath" />
       <cm ns="0" title="XBase++" />
+      <cm ns="0" title="XBase" />
     </categorymembers>
   </query>
   <query-continue>
-    <categorymembers cmcontinue="page|5842415345|572327" />
+    <categorymembers cmcontinue="page|57454220434f5645524147..." />
   </query-continue>
 </api>
 \end{lstlisting}
 
-\caption{Example of \ac{API} request and response}
-\label{API example}
+\caption[API request to list pages from a category and its response]{
+\ac{API} request to list the last five pages \\
+from the category \texttt{Category:\allowbreak Query languages} \\
+using the \texttt{list} module \lstinline{categorymembers}
+and its response}
+\label{API categorymembers example}
+\end{figure}
+
+\begin{figure}[p]
+\texttt{GET:}
+\texttt{http://en.wikipedia.org/w/api.php}~\texttt{?}
+\ApiParameter{format}{xml}
+\ApiParameter{action}{query}
+\ApiParameter{titles}{LINQ|MediaWiki}
+\ApiParameter{prop}{categories}
+\ApiParameterNoAmp{cllimit}{5}
+
+\begin{lstlisting}[language=xml]
+<?xml version="1.0"?>
+<api>
+  <query>
+    <pages>
+      <page pageid="11904240" ns="0" title="LINQ" />
+      <page pageid="323710" ns="0" title="MediaWiki">
+        <categories>
+          <cl ns="14" title="Category:2002 software" />
+          <cl ns="14" title="Category:All articles with spec..." />
+          <cl ns="14" title="Category:All articles with unso..." />
+          <cl ns="14" title="Category:Articles with specific..." />
+          <cl ns="14" title="Category:Articles with unsource..." />
+        </categories>
+      </page>
+    </pages>
+  </query>
+  <query-continue>
+    <categories clcontinue="323710|Commons_category_template..." />
+  </query-continue>
+</api>
+\end{lstlisting}
+
+\caption[API request to list categories of given pages and its response]{
+API request to list categories of the pages \texttt{LINQ} and \texttt{MediaWiki} \\
+using the \texttt{prop} module \texttt{categories} and its response}
+\label{API categories titles example}
+\end{figure}
+
+\begin{figure}[p]
+\texttt{GET:}
+\texttt{http://en.wikipedia.org/w/api.php}~\texttt{?}
+\ApiParameter{format}{xml}
+\ApiParameter{action}{query}
+\ApiParameter{generator}{categorymembers}
+\ApiParameter{gcmtitle}{Category:Query\%20languages}
+\ApiParameter{gcmtype}{page}
+\ApiParameter{gcmdir}{descending}
+\ApiParameter{gcmlimit}{2}
+\ApiParameter{prop}{categories}
+\ApiParameterNoAmp{cllimit}{5}
+
+\begin{lstlisting}[language=xml]
+<?xml version="1.0"?>
+<api>
+  <query-continue>
+    <categorymembers gcmcontinue="page|58504154480a585041544..." />
+    <categories clcontinue="23742879|Query_languages" />
+  </query-continue>
+  <query>
+    <pages>
+      <page pageid="22672444" ns="0" title="Yahoo! Query Language">
+        <categories>
+          <cl ns="14" title="Category:Query languages" />
+          <cl ns="14" title="Category:World Wide Web stubs" />
+          <cl ns="14" title="Category:Yahoo! Development" />
+        </categories>
+      </page>
+      <page pageid="23742879" ns="0" title="XQuery">
+        <categories>
+          <cl ns="14" title="Category:4GL" />
+          <cl ns="14" title="Category:Functional languages" />
+        </categories>
+      </page>
+    </pages>
+  </query>
+</api>
+\end{lstlisting}
+
+\caption[API request to list categories of pages from a category and its response]{
+\ac{API} request to list categories of pages
+from the end of \texttt{Category:\allowbreak Query languages}
+using the \texttt{list} module \texttt{categorymembers} as a generator
+for the \texttt{prop} module \texttt{categories}
+and its response}
+\label{API categories generator example}
 \end{figure}
 
 \subsection{Paging}
@@ -149,7 +271,7 @@ In the \texttt{limit} parameter, one can specify either the exact value,
 or the special value \texttt{max}, which means the maximum allowed for the current user.
 
 To get the data from the following page, one has to use a value specified in the \texttt{query-continue}
-element in the result (see Figure \ref{API example} again).
+element in the result (see Figure \ref{API categorymembers example} again).
 The value in this element is a transparent identifier of the next page.
 
 The advantage of this system when compared with the conventional paging systems of numbering pages

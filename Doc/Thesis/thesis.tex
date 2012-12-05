@@ -117,6 +117,9 @@
 \addcontentsline{toc}{section}{#1}
 }
 
+\newcommand\ApiParameterNoAmp[2]{\texttt{#1}~\texttt{=}~\texttt{#2}}
+\newcommand\ApiParameter[2]{\ApiParameterNoAmp{#1}{#2}~\texttt{\&}}
+
 \begin{document}
 
 \hypersetup{pageanchor=false}
