@@ -158,9 +158,15 @@ namespace LinqToWiki.Codegen
         }
 
         /// <summary>
-        /// Characters that can't be present in the names of enum members and have be replaced.
+        /// Characters that can't be present in the names of enum members and will be replaced by an underscore.
         /// </summary>
-        private static readonly char[] ToReplace = "-/ ".ToCharArray();
+        private static readonly char[] ToReplaceWithUnderscore = "-/ ".ToCharArray();
+
+        /// <summary>
+        /// Characters that can't be present in the names of enum members and will be replaced by a custom string.
+        /// </summary>
+        private static readonly TupleList<char, string> ToReplaceCustom =
+            new TupleList<char, string> { { '!', "not-" }, { '*', "star" } };
 
         /// <summary>
         /// Names of enum members that are keywords and have to be prefixed by a <c>@</c>.
@@ -177,10 +183,10 @@ namespace LinqToWiki.Codegen
             if (Restricted.Contains(value))
                 return '@' + value;
 
-            if (value[0] == '!')
-                value = "not-" + value.Substring(1);
+            foreach (var tuple in ToReplaceCustom)
+                value = value.Replace(tuple.Item1.ToString(), tuple.Item2);
 
-            foreach (var c in ToReplace)
+            foreach (var c in ToReplaceWithUnderscore)
                 value = value.Replace(c, '_');
 
             return value;

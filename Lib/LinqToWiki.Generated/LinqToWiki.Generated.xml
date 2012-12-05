@@ -59,6 +59,11 @@
             Returns all templates from the given page(s)
             </summary>
         </member>
+        <member name="M:LinqToWiki.Generated.Page.videoinfo">
+            <summary>
+            Extends imageinfo to include video source information
+            </summary>
+        </member>
         <member name="P:LinqToWiki.Generated.Page.categoryinfo">
             <summary>
             Returns information about the given categories
@@ -157,7 +162,7 @@
             The name of the old image to delete as provided by iiprop=archivename
             </param >
         </member>
-        <member name="M:LinqToWiki.Generated.Wiki.edit(System.String,System.String,System.Nullable{System.Int64},System.String,System.String,System.String,System.String,System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.String,System.String,System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},LinqToWiki.Generated.editwatchlist,System.String,System.String,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.Nullable{System.Boolean},LinqToWiki.Generated.editcontentformat,LinqToWiki.Generated.editcontentmodel)">
+        <member name="M:LinqToWiki.Generated.Wiki.edit(System.String,System.String,System.Nullable{System.Int64},System.String,System.String,System.String,System.String,System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.String,System.String,System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},LinqToWiki.Generated.editwatchlist,System.String,System.String,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.Nullable{System.Boolean},LinqToWiki.Generated.editcontentformat,LinqToWiki.Generated.editcontentmodel,LinqToWiki.Generated.editassert,LinqToWiki.Generated.editassert,System.String,System.String)">
             <summary>
             Create and edit pages.
             </summary>
@@ -237,6 +242,30 @@
             </param >
             <param name="contentmodel">
             Content model of the new content
+            </param >
+            <param name="assert">
+            Allows bots to make assertions.
+             true   - Always true; nassert=true will fail if the extension is installed.
+             false  - Always false; assert=false will fail if the extension is installed.
+             user   - Verify that bot is logged in, to prevent anonymous edits.
+             bot    - Verify that bot is logged in and has a bot flag.
+             exists - Verify that page exists. Could be useful from other extensions, i.e. adding nassert=exists to the inputbox extension.
+             test   - Verify that this wiki allows random testing. Defaults to false, but can be overridden in LocalSettings.php.
+            </param >
+            <param name="nassert">
+            Allows bots to make negative assertions.
+             true   - Always true; nassert=true will fail if the extension is installed.
+             false  - Always false; assert=false will fail if the extension is installed.
+             user   - Verify that bot is logged in, to prevent anonymous edits.
+             bot    - Verify that bot is logged in and has a bot flag.
+             exists - Verify that page exists. Could be useful from other extensions, i.e. adding nassert=exists to the inputbox extension.
+             test   - Verify that this wiki allows random testing. Defaults to false, but can be overridden in LocalSettings.php.
+            </param >
+            <param name="captchaword">
+            Answer to the CAPTCHA
+            </param >
+            <param name="captchaid">
+            CAPTCHA ID from previous request
             </param >
         </member>
         <member name="M:LinqToWiki.Generated.Wiki.emailuser(System.String,System.String,System.String,System.String,System.Nullable{System.Boolean})">
@@ -628,7 +657,7 @@
             Fetch the upload status for this file key
             </param >
         </member>
-        <member name="M:LinqToWiki.Generated.Wiki.watch(System.String,System.String,System.Nullable{System.Boolean})">
+        <member name="M:LinqToWiki.Generated.Wiki.watch(System.String,System.String,System.Nullable{System.Boolean},System.String)">
             <summary>
             Add or remove a page from/to the current user's watchlist
             </summary>
@@ -640,6 +669,9 @@
             </param >
             <param name="unwatch">
             If set the page will be unwatched rather than watched
+            </param >
+            <param name="uselang">
+            Language to show the message in
             </param >
         </member>
         <member name="M:LinqToWiki.Generated.QueryAction.allcategories">
@@ -1138,6 +1170,9 @@
         <member name="P:LinqToWiki.Generated.Entities.categorymembersWhere.ns">
             <summary>
             Only include pages in these namespaces
+            NOTE: Due to $wgMiserMode, using this may result in fewer than "cmlimit" results
+            returned before continuing; in extreme cases, zero results may be returned.
+            Note that you can use cmtype=subcat or cmtype=file instead of cmnamespace=14 or 6.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.categorymembersWhere.type">
@@ -1275,6 +1310,8 @@
         <member name="P:LinqToWiki.Generated.Entities.exturlusageWhere.ns">
             <summary>
             The page namespace(s) to enumerate.
+            NOTE: Due to $wgMiserMode, using this may result in fewer than "eulimit" results
+            returned before continuing; in extreme cases, zero results may be returned
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.exturlusageWhere.expandurl">
@@ -1692,7 +1729,7 @@
         <member name="P:LinqToWiki.Generated.Entities.usercontribsWhere.show">
             <summary>
             Show only items that meet this criteria, e.g. non minor edits only: ucshow=!minor
-            NOTE: if ucshow=patrolled or ucshow=!patrolled is set, revisions older than $wgRCMaxAge (7862400) won't be shown
+            NOTE: if ucshow=patrolled or ucshow=!patrolled is set, revisions older than $wgRCMaxAge (2592000) won't be shown
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.usercontribsWhere.tag">
@@ -1713,6 +1750,33 @@
         <member name="P:LinqToWiki.Generated.Entities.usersWhere.token">
             <summary>
             Which tokens to obtain for each user
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.videoinfoWhere.start">
+            <summary>
+            Timestamp to start listing from
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.videoinfoWhere.end">
+            <summary>
+            Timestamp to stop listing at
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.videoinfoWhere.urlwidth">
+            <summary>
+            If viprop=url is set, a URL to an image scaled to this width will be returned.
+            Only the current version of the image can be scaled
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.videoinfoWhere.urlheight">
+            <summary>
+            Similar to viurlwidth. Cannot be used without viurlwidth
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.videoinfoWhere.urlparam">
+            <summary>
+            A handler specific parameter string. For example, pdf's
+            might use 'page15-100px'. viurlwidth must be used and be consistent with viurlparam
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.watchlistWhere.allrev">
