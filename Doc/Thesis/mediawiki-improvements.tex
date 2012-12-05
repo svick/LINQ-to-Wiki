@@ -11,6 +11,12 @@ to be able to provide information about result properties
 of the \ac{API} modules, using the same type system already used to describe parameters.
 Also, most of the \ac{API} modules were changed so that they provide this information to the \texttt{paraminfo} module.
 
+Specifically, this meant adding \texttt{getResultProperties()} function to the \texttt{Api\-Base} class,
+which is a base class for all module classes, and then overriding it in each module's class.
+This function is then called from the \texttt{ApiParamInfo} class,
+so that the provided information shows in the output of the \texttt{paraminfo} module.
+For an example implementation of \texttt{getResultProperties()}, see Figure~\ref{paraminfo code}.
+
 Of the 73~modules present in the MediaWiki core (that is, without any extensions),
 5 are not suitable for having their result properties described,
 because their result looks different than the result of other modules (for example, there are modules that produce \acs{RSS} feeds).
@@ -25,7 +31,43 @@ On 2 July 2012, MediaWiki version 1.20wmf6, which includes changes from this pat
 
 An example of the added result information to the \texttt{paraminfo} response (here for the \texttt{categorymembers} module) is in Figure~\ref{paraminfo props}.
 
-\medskip
+\begin{figure}[htbp]
+\begin{lstlisting}[language=php]
+public function getResultProperties() {
+  return array(
+    'ids' => array(
+      'pageid' => 'integer'
+    ),
+    'title' => array(
+      'ns' => 'namespace',
+      'title' => 'string'
+    ),
+    'sortkey' => array(
+      'sortkey' => 'string'
+    ),
+    'sortkeyprefix' => array(
+      'sortkeyprefix' => 'string'
+    ),
+    'type' => array(
+      'type' => array(
+        ApiBase::PROP_TYPE => array(
+          'page',
+          'subcat',
+          'file'
+        )
+      )
+    ),
+    'timestamp' => array(
+      'timestamp' => 'timestamp'
+    )
+  );
+}
+\end{lstlisting}
+
+\caption{Implementation of \texttt{getResultProperties()} \\
+in the \texttt{Api\-Query\-Category\-Members} class}
+\label{paraminfo code}
+\end{figure}
 
 \begin{figure}[p]
 
