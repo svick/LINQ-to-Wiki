@@ -60,7 +60,7 @@ namespace LinqToWiki.Internals
                 m_wiki,
                 QueryPageProcessor.ProcessParameters(
                     m_propQueryParametersCollection, m_currentParameters,
-                    m_pageProperties, false),
+                    m_pageProperties, false, m_secondaryQueryContinues.Keys),
                 new[] { m_primaryQueryContinue }.Concat(m_secondaryQueryContinues.Values));
 
             var queryContinues = QueryProcessor.GetQueryContinues(downloaded);
