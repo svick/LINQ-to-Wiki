@@ -350,7 +350,10 @@ namespace LinqToWiki.Codegen
         /// </summary>
         public void AddAllModules()
         {
-            AddModules(m_modulesSource.GetAllModuleNames());
+            var moduleNames = m_modulesSource.GetAllModuleNames()
+                // this module produces invalid XML, this exception is temporary until the module is fixed
+                .Where(name => name != "setglobalaccountstatus");
+            AddModules(moduleNames);
         }
 
         /// <summary>

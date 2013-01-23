@@ -162,6 +162,20 @@
             The name of the old image to delete as provided by iiprop=archivename
             </param >
         </member>
+        <member name="M:LinqToWiki.Generated.Wiki.deleteglobalaccount(System.String,System.String,System.String)">
+            <summary>
+            Delete a global user.
+            </summary>
+            <param name="user">
+            User to delete.
+            </param >
+            <param name="token">
+            Your edit token.
+            </param >
+            <param name="reason">
+            Reason for deleting the user.
+            </param >
+        </member>
         <member name="M:LinqToWiki.Generated.Wiki.edit(System.String,System.String,System.Nullable{System.Int64},System.String,System.String,System.String,System.String,System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.String,System.String,System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},LinqToWiki.Generated.editwatchlist,System.String,System.String,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.Nullable{System.Boolean},LinqToWiki.Generated.editcontentformat,LinqToWiki.Generated.editcontentmodel,LinqToWiki.Generated.editassert,LinqToWiki.Generated.editassert,System.String,System.String)">
             <summary>
             Create and edit pages.
@@ -599,7 +613,7 @@
             Unconditionally add or remove the page from your watchlist, use preferences or do not change watch
             </param >
         </member>
-        <member name="M:LinqToWiki.Generated.Wiki.upload(System.String,System.String,System.String,System.String,LinqToWiki.Generated.uploadwatchlist,System.Nullable{System.Boolean},System.String,System.String,System.String,System.Nullable{System.Boolean},System.String,System.String,System.String,System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.String)">
+        <member name="M:LinqToWiki.Generated.Wiki.upload(System.String,System.String,System.String,System.String,LinqToWiki.Generated.uploadwatchlist,System.Nullable{System.Boolean},System.String,System.String,System.String,System.Nullable{System.Boolean},System.String,System.String,System.String,System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.String,System.Nullable{System.Boolean})">
             <summary>
             Upload a file, or get the status of pending uploads. Several methods are available:
              * Upload file contents directly, using the "file" parameter
@@ -647,6 +661,9 @@
             <param name="chunk">
             Chunk contents
             </param >
+            <param name="async">
+            Make potentially large file operations asynchronous when possible
+            </param >
             <param name="asyncdownload">
             Make fetching a URL asynchronous
             </param >
@@ -654,7 +671,10 @@
             If asyncdownload is used, leave a message on the user talk page if finished
             </param >
             <param name="statuskey">
-            Fetch the upload status for this file key
+            Fetch the upload status for this file key (upload by URL)
+            </param >
+            <param name="checkstatus">
+            Only fetch the upload status for the given file key
             </param >
         </member>
         <member name="M:LinqToWiki.Generated.Wiki.watch(System.String,System.String,System.Nullable{System.Boolean},System.String)">
@@ -697,6 +717,11 @@
         <member name="M:LinqToWiki.Generated.QueryAction.allpages">
             <summary>
             Enumerate all pages sequentially in a given namespace
+            </summary>
+        </member>
+        <member name="M:LinqToWiki.Generated.QueryAction.alltransclusions">
+            <summary>
+            List all transclusions (pages embedded using {{x}}), including non-existing
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.QueryAction.allusers">
@@ -862,17 +887,27 @@
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allimagesWhere.from">
             <summary>
-            The image title to start enumerating from
+            The image title to start enumerating from. Can only be used with aisort=name
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allimagesWhere.to">
             <summary>
-            The image title to stop enumerating at
+            The image title to stop enumerating at. Can only be used with aisort=name
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.allimagesWhere.start">
+            <summary>
+            The timestamp to start enumerating from. Can only be used with aisort=timestamp
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.allimagesWhere.end">
+            <summary>
+            The timestamp to end enumerating. Can only be used with aisort=timestamp
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allimagesWhere.prefix">
             <summary>
-            Search for all image titles that begin with this value
+            Search for all image titles that begin with this value. Can only be used with aisort=name
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allimagesWhere.minsize">
@@ -895,6 +930,16 @@
             SHA1 hash of image in base 36 (used in MediaWiki)
             </summary>
         </member>
+        <member name="P:LinqToWiki.Generated.Entities.allimagesWhere.user">
+            <summary>
+            Only return files uploaded by this user. Can only be used with aisort=timestamp. Cannot be used together with aifilterbots
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.allimagesWhere.filterbots">
+            <summary>
+            How to filter files uploaded by bots. Can only be used with aisort=timestamp. Cannot be used together with aiuser
+            </summary>
+        </member>
         <member name="P:LinqToWiki.Generated.Entities.allimagesWhere.mime">
             <summary>
             What MIME type to search for. e.g. image/jpeg. Disabled in Miser Mode
@@ -902,22 +947,23 @@
         </member>
         <member name="P:LinqToWiki.Generated.Entities.alllinksWhere.from">
             <summary>
-            The page title to start enumerating from
+            The title of the link to start enumerating from
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.alllinksWhere.to">
             <summary>
-            The page title to stop enumerating at
+            The title of the link to stop enumerating at
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.alllinksWhere.prefix">
             <summary>
-            Search for all page titles that begin with this value
+            Search for all link titles that begin with this value
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.alllinksWhere.unique">
             <summary>
-            Only show unique links. Cannot be used with generator or alprop=ids
+            Only show distinct link titles. Cannot be used with alprop=ids.
+            When used as a generator, yields target pages instead of source pages.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.alllinksWhere.ns">
@@ -1048,6 +1094,32 @@
              indefinite - Get only pages with indefinite protection expiry
              definite - Get only pages with a definite (specific) protection expiry
              all - Get pages with any protections expiry
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.alltransclusionsWhere.from">
+            <summary>
+            The title of the transclusion to start enumerating from
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.alltransclusionsWhere.to">
+            <summary>
+            The title of the transclusion to stop enumerating at
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.alltransclusionsWhere.prefix">
+            <summary>
+            Search for all transclusion titles that begin with this value
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.alltransclusionsWhere.unique">
+            <summary>
+            Only show distinct transclusion titles. Cannot be used with atprop=ids.
+            When used as a generator, yields target pages instead of source pages.
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.alltransclusionsWhere.ns">
+            <summary>
+            The namespace to enumerate
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allusersWhere.from">
