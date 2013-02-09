@@ -139,6 +139,38 @@
             Second revision to compare
             </param >
         </member>
+        <member name="M:LinqToWiki.Generated.Wiki.createaccount(System.String,System.String,System.String,System.String,System.String,System.String,System.Nullable{System.Boolean},System.String,System.String)">
+            <summary>
+            Create a new user account.
+            </summary>
+            <param name="name">
+            User Name
+            </param >
+            <param name="password">
+            Password (ignored if mailpassword is set)
+            </param >
+            <param name="domain">
+            Domain (optional)
+            </param >
+            <param name="token">
+            Account creation token obtained in first request
+            </param >
+            <param name="email">
+            Email address of user
+            </param >
+            <param name="realname">
+            Real Name of user
+            </param >
+            <param name="mailpassword">
+            Whether to generate and mail a random password to the user
+            </param >
+            <param name="reason">
+            Optional reason for creating the account (used when mailpassword is set)
+            </param >
+            <param name="language">
+            Language code to set for the user.
+            </param >
+        </member>
         <member name="M:LinqToWiki.Generated.Wiki.delete(System.String,System.String,System.Nullable{System.Int64},System.String,LinqToWiki.Generated.deletewatchlist,System.String)">
             <summary>
             Delete a page
@@ -434,6 +466,8 @@
         <member name="M:LinqToWiki.Generated.Wiki.options(System.String,System.Nullable{System.Boolean},System.Collections.Generic.IEnumerable{System.String},System.String,System.String)">
             <summary>
             Change preferences of the current user
+            Only options which are registered in core or in one of installed extensions,
+            or as options with keys prefixed with 'userjs-' (intended to be used by user scripts), can be set.
             </summary>
             <param name="token">
             An options token previously obtained through the action=tokens
