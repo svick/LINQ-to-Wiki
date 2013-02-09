@@ -82,7 +82,7 @@ namespace LinqToWiki.Internals
         internal static Tuple<string, string>[] ProcessParameters(
             IEnumerable<PropQueryParameters> propQueryParametersCollection,
             IEnumerable<Tuple<string, string>> currentParameters, Dictionary<string, QueryTypeProperties> pageProperties,
-            bool withInfo = true)
+            bool withInfo = true, IEnumerable<string> includedProperties = null)
         {
             var propParameters = new TupleList<string, string>();
 
@@ -90,6 +90,10 @@ namespace LinqToWiki.Internals
 
             if (!withInfo)
                 propQueryParametersCollection = propQueryParametersCollection.Where(x => x.PropName != "info");
+
+            if (includedProperties != null)
+                propQueryParametersCollection =
+                    propQueryParametersCollection.Where(x => includedProperties.Contains(x.PropName));
 
             foreach (var propQueryParameters in propQueryParametersCollection)
             {
