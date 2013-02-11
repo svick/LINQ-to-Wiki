@@ -160,7 +160,7 @@ namespace LinqToWiki.Codegen
         /// <summary>
         /// Characters that can't be present in the names of enum members and will be replaced by an underscore.
         /// </summary>
-        private static readonly char[] ToReplaceWithUnderscore = "-/ ".ToCharArray();
+        private static readonly char[] ToReplaceWithUnderscore = "-/ .".ToCharArray();
 
         /// <summary>
         /// Characters that can't be present in the names of enum members and will be replaced by a custom string.
