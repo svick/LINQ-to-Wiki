@@ -1,7 +1,7 @@
-LINQ to Wiki
+LinqToWiki
 ============
 
-LINQ to Wiki is a library for accessing sites running [MediaWiki](http://www.mediawiki.org/)
+LinqToWiki is a library for accessing sites running [MediaWiki](http://www.mediawiki.org/)
 (including [Wikipedia](http://en.wikipedia.org/)) through the [MediaWiki API](https://www.mediawiki.org/wiki/API)
 from .Net languages like C# and VB.NET.
 
@@ -9,7 +9,7 @@ It can be used to do almost anything that can be done from the web interface and
 including things like editing articles, listing articles in categories, listing all kinds of links on a page
 and much more.
 Querying the various lists available can be done using LINQ queries,
-which then get translated into efficient API reuqests.
+which then get translated into efficient API requests.
 
 The library is strongly-typed, which means it should be hard to make invalid requests
 and it also makes it easy to discover available methods and properties though IntelliSense.
