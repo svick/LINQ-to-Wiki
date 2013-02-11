@@ -1,5 +1,5 @@
 LinqToWiki
-============
+==========
 
 LinqToWiki is a library for accessing sites running [MediaWiki](http://www.mediawiki.org/)
 (including [Wikipedia](http://en.wikipedia.org/)) through the [MediaWiki API](https://www.mediawiki.org/wiki/API)
@@ -17,10 +17,16 @@ and it also makes it easy to discover available methods and properties though In
 Because the API can vary from wiki to wiki,
 [it's necessary to configure the library thorough an automatically generated assembly](#generating-configuration-for-a-wiki).
 
+- [Downloads](#downloads)
 - [Usage](#usage)
 - [Generating configuration for a wiki](#generating-configuration-for-a-wiki)
 - [Developer documentation](#developer-documentation)
 
+Downloads
+---------
+
+- Add the package [LinqToWiki](https://nuget.org/packages/LinqToWiki) to your project through [NuGet](https://nuget.org/); or
+- Download [LinqToWiki](http://ltw.svick.org/LinqToWiki-enwiki-20130211.zip) (11 February 2013)
 
 Usage
 -----
