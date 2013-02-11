@@ -65,6 +65,7 @@ namespace LinqToWiki.Codegen.ModuleInfo
 
             var propsElement = element.Element("props") ??
                                (propsDefault == null ? null : propsDefault.Element("props"));
+            var parametersElement = element.Element("parameters");
 
             return
                 new Module
@@ -80,7 +81,10 @@ namespace LinqToWiki.Codegen.ModuleInfo
                     ListResult =
                         element.Attribute("listresult") != null
                         || (propsDefault != null && propsDefault.Attribute("listresult") != null),
-                    Parameters = element.Element("parameters").Elements().Select(Parameter.Parse).ToArray(),
+                    Parameters =
+                        parametersElement == null
+                            ? null
+                            : parametersElement.Elements().Select(Parameter.Parse).ToArray(),
                     PropertyGroups =
                         propsElement == null
                             ? null
