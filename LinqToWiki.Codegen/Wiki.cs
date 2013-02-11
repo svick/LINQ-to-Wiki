@@ -379,8 +379,8 @@ namespace LinqToWiki.Codegen
                     }, Path.Combine(path, name + ".dll"))
                 {
                     TreatWarningsAsErrors = true,
-                    CompilerOptions = string.Format("/doc:{0} /nowarn:1591", Path.Combine(path, name + ".xml")),
-                    IncludeDebugInformation = true
+                    CompilerOptions = string.Format("/doc:{0} /nowarn:1591 /debug", Path.Combine(path, name + ".xml")),
+                    IncludeDebugInformation = false
                 },
                 files.ToArray());
         }
