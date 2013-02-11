@@ -288,7 +288,7 @@ namespace LinqToWiki.Codegen
         }
 
         /// <summary>
-        /// Adds the code for the given query modules.
+        /// Adds the code for given query modules.
         /// </summary>
         public void AddQueryModules(IEnumerable<string> moduleNames)
         {
@@ -305,6 +305,7 @@ namespace LinqToWiki.Codegen
                 }
                 else
                 {
+                    // unknown result properties: not supported
                     if (module.PropertyGroups == null)
                         continue;
 
@@ -319,6 +320,7 @@ namespace LinqToWiki.Codegen
                     }
                     else
                     {
+                        // this is not actually a query module
                         if (module.Name == "stashimageinfo")
                             continue;
 
@@ -329,7 +331,7 @@ namespace LinqToWiki.Codegen
         }
 
         /// <summary>
-        /// Adds the code for the given non-query modules.
+        /// Adds the code for given non-query modules.
         /// </summary>
         public void AddModules(IEnumerable<string> moduleNames)
         {
