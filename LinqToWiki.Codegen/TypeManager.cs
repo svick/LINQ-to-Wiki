@@ -171,7 +171,7 @@ namespace LinqToWiki.Codegen
         /// <summary>
         /// Names of enum members that are keywords and have to be prefixed by a <c>@</c>.
         /// </summary>
-        private static readonly string[] Restricted = new[] { "new", "true", "false" };
+        private static readonly string[] Restricted = new[] { "new", "true", "false", "lock" };
 
         /// <summary>
         /// Fixes the name of an enum member, so that it's a valid C# identifier.
