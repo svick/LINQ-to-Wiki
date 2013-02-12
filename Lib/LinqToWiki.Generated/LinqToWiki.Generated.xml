@@ -463,7 +463,7 @@
             Ignore any warnings
             </param >
         </member>
-        <member name="M:LinqToWiki.Generated.Wiki.options(System.String,System.Nullable{System.Boolean},System.Collections.Generic.IEnumerable{System.String},System.String,System.String)">
+        <member name="M:LinqToWiki.Generated.Wiki.options(System.String,System.Nullable{System.Boolean},System.Collections.Generic.IEnumerable{LinqToWiki.Generated.optionsresetkinds},System.Collections.Generic.IEnumerable{System.String},System.String,System.String)">
             <summary>
             Change preferences of the current user
             Only options which are registered in core or in one of installed extensions,
@@ -473,10 +473,13 @@
             An options token previously obtained through the action=tokens
             </param >
             <param name="reset">
-            Resets all preferences to the site defaults
+            Resets preferences to the site defaults
+            </param >
+            <param name="resetkinds">
+            List of types of options to reset when the "reset" option is set
             </param >
             <param name="change">
-            List of changes, formatted name=value (e.g. skin=vector), value cannot contain pipe characters
+            List of changes, formatted name=value (e.g. skin=vector), value cannot contain pipe characters. If no value is given (not even an equals sign), e.g., optionname|otheroption|..., the option will be reset to its default value
             </param >
             <param name="optionname">
             A name of a option which should have an optionvalue set
@@ -567,6 +570,26 @@
             </param >
             <param name="watchlist">
             Unconditionally add or remove the page from your watchlist, use preferences or do not change watch
+            </param >
+        </member>
+        <member name="M:LinqToWiki.Generated.Wiki.setglobalaccountstatus(System.String,System.String,LinqToWiki.Generated.setglobalaccountstatuslocked,LinqToWiki.Generated.setglobalaccountstatushidden,System.String)">
+            <summary>
+            Set a global user's status.
+            </summary>
+            <param name="user">
+            User to change the status of.
+            </param >
+            <param name="token">
+            Your edit token.
+            </param >
+            <param name="locked">
+            Change whether this user is locked or not.
+            </param >
+            <param name="hidden">
+            Change whether this user is not hidden, hidden from lists, or suppressed.
+            </param >
+            <param name="reason">
+            Reason for changing the user's status.
             </param >
         </member>
         <member name="M:LinqToWiki.Generated.Wiki.setnotificationtimestamp(System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.Int32},System.Collections.Generic.IEnumerable{System.Int32},System.Nullable{System.Boolean},System.String,System.Nullable{System.DateTime},System.Nullable{System.Int64},System.Nullable{System.Int64})">
