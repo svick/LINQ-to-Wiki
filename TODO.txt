@@ -1,5 +1,3 @@
-* add usage scenarios to thesis?
-
 * XML documentation of generated types (e.g. Wiki)
 * web application
 * optionally turn off getting namespaces every time (or maybe cache them?)
@@ -8,4 +6,4 @@
 * consider using multipart/formdata when necessary
 * Take()?
 * all configuration in one place
-* NuGet
+* hadle != in Where() correctly
