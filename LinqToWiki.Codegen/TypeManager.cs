@@ -143,9 +143,38 @@ namespace LinqToWiki.Codegen
                 new[] { SyntaxKind.InternalKeyword }, typeName, new[] { constructorParameter },
                 constructorInitializer: SyntaxEx.BaseConstructorInitializer((NamedNode)constructorParameter));
 
+            var firstParameter = SyntaxEx.Parameter(typeName, "first");
+            var secondParameter = SyntaxEx.Parameter(typeName, "second");
+
+            Func<SyntaxKind, ExpressionSyntax, OperatorDeclarationSyntax> createOperator =
+                (op, result) => SyntaxEx.OperatorDeclaration(
+                    Syntax.ParseTypeName("bool"), op,
+                    new[] { firstParameter, secondParameter },
+                    new[] { SyntaxEx.Return(result) });
+
+            var equalsExpression = SyntaxEx.Invocation(
+                Syntax.IdentifierName("Equals"), (NamedNode)firstParameter, (NamedNode)secondParameter);
+            var notEqualsExpression = SyntaxEx.Not(equalsExpression);
+
+            var equalsOperator = createOperator(SyntaxKind.EqualsEqualsToken, equalsExpression);
+            var notEqualsOPerator = createOperator(SyntaxKind.ExclamationEqualsToken, notEqualsExpression);
+
+            var equalsParameter = SyntaxEx.Parameter("object", "obj");
+            var equalsMethod = SyntaxEx.MethodDeclaration(
+                new[] { SyntaxKind.PublicKeyword, SyntaxKind.OverrideKeyword }, "bool", "Equals",
+                new[] { equalsParameter },
+                SyntaxEx.Return(
+                    SyntaxEx.Invocation(SyntaxEx.MemberAccess("base", "Equals"), (NamedNode)equalsParameter)));
+
+            var getHashCodeMethod = SyntaxEx.MethodDeclaration(
+                new[] { SyntaxKind.PublicKeyword, SyntaxKind.OverrideKeyword }, "int", "GetHashCode",
+                new ParameterSyntax[0],
+                SyntaxEx.Return(SyntaxEx.Invocation(SyntaxEx.MemberAccess("base", "GetHashCode"))));
+
             var classDeclaration =
                 SyntaxEx.ClassDeclaration(typeName, Syntax.ParseTypeName("StringValue"), contructor)
-                    .AddMembers(members.ToArray<MemberDeclarationSyntax>());
+                        .AddMembers(equalsOperator, notEqualsOPerator, equalsMethod, getHashCodeMethod)
+                        .AddMembers(members.ToArray<MemberDeclarationSyntax>());
 
             var namespaceDeclaration = m_wiki.Files[Wiki.Names.Enums].SingleDescendant<NamespaceDeclarationSyntax>();
 

@@ -199,6 +199,16 @@ namespace LinqToWiki.Codegen
                 .WithInitializer(constructorInitializer);
         }
 
+        public static OperatorDeclarationSyntax OperatorDeclaration(
+            TypeSyntax returnType, SyntaxKind operatorToken, IEnumerable<ParameterSyntax> parameters,
+            IEnumerable<StatementSyntax> statements = null)
+        {
+            return Syntax.OperatorDeclaration(returnType, Syntax.Token(operatorToken))
+                         .WithModifiers(TokenList(new[] { SyntaxKind.PublicKeyword, SyntaxKind.StaticKeyword }))
+                         .WithParameterList(Syntax.ParameterList(parameters.ToSeparatedList()))
+                         .WithBody(Syntax.Block(statements.ToSyntaxList()));
+        }
+
         public static ConstructorInitializerSyntax ThisConstructorInitializer(params ExpressionSyntax[] arguments)
         {
             return ConstructorInitializer(SyntaxKind.ThisConstructorInitializer, arguments);
@@ -587,6 +597,11 @@ namespace LinqToWiki.Codegen
         public static BinaryExpressionSyntax And(ExpressionSyntax left, ExpressionSyntax right)
         {
             return Syntax.BinaryExpression(SyntaxKind.LogicalAndExpression, left, right);
+        }
+
+        public static PrefixUnaryExpressionSyntax Not(ExpressionSyntax operand)
+        {
+            return Syntax.PrefixUnaryExpression(SyntaxKind.LogicalNotExpression, operand);
         }
 
         public static TypeOfExpressionSyntax TypeOf(string typeName)
