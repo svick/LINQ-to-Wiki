@@ -16,16 +16,8 @@ namespace LinqToWiki
         static Downloader()
         {
             ServicePointManager.Expect100Continue = false;
-            UserAgent = "Linq to Wiki by [[w:en:User:Svick]]";
             UseMaxlag = true;
         }
-
-        /// <summary>
-        /// The value of the <c>User-Agent</c> header of requests.
-        /// Should be set to “an informative User-Agent string with contact information”.
-        /// See the <see cref="http://meta.wikimedia.org/wiki/User-Agent_policy">WikiMedia User-Agent policy</see>.
-        /// </summary>
-        public static string UserAgent { get; set; }
 
         /// <summary>
         /// Whether to set the <c>maxlag</c> parameter to limit queries in times of high load.
@@ -37,6 +29,11 @@ namespace LinqToWiki
         /// Whether each request should be logged to the console.
         /// </summary>
         public static bool LogDownloading { get; set; }
+
+        /// <summary>
+        /// The value of the <c>User-Agent</c> header of requests.
+        /// </summary>
+        public string UserAgent { get { return string.Format("{0} LinqToWiki", m_wiki.UserAgent); } }
 
         private readonly WikiInfo m_wiki;
         private readonly CookieContainer m_cookies = new CookieContainer();

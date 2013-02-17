@@ -76,7 +76,7 @@ namespace LinqToWiki.Codegen
             Namespace = ns ?? "LinqToWiki.Generated";
             EntitiesNamespace = Namespace + ".Entities";
 
-            m_modulesSource = new ModulesSource(new WikiInfo(baseUri, apiPath), propsFilePath);
+            m_modulesSource = new ModulesSource(new WikiInfo("LinqToWiki.Codegen.App", baseUri, apiPath), propsFilePath);
 
             CreatePageClass();
             CreateWikiClass(baseUri, apiPath);
@@ -145,6 +145,7 @@ namespace LinqToWiki.Codegen
                 setStatements:
                     new[] { SyntaxEx.Assignment(wikiFieldPagesSourcePageSizeProperty, Syntax.IdentifierName("value")) });
 
+            var userAgentParameter = SyntaxEx.Parameter("string", "userAgent");
             var baseUriParameter = SyntaxEx.Parameter("string", "baseUri", SyntaxEx.NullLiteral());
             var apiPathParameter = SyntaxEx.Parameter("string", "apiPath", SyntaxEx.NullLiteral());
 
@@ -152,6 +153,7 @@ namespace LinqToWiki.Codegen
                 wikiField,
                 SyntaxEx.ObjectCreation(
                     Names.WikiInfo,
+                    (NamedNode)userAgentParameter,
                     SyntaxEx.Coalesce((NamedNode)baseUriParameter, SyntaxEx.Literal(baseUri)),
                     SyntaxEx.Coalesce((NamedNode)apiPathParameter, SyntaxEx.Literal(apiPath))));
 
@@ -160,7 +162,7 @@ namespace LinqToWiki.Codegen
 
             var ctor = SyntaxEx.ConstructorDeclaration(
                 new[] { SyntaxKind.PublicKeyword }, Names.Wiki,
-                new[] { baseUriParameter, apiPathParameter },
+                new[] { userAgentParameter, baseUriParameter, apiPathParameter },
                 new StatementSyntax[] { wikiAssignment, queryAssignment });
 
             var members = new List<MemberDeclarationSyntax>

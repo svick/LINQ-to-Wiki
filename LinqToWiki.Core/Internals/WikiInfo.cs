@@ -9,6 +9,12 @@ namespace LinqToWiki.Internals
     public class WikiInfo
     {
         /// <summary>
+        /// Varying part of the UserAgent HTTP header.
+        /// Should be something like <c>TheNameOfMyBot/1.0 (http://website, myemail@site)</c>.
+        /// </summary>
+        public string UserAgent { get; private set; }
+
+        /// <summary>
         /// Base URL of the wiki.
         /// For example <c>http://en.wikipedia.org/</c> or <c>http://localhost/wiki/</c>.
         /// </summary>
@@ -36,9 +42,13 @@ namespace LinqToWiki.Internals
         /// </summary>
         public int PagesSourcePageSize { get; set; }
 
-        public WikiInfo(string baseUrl = null, string apiPath = null, IEnumerable<Namespace> namespaces = null)
+        public WikiInfo(string userAgent, string baseUrl = null, string apiPath = null, IEnumerable<Namespace> namespaces = null)
         {
             PagesSourcePageSize = 50;
+
+            if (string.IsNullOrWhiteSpace(userAgent))
+                throw new ArgumentException("User agent has to be set.", "userAgent");
+            UserAgent = userAgent;
 
             if (baseUrl == null)
                 baseUrl = "en.wikipedia.org";
