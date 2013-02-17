@@ -36,7 +36,7 @@ Usage
 For example, to edit the [Sandbox](http://en.wikipedia.org/wiki/Wikipedia:Sandbox) on the English Wikipedia anonymously, you can use the following:
 
 ```C#
-var wiki = new Wiki("en.wikipedia.org");
+var wiki = new Wiki("TheNameOfMyBot/1.0 (http://website, myemail@site)", "en.wikipedia.org");
 
 // get edit token, necessary to edit pages
 var token = wiki.tokens(new[] { tokenstype.edit }).edittoken;
