@@ -226,6 +226,11 @@ namespace LinqToWiki.Codegen.ModuleGenerators
                 var nullable = nullableParameters && !methodParameter.Required;
                 var typeName = Wiki.TypeManager.GetTypeName(methodParameter, ClassNameBase, nullable, false);
                 var parameterName = GetPropertyName(methodParameter.Name);
+
+                // this type cannot be processed
+                if (typeName == null)
+                    continue;
+
                 var parameter = SyntaxEx.Parameter(typeName, parameterName, nullable ? SyntaxEx.NullLiteral() : null);
 
                 parameters.Add(parameter);
