@@ -183,8 +183,6 @@ namespace LinqToWiki.Codegen.ModuleGenerators
         {
             if (name == "*")
                 return "value";
-            if (name == "namespace")
-                return "ns";
             if (name == "default")
                 return "defaultvalue";
             if (name == "new")

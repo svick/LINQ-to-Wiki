@@ -131,8 +131,6 @@ namespace LinqToWiki.Expressions
         {
             if (propertyName == "value")
                 return "*";
-            if (propertyName == "ns")
-                return "namespace";
             if (propertyName == "defaultvalue")
                 return "default";
 
