@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using LinqToWiki.Download;
 using LinqToWiki.Generated;
 
 namespace LinqToWiki.Samples
@@ -146,7 +148,7 @@ namespace LinqToWiki.Samples
 
         private static void Purge(Wiki wiki)
         {
-            var result = wiki.purge(new[] { "Test", "Test2", "Test3" }, forcelinkupdate: true);
+            var result = wiki.purge(titles: new[] { "Test", "Test2", "Test3" }, forcelinkupdate: true);
             Write(result);
         }
 
@@ -204,6 +206,17 @@ namespace LinqToWiki.Samples
                 url: "http://upload.wikimedia.org/wikipedia/commons/4/4e/Hymensoporum_flavum_flowers.jpg");
 
             Console.WriteLine(result);
+        }
+
+        private static void UploadFile(Wiki wiki)
+        {
+            var token = wiki.tokens(new[] { tokenstype.edit }).edittoken;
+            using (var stream = File.OpenRead(@"C:\Users\Public\Pictures\Sample Pictures\Chrysanthemum.jpg"))
+            {
+                var result = wiki.upload(token, "Flower.jpeg", file: stream, ignorewarnings: true);
+
+                Console.WriteLine(result);
+            }
         }
 
         private static void Watch(Wiki wiki)

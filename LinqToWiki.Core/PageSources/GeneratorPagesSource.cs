@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using LinqToWiki.Download;
 using LinqToWiki.Internals;
 
 namespace LinqToWiki
@@ -9,10 +10,10 @@ namespace LinqToWiki
     /// </summary>
     public sealed class GeneratorPagesSource<TPage> : PagesSource<TPage>
     {
-        private readonly Func<int, IEnumerable<Tuple<string, string>>> m_baseParametersSelector;
+        private readonly Func<int, IEnumerable<HttpQueryParameterBase>> m_baseParametersSelector;
 
         public GeneratorPagesSource(
-            Func<int, IEnumerable<Tuple<string, string>>> baseParametersSelector, QueryPageProcessor queryPageProcessor)
+            Func<int, IEnumerable<HttpQueryParameterBase>> baseParametersSelector, QueryPageProcessor queryPageProcessor)
             : base(queryPageProcessor)
         {
             m_baseParametersSelector = baseParametersSelector;

@@ -240,11 +240,22 @@ namespace LinqToWiki.Codegen.ModuleGenerators
                 if (nullable && typeName.EndsWith("?"))
                     valueExpression = SyntaxEx.MemberAccess(valueExpression, "Value");
 
-                var queryParametersAssignment = SyntaxEx.Assignment(
-                    queryParametersLocal, SyntaxEx.Invocation(
+                ExpressionSyntax newQueryParameters;
+                if (typeName == "System.IO.Stream")
+                {
+                    newQueryParameters = SyntaxEx.Invocation(
+                        SyntaxEx.MemberAccess(queryParametersLocal, "AddFile"),
+                        SyntaxEx.Literal(methodParameter.Name),
+                        valueExpression);
+                }
+                else
+                {
+                    newQueryParameters = SyntaxEx.Invocation(
                         SyntaxEx.MemberAccess(queryParametersLocal, "AddSingleValue"),
                         SyntaxEx.Literal(methodParameter.Name),
-                        SyntaxEx.Invocation(SyntaxEx.MemberAccess(valueExpression, "ToQueryString"))));
+                        SyntaxEx.Invocation(SyntaxEx.MemberAccess(valueExpression, "ToQueryString")));
+                }
+                var queryParametersAssignment = SyntaxEx.Assignment(queryParametersLocal, newQueryParameters);
                 
                 if (nullable)
                 {

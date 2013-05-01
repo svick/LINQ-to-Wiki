@@ -75,7 +75,7 @@ namespace LinqToWiki.Codegen
                 result = propertyName.EndsWith("id") ? "long" : "int";
                 break;
             case "upload":
-                return null;
+                return "System.IO.Stream";
             default:
                 throw new InvalidOperationException(string.Format("Unknown type {0}", simpleType.Name));
             }

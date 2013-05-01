@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using LinqToWiki.Download;
 using LinqToWiki.Parameters;
 
 namespace LinqToWiki.Internals
@@ -13,17 +13,17 @@ namespace LinqToWiki.Internals
         private readonly WikiInfo m_wiki;
         private readonly string m_generator;
         private readonly IEnumerable<PropQueryParameters> m_propQueryParametersCollection;
-        private readonly IEnumerable<Tuple<string, string>> m_currentParameters;
+        private readonly IEnumerable<HttpQueryParameterBase> m_currentParameters;
         private readonly Dictionary<string, QueryTypeProperties> m_pageProperties;
-        private readonly Tuple<string, string> m_primaryQueryContinue;
-        private Dictionary<string, Tuple<string, string>> m_secondaryQueryContinues;
+        private readonly HttpQueryParameter m_primaryQueryContinue;
+        private Dictionary<string, HttpQueryParameter> m_secondaryQueryContinues;
         private Dictionary<long, PageData> m_pages;
 
         public PagingManager(
             WikiInfo wiki, string generator, IEnumerable<PropQueryParameters> propQueryParametersCollection,
-            IEnumerable<Tuple<string, string>> currentParameters, Dictionary<string, QueryTypeProperties> pageProperties,
-            Tuple<string, string> primaryQueryContinue,
-            Dictionary<string, Tuple<string, string>> secondaryQueryContinues)
+            IEnumerable<HttpQueryParameterBase> currentParameters, Dictionary<string, QueryTypeProperties> pageProperties,
+            HttpQueryParameter primaryQueryContinue,
+            Dictionary<string, HttpQueryParameter> secondaryQueryContinues)
         {
             m_wiki = wiki;
             m_generator = generator;

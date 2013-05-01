@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using LinqToWiki.Collections;
+using LinqToWiki.Download;
 using LinqToWiki.Parameters;
 
 namespace LinqToWiki.Internals
@@ -28,7 +28,7 @@ namespace LinqToWiki.Internals
         {
             var processedParameters = ProcessParameters(parameters, true).ToArray();
 
-            Tuple<string, string> queryContinue = null;
+            HttpQueryParameter queryContinue = null;
 
             do
             {
@@ -98,7 +98,7 @@ namespace LinqToWiki.Internals
         /// Executes query based on the given parameters and returns the results as an XML element.
         /// </summary>
         private XElement Download(
-            IEnumerable<Tuple<string, string>> processedParameters, Tuple<string, string> queryContinue = null)
+            IEnumerable<HttpQueryParameterBase> processedParameters, HttpQueryParameter queryContinue = null)
         {
             return Download(m_wiki, processedParameters, queryContinue);
         }
@@ -106,7 +106,7 @@ namespace LinqToWiki.Internals
         /// <summary>
         /// Processes the data about the query and returns a collection of query parameters.
         /// </summary>
-        private IEnumerable<Tuple<string, string>> ProcessParameters(QueryParameters parameters, bool list)
+        private IEnumerable<HttpQueryParameterBase> ProcessParameters(QueryParameters parameters, bool list)
         {
             return ProcessParameters(m_queryTypeProperties, parameters, list);
         }
@@ -122,7 +122,7 @@ namespace LinqToWiki.Internals
         /// <summary>
         /// Returns a delegate that can be used to get generator parameters for a given limit.
         /// </summary>
-        public Func<int, IEnumerable<Tuple<string, string>>> ProcessGeneratorParameters(QueryParameters parameters)
+        public Func<int, IEnumerable<HttpQueryParameterBase>> ProcessGeneratorParameters(QueryParameters parameters)
         {
             return limit => ProcessParameters(m_queryTypeProperties, parameters, true, true, limit);
         }
@@ -138,8 +138,8 @@ namespace LinqToWiki.Internals
         /// Executes query based on the given parameters and returns the results as an XML element.
         /// </summary>
         public static XElement Download(
-            WikiInfo wiki, IEnumerable<Tuple<string, string>> processedParameters,
-            Tuple<string, string> queryContinue = null)
+            WikiInfo wiki, IEnumerable<HttpQueryParameterBase> processedParameters,
+            HttpQueryParameter queryContinue = null)
         {
             return Download(wiki, processedParameters, new[] { queryContinue });
         }
@@ -149,8 +149,8 @@ namespace LinqToWiki.Internals
         /// Supports multiple query-contine parameters.
         /// </summary>
         public static XElement Download(
-            WikiInfo wiki, IEnumerable<Tuple<string, string>> processedParameters,
-            IEnumerable<Tuple<string, string>> queryContinues = null)
+            WikiInfo wiki, IEnumerable<HttpQueryParameterBase> processedParameters,
+            IEnumerable<HttpQueryParameter> queryContinues = null)
         {
             if (queryContinues != null)
                 processedParameters = processedParameters.Concat(queryContinues.Where(x => x != null));
@@ -194,19 +194,22 @@ namespace LinqToWiki.Internals
         /// <summary>
         /// Processes the data about the query and returns a collection of query parameters.
         /// </summary>
-        public static IEnumerable<Tuple<string, string>> ProcessParameters(
+        public static IEnumerable<HttpQueryParameterBase> ProcessParameters(
             QueryTypeProperties queryTypeProperties, QueryParameters parameters,
             bool list, bool generator = false, int limit = -1)
         {
-            var parsedParameters = new TupleList<string, string>();
+            var parsedParameters = new List<HttpQueryParameterBase>();
+
+            Action<string, string> addParameter = (name, value) => parsedParameters.Add(new HttpQueryParameter(name, value));
 
             if (generator)
             {
                 var generatorParameter = queryTypeProperties.BaseParameters.Single(p => p.Item1 != "action");
-                parsedParameters.Add("generator", generatorParameter.Item2);
+                addParameter("generator", generatorParameter.Item2);
             }
             else
-                parsedParameters.AddRange(queryTypeProperties.BaseParameters);
+                parsedParameters.AddRange(
+                    queryTypeProperties.BaseParameters.Select(p => new HttpQueryParameter(p.Item1, p.Item2)));
 
             string prefix = queryTypeProperties.Prefix;
 
@@ -215,12 +218,22 @@ namespace LinqToWiki.Internals
 
             if (parameters.Value != null)
                 foreach (var value in parameters.Value)
-                    parsedParameters.Add(prefix + value.Name, value.Value);
+                {
+                    var fileParameter = value as NameFileParameter;
+                    if (fileParameter != null)
+                    {
+                        parsedParameters.Add(new HttpQueryFileParameter(fileParameter.Name, fileParameter.File));
+                    }
+                    else
+                    {
+                        addParameter(prefix + value.Name, value.Value);
+                    }
+                }
 
             if (parameters.Ascending != null)
             {
                 if (parameters.Sort != null)
-                    parsedParameters.Add(prefix + "sort", parameters.Sort);
+                    addParameter(prefix + "sort", parameters.Sort);
 
                 string dir;
                 switch (queryTypeProperties.SortType)
@@ -235,7 +248,7 @@ namespace LinqToWiki.Internals
                     throw new InvalidOperationException();
                 }
 
-                parsedParameters.Add(prefix + "dir", dir);
+                addParameter(prefix + "dir", dir);
             }
 
             var selectedProps = new List<string>();
@@ -259,10 +272,10 @@ namespace LinqToWiki.Internals
             if (list)
             {
                 if (!generator)
-                    parsedParameters.Add(prefix + "prop", selectedProps.ToQueryString());
+                    addParameter(prefix + "prop", selectedProps.ToQueryString());
 
                 if (limit != 0)
-                    parsedParameters.Add(prefix + "limit", limit == -1 ? "max" : limit.ToQueryString());
+                    addParameter(prefix + "limit", limit == -1 ? "max" : limit.ToQueryString());
             }
 
             return parsedParameters;
@@ -271,9 +284,9 @@ namespace LinqToWiki.Internals
         /// <summary>
         /// Gets query-continue values for a given module.
         /// </summary>
-        public static Tuple<string, string> GetQueryContinue(XElement downloaded, string moduleName)
+        public static HttpQueryParameter GetQueryContinue(XElement downloaded, string moduleName)
         {
-            Tuple<string, string> result;
+            HttpQueryParameter result;
             GetQueryContinues(downloaded).TryGetValue(moduleName, out result);
             return result;
         }
@@ -281,17 +294,17 @@ namespace LinqToWiki.Internals
         /// <summary>
         /// Parses query-continue values in a query result.
         /// </summary>
-        public static Dictionary<string, Tuple<string, string>> GetQueryContinues(XElement downloaded)
+        public static Dictionary<string, HttpQueryParameter> GetQueryContinues(XElement downloaded)
         {
             var queryContinueElement = downloaded.Element("query-continue");
 
             if (queryContinueElement == null)
-                return new Dictionary<string, Tuple<string, string>>();
+                return new Dictionary<string, HttpQueryParameter>();
 
             var listContinueElements = queryContinueElement.Elements();
             var listContinueAttributes = listContinueElements.Attributes();
             return listContinueAttributes.ToDictionary(
-                a => a.Parent.Name.LocalName, a => Tuple.Create(a.Name.LocalName, a.Value));
+                a => a.Parent.Name.LocalName, a => new HttpQueryParameter(a.Name.LocalName, a.Value));
         }
     }
 }

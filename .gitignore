@@ -5,3 +5,4 @@ _ReSharper*/
 bin/
 obj/
 /Tools/LinqToWiki.Codegen.App/
+/packages/

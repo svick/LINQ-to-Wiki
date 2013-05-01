@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using LinqToWiki.Internals;
 
@@ -106,6 +107,20 @@ namespace LinqToWiki.Parameters
         public QueryParameters<TSource, TResult> AddMultipleValues(string name, IEnumerable<string> values)
         {
             return AddSingleValue(name, values.ToQueryString());
+        }
+
+        public QueryParameters<TSource, TResult> AddFile(string name, Stream file)
+        {
+            if (file == null)
+                return this;
+
+            if (Value != null && Value.Any(v => v.Name == name))
+                throw new InvalidOperationException(
+                    string.Format("Tried adding value with the name '{0}' that is already present.", name));
+
+            var result = Clone();
+            result.Value = new NameFileParameter(Value, name, file);
+            return result;
         }
 
         /// <summary>

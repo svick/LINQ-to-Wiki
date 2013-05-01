@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using LinqToWiki.Download;
 
 namespace LinqToWiki
 {
@@ -14,11 +15,11 @@ namespace LinqToWiki
         /// <summary>
         /// Whether there are any more pages of pages available.
         /// </summary>
-        bool HasMorePages(Tuple<string, string> primaryQueryContinue);
+        bool HasMorePages(HttpQueryParameter primaryQueryContinue);
 
         /// <summary>
         /// Returns the parameters to retrieve the next page of pages.
         /// </summary>
-        IEnumerable<Tuple<string, string>> GetNextPage(int limit);
+        IEnumerable<HttpQueryParameterBase> GetNextPage(int limit);
     }
 }

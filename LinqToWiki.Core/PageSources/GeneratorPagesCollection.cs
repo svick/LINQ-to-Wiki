@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using LinqToWiki.Download;
 
 namespace LinqToWiki
 {
@@ -8,19 +9,19 @@ namespace LinqToWiki
     /// </summary>
     class GeneratorPagesCollection : IPagesCollection
     {
-        private readonly Func<int, IEnumerable<Tuple<string, string>>> m_baseParametersSelector;
+        private readonly Func<int, IEnumerable<HttpQueryParameterBase>> m_baseParametersSelector;
 
-        public GeneratorPagesCollection(Func<int, IEnumerable<Tuple<string, string>>> baseParametersSelector)
+        public GeneratorPagesCollection(Func<int, IEnumerable<HttpQueryParameterBase>> baseParametersSelector)
         {
             m_baseParametersSelector = baseParametersSelector;
         }
 
-        public bool HasMorePages(Tuple<string, string> primaryQueryContinue)
+        public bool HasMorePages(HttpQueryParameter primaryQueryContinue)
         {
             return primaryQueryContinue != null;
         }
 
-        public IEnumerable<Tuple<string, string>> GetNextPage(int limit)
+        public IEnumerable<HttpQueryParameterBase> GetNextPage(int limit)
         {
             return m_baseParametersSelector(limit);
         }

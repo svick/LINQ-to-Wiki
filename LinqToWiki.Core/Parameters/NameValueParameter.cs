@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 
 namespace LinqToWiki.Parameters
 {
@@ -7,7 +8,7 @@ namespace LinqToWiki.Parameters
     /// Node of a linked list of name-value pairs, that represent general query parameters.
     /// Also acts as a collection of parameters from the linked list ending with the current one.
     /// </summary>
-    public sealed class NameValueParameter : IEnumerable<NameValueParameter>
+    public class NameValueParameter : IEnumerable<NameValueParameter>
     {
         /// <summary>
         /// Previous node in the list, or <c>null</c>, if this is the last one.
@@ -50,6 +51,22 @@ namespace LinqToWiki.Parameters
         public override string ToString()
         {
             return string.Format("{0}={1}", Name, Value);
+        }
+    }
+
+    public class NameFileParameter : NameValueParameter
+    {
+        public Stream File { get; private set; }
+
+        public NameFileParameter(NameValueParameter previous, string name, Stream file)
+            : base(previous, name, null)
+        {
+            File = file;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0}=<file>", Name);
         }
     }
 }

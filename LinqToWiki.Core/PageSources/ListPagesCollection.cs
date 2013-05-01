@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using LinqToWiki.Collections;
+using LinqToWiki.Download;
 using LinqToWiki.Internals;
 
 namespace LinqToWiki
@@ -23,7 +24,7 @@ namespace LinqToWiki
             m_enumerator = values.GetEnumerator();
         }
 
-        public bool HasMorePages(Tuple<string, string> primaryQueryContinue)
+        public bool HasMorePages(HttpQueryParameter primaryQueryContinue)
         {
             MoveIfNecessary();
             return m_iterating;
@@ -41,7 +42,7 @@ namespace LinqToWiki
             }
         }
 
-        public IEnumerable<Tuple<string, string>> GetNextPage(int limit)
+        public IEnumerable<HttpQueryParameterBase> GetNextPage(int limit)
         {
             if (limit == -1)
                 limit = m_pageSize;
@@ -59,7 +60,7 @@ namespace LinqToWiki
                     break;
                 MoveIfNecessary();
             }
-            return new TupleList<string, string> { { m_parameterName, formattedValues.ToQueryString() } };
+            return new[] { new HttpQueryParameter(m_parameterName, formattedValues.ToQueryString()) };
         }
     }
 }

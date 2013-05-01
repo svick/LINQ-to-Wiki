@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using LinqToWiki.Collections;
+using LinqToWiki.Download;
 using LinqToWiki.Parameters;
 
 namespace LinqToWiki.Internals
@@ -25,7 +26,7 @@ namespace LinqToWiki.Internals
             PageQueryParameters parameters, Func<PageData, TResult> selector,
             Dictionary<string, QueryTypeProperties> pageProperties)
         {
-            Tuple<string, string> primaryQueryContinue = null;
+            HttpQueryParameter primaryQueryContinue = null;
 
             var revisions = parameters.PropQueryParametersCollection.SingleOrDefault(p => p.PropName == "revisions");
 
@@ -37,14 +38,14 @@ namespace LinqToWiki.Internals
                 var currentParameters = pagesCollection.GetNextPage(limit).ToArray();
                 var processedParameters = ProcessParameters(
                     parameters.PropQueryParametersCollection, currentParameters, pageProperties);
-                var generatorParameter = currentParameters.SingleOrDefault(p => p.Item1 == "generator");
-                var generator = generatorParameter == null ? null : generatorParameter.Item2;
+                var generatorParameter = (HttpQueryParameter)currentParameters.SingleOrDefault(p => p.Name == "generator");
+                var generator = generatorParameter == null ? null : generatorParameter.Value;
 
                 var downloaded = QueryProcessor.Download(m_wiki, processedParameters, primaryQueryContinue);
 
                 var queryContinues = QueryProcessor.GetQueryContinues(downloaded);
 
-                Tuple<string, string> newPrimaryQueryContinue = null;
+                HttpQueryParameter newPrimaryQueryContinue = null;
 
                 if (generator != null)
                 {
@@ -79,12 +80,13 @@ namespace LinqToWiki.Internals
         /// <summary>
         /// Processes the data about the query and returns a collection of query parameters.
         /// </summary>
-        internal static Tuple<string, string>[] ProcessParameters(
+        internal static HttpQueryParameterBase[] ProcessParameters(
             IEnumerable<PropQueryParameters> propQueryParametersCollection,
-            IEnumerable<Tuple<string, string>> currentParameters, Dictionary<string, QueryTypeProperties> pageProperties,
+            IEnumerable<HttpQueryParameterBase> currentParameters,
+            Dictionary<string, QueryTypeProperties> pageProperties,
             bool withInfo = true, IEnumerable<string> includedProperties = null)
         {
-            var propParameters = new TupleList<string, string>();
+            var propParameters = new List<HttpQueryParameterBase>();
 
             var propNames = new List<string>();
 
@@ -105,9 +107,9 @@ namespace LinqToWiki.Internals
                         limit: propQueryParameters.OnlyFirst ? 0 : -1));
             }
 
-            return new[] { Tuple.Create("action", "query") }
-                .Concat(currentParameters.Select(x => Tuple.Create(x.Item1, x.Item2)))
-                .Concat(new[] { Tuple.Create("prop", propNames.ToQueryString()) })
+            return new[] { new HttpQueryParameter("action", "query") }
+                .Concat(currentParameters)
+                .Concat(new[] { new HttpQueryParameter("prop", propNames.ToQueryString()) })
                 .Concat(propParameters)
                 .ToArray();
         }
