@@ -16,7 +16,7 @@
         </member>
         <member name="M:LinqToWiki.Generated.Page.extlinks">
             <summary>
-            Returns all external urls (not interwikies) from the given page(s)
+            Returns all external urls (not interwikis) from the given page(s)
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.Page.imageinfo">
@@ -100,7 +100,7 @@
             Automatically block the last used IP address, and any subsequent IP addresses they try to login from
             </param >
             <param name="noemail">
-            Prevent user from sending e-mail through the wiki. (Requires the "blockemail" right.)
+            Prevent user from sending email through the wiki. (Requires the "blockemail" right.)
             </param >
             <param name="hidename">
             Hide the username from the block log. (Requires the "hideuser" right.)
@@ -144,31 +144,31 @@
             Create a new user account.
             </summary>
             <param name="name">
-            User Name
+            Username
             </param >
             <param name="password">
             Password (ignored if mailpassword is set)
             </param >
             <param name="domain">
-            Domain (optional)
+            Domain for external authentication (optional)
             </param >
             <param name="token">
             Account creation token obtained in first request
             </param >
             <param name="email">
-            Email address of user
+            Email address of user (optional)
             </param >
             <param name="realname">
-            Real Name of user
+            Real name of user (optional)
             </param >
             <param name="mailpassword">
-            Whether to generate and mail a random password to the user
+            If set to any value, a random password will be emailed to the user
             </param >
             <param name="reason">
-            Optional reason for creating the account (used when mailpassword is set)
+            Optional reason for creating the account to be put in the logs
             </param >
             <param name="language">
-            Language code to set for the user.
+            Language code to set as default for the user (optional, defaults to content language)
             </param >
         </member>
         <member name="M:LinqToWiki.Generated.Wiki.delete(System.String,System.String,System.Nullable{System.Int64},System.String,LinqToWiki.Generated.deletewatchlist,System.String)">
@@ -368,7 +368,7 @@
             Upload comment
             </param >
         </member>
-        <member name="M:LinqToWiki.Generated.Wiki.import(System.String,System.String,System.String,LinqToWiki.Generated.importinterwikisource,System.String,System.Nullable{System.Boolean},System.Nullable{System.Boolean},LinqToWiki.Namespace,System.String)">
+        <member name="M:LinqToWiki.Generated.Wiki.import(System.String,System.String,System.IO.Stream,LinqToWiki.Generated.importinterwikisource,System.String,System.Nullable{System.Boolean},System.Nullable{System.Boolean},LinqToWiki.Namespace,System.String)">
             <summary>
             Import a page from another wiki, or an XML file.
             Note that the HTTP POST must be done as a file upload (i.e. using multipart/form-data) when
@@ -517,7 +517,7 @@
             </param >
             <param name="expiry">
             Expiry timestamps. If only one timestamp is set, it'll be used for all protections.
-            Use 'infinite', 'indefinite' or 'never', for a neverexpiring protection.
+            Use 'infinite', 'indefinite' or 'never', for a never-expiring protection.
             </param >
             <param name="reason">
             Reason for (un)protecting
@@ -530,11 +530,14 @@
             Unconditionally add or remove the page from your watchlist, use preferences or do not change watch
             </param >
         </member>
-        <member name="M:LinqToWiki.Generated.Wiki.purge(System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.Int32},System.Collections.Generic.IEnumerable{System.Int32},System.Nullable{System.Boolean})">
+        <member name="M:LinqToWiki.Generated.Wiki.purge(System.Nullable{System.Boolean},System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.Int32},System.Collections.Generic.IEnumerable{System.Int32},System.Nullable{System.Boolean},System.Nullable{System.Boolean},LinqToWiki.Generated.purgegenerator)">
             <summary>
             Purge the cache for the given titles.
             Requires a POST request if the user is not logged in.
             </summary>
+            <param name="forcelinkupdate">
+            Update the links tables
+            </param >
             <param name="titles">
             A list of titles to work on
             </param >
@@ -544,8 +547,16 @@
             <param name="revids">
             A list of revision IDs to work on
             </param >
-            <param name="forcelinkupdate">
-            Update the links tables
+            <param name="redirects">
+            Automatically resolve redirects
+            </param >
+            <param name="converttitles">
+            Convert titles to other variants if necessary. Only works if the wiki's content language supports variant conversion.
+            Languages that support variant conversion include gan, iu, kk, ku, shi, sr, tg, uz, zh
+            </param >
+            <param name="generator">
+            Get the list of pages to work on by executing the specified query module.
+            NOTE: generator parameter names must be prefixed with a 'g', see examples
             </param >
         </member>
         <member name="M:LinqToWiki.Generated.Wiki.rollback(System.String,System.String,System.String,System.String,System.Nullable{System.Boolean},LinqToWiki.Generated.rollbackwatchlist)">
@@ -572,7 +583,7 @@
             Unconditionally add or remove the page from your watchlist, use preferences or do not change watch
             </param >
         </member>
-        <member name="M:LinqToWiki.Generated.Wiki.setglobalaccountstatus(System.String,System.String,LinqToWiki.Generated.setglobalaccountstatuslocked,LinqToWiki.Generated.setglobalaccountstatushidden,System.String)">
+        <member name="M:LinqToWiki.Generated.Wiki.setglobalaccountstatus(System.String,System.String,LinqToWiki.Generated.setglobalaccountstatuslocked,LinqToWiki.Generated.setglobalaccountstatushidden,System.String,System.String)">
             <summary>
             Set a global user's status.
             </summary>
@@ -591,23 +602,17 @@
             <param name="reason">
             Reason for changing the user's status.
             </param >
+            <param name="statecheck">
+            Optional MD5 of the expected current &lt;username&gt;:&lt;hidden&gt;:&lt;locked&gt;, to detect edit conflicts. Set &lt;locked&gt; to 1 for locked, 0 for unlocked.
+            </param >
         </member>
-        <member name="M:LinqToWiki.Generated.Wiki.setnotificationtimestamp(System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.Int32},System.Collections.Generic.IEnumerable{System.Int32},System.Nullable{System.Boolean},System.String,System.Nullable{System.DateTime},System.Nullable{System.Int64},System.Nullable{System.Int64})">
+        <member name="M:LinqToWiki.Generated.Wiki.setnotificationtimestamp(System.Nullable{System.Boolean},System.String,System.Nullable{System.DateTime},System.Nullable{System.Int64},System.Nullable{System.Int64},System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.Int32},System.Collections.Generic.IEnumerable{System.Int32},System.Nullable{System.Boolean},System.Nullable{System.Boolean},LinqToWiki.Generated.setnotificationtimestampgenerator)">
             <summary>
             Update the notification timestamp for watched pages.
             This affects the highlighting of changed pages in the watchlist and history,
-            and the sending of email when the "E-mail me when a page on my watchlist is
+            and the sending of email when the "Email me when a page on my watchlist is
             changed" preference is enabled.
             </summary>
-            <param name="titles">
-            A list of titles to work on
-            </param >
-            <param name="pageids">
-            A list of page IDs to work on
-            </param >
-            <param name="revids">
-            A list of revision IDs to work on
-            </param >
             <param name="entirewatchlist">
             Work on all watched pages
             </param >
@@ -622,6 +627,26 @@
             </param >
             <param name="newerthanrevid">
             Revision to set the notification timestamp newer than (one page only)
+            </param >
+            <param name="titles">
+            A list of titles to work on
+            </param >
+            <param name="pageids">
+            A list of page IDs to work on
+            </param >
+            <param name="revids">
+            A list of revision IDs to work on
+            </param >
+            <param name="redirects">
+            Automatically resolve redirects
+            </param >
+            <param name="converttitles">
+            Convert titles to other variants if necessary. Only works if the wiki's content language supports variant conversion.
+            Languages that support variant conversion include gan, iu, kk, ku, shi, sr, tg, uz, zh
+            </param >
+            <param name="generator">
+            Get the list of pages to work on by executing the specified query module.
+            NOTE: generator parameter names must be prefixed with a 'g', see examples
             </param >
         </member>
         <member name="M:LinqToWiki.Generated.Wiki.tokens(System.Collections.Generic.IEnumerable{LinqToWiki.Generated.tokenstype})">
@@ -670,14 +695,14 @@
             Unconditionally add or remove the page from your watchlist, use preferences or do not change watch
             </param >
         </member>
-        <member name="M:LinqToWiki.Generated.Wiki.upload(System.String,System.String,System.String,System.String,LinqToWiki.Generated.uploadwatchlist,System.Nullable{System.Boolean},System.String,System.String,System.String,System.Nullable{System.Boolean},System.String,System.String,System.String,System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.String,System.Nullable{System.Boolean})">
+        <member name="M:LinqToWiki.Generated.Wiki.upload(System.String,System.String,System.String,System.String,LinqToWiki.Generated.uploadwatchlist,System.Nullable{System.Boolean},System.IO.Stream,System.String,System.String,System.Nullable{System.Boolean},System.String,System.String,System.IO.Stream,System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.String,System.Nullable{System.Boolean})">
             <summary>
             Upload a file, or get the status of pending uploads. Several methods are available:
              * Upload file contents directly, using the "file" parameter
              * Have the MediaWiki server fetch a file from a URL, using the "url" parameter
              * Complete an earlier upload that failed due to warnings, using the "filekey" parameter
             Note that the HTTP POST must be done as a file upload (i.e. using multipart/form-data) when
-            sending the "file".  Also you must get and send an edit token before doing any upload stuff
+            sending the "file". Also you must get and send an edit token before doing any upload stuff
             </summary>
             <param name="token">
             Edit token. You can get one of these through prop=info
@@ -1486,7 +1511,7 @@
         <member name="P:LinqToWiki.Generated.Entities.imageinfoWhere.urlwidth">
             <summary>
             If iiprop=url is set, a URL to an image scaled to this width will be returned.
-            Only the current version of the image can be scaled
+            For performance reasons if this option is used, no more than 50 scaled images will be returned.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.imageinfoWhere.urlheight">
@@ -1847,7 +1872,7 @@
         </member>
         <member name="P:LinqToWiki.Generated.Entities.usercontribsWhere.userprefix">
             <summary>
-            Retrieve contibutions for all users whose names begin with this value. Overrides ucuser
+            Retrieve contributions for all users whose names begin with this value. Overrides ucuser
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.usercontribsWhere.ns">
@@ -1894,7 +1919,7 @@
         <member name="P:LinqToWiki.Generated.Entities.videoinfoWhere.urlwidth">
             <summary>
             If viprop=url is set, a URL to an image scaled to this width will be returned.
-            Only the current version of the image can be scaled
+            For performance reasons if this option is used, no more than 50 scaled images will be returned.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.videoinfoWhere.urlheight">
