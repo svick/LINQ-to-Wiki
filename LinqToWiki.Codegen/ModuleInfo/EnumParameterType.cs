@@ -20,7 +20,7 @@ namespace LinqToWiki.Codegen.ModuleInfo
         /// </summary>
         public EnumParameterType(XElement element)
         {
-            Values = element.Elements().Select(e => (string)e).ToArray();
+            Values = element.Elements().Select(e => (string)e).Distinct().ToArray();
         }
 
         public override bool Equals(ParameterType other)
