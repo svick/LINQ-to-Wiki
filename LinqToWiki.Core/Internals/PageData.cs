@@ -34,11 +34,9 @@ namespace LinqToWiki.Internals
             var pageIdAttribute = element.Attribute("pageid");
 
             if (pageIdAttribute != null)
-            {
                 PageId = ValueParser.ParseInt64(pageIdAttribute.Value);
 
-                AddData(element);
-            }
+            AddData(element);
         }
 
         /// <summary>
