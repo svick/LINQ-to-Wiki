@@ -34,17 +34,24 @@ namespace LinqToWiki.Codegen.ModuleInfo
                     e => ParamInfo.Parse(e, propsDefaults)));
         }
 
+        private static string[] GetParameterValues(IReadOnlyList<Module> modules, string moduleName, string parameterName)
+        {
+            var module = modules.Single(m => m.Name == moduleName);
+            var parameter = module.Parameters.Single(p => p.Name == parameterName);
+            return ((EnumParameterType)parameter.Type).Values.ToArray();
+        }
+
         /// <summary>
         /// Loads module names from the wiki.
         /// </summary>
         private void RetrieveModuleNames()
         {
-            var module = m_processor
-                .ExecuteSingle(QueryParameters.Create<ParamInfo>().AddSingleValue("modules", "paraminfo"))
-                .Modules.Single();
+            var modules = m_processor.ExecuteSingle(
+                QueryParameters.Create<ParamInfo>().AddMultipleValues("modules", new[] { "main", "paraminfo" }))
+                .Modules.ToList();
 
-            m_moduleNames = ((EnumParameterType)module.Parameters.Single(p => p.Name == "modules").Type).Values.ToArray();
-            m_queryModuleNames = ((EnumParameterType)module.Parameters.Single(p => p.Name == "querymodules").Type).Values.ToArray();
+            m_moduleNames = GetParameterValues(modules, "main", "action");
+            m_queryModuleNames = GetParameterValues(modules, "paraminfo", "querymodules");
         }
 
         /// <summary>
