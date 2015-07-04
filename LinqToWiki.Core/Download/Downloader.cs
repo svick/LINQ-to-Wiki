@@ -61,7 +61,7 @@ namespace LinqToWiki.Download
 
             var client = new RestClient
             {
-                BaseUrl = m_wiki.ApiUrl.AbsoluteUri,
+                BaseUrl = m_wiki.ApiUrl.AbsoluteUri + "?rawcontinue",
                 CookieContainer = m_cookies,
                 UserAgent = UserAgent
             };
