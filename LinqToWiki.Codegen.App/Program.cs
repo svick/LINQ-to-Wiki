@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CodeDom.Compiler;
 using System.IO;
+using LinqToWiki.Download;
 
 namespace LinqToWiki.Codegen.App
 {
@@ -8,6 +9,8 @@ namespace LinqToWiki.Codegen.App
     {
         static void Main(string[] args)
         {
+            Downloader.LogDownloading = true;
+
             if (args.Length == 0)
             {
                 Usage();

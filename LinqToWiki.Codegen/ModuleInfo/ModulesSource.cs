@@ -106,8 +106,9 @@ namespace LinqToWiki.Codegen.ModuleInfo
             {
                 var result = m_processor
                     .ExecuteSingle(
-                        QueryParameters.Create<ParamInfo>().AddMultipleValues(
-                            parameterName, moduleNames.Skip(i).Take(pageSize)));
+                        QueryParameters.Create<ParamInfo>()
+                            .AddSingleValue("helpformat", "html")
+                            .AddMultipleValues(parameterName, moduleNames.Skip(i).Take(pageSize)));
 
                 foreach (var module in modulesSelector(result))
                     yield return module;

@@ -119,8 +119,7 @@ namespace LinqToWiki.Samples
         private static void Options(Wiki wiki)
         {
             var tokens = wiki.tokens(new[] { tokenstype.options });
-            var result = wiki.options(tokens.optionstoken, change: new[] { "skin=monobook" });
-            Console.WriteLine(result);
+            wiki.options(tokens.optionstoken, change: new[] { "skin=monobook" });
         }
 
         private static void Patrol(Wiki wiki)
@@ -142,7 +141,7 @@ namespace LinqToWiki.Samples
         {
             var token = wiki.tokens(new[] { tokenstype.protect }).protecttoken;
 
-            var result = wiki.protect(token, new[] { "edit=autoconfirmed", "move=sysop" }, "Test");
+            var result = wiki.protect(new[] { "edit=autoconfirmed", "move=sysop" }, token, "Test");
             Console.WriteLine(result);
         }
 
@@ -222,7 +221,7 @@ namespace LinqToWiki.Samples
         private static void Watch(Wiki wiki)
         {
             var token = wiki.tokens(new[] { tokenstype.watch }).watchtoken;
-            var result = wiki.watch(token, "Test", false);
+            var result = wiki.watch(token, titles: new[]{ "Test" }, unwatch: false);
             Console.WriteLine(result);
         }
 

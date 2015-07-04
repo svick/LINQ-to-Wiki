@@ -218,7 +218,9 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
             statements.Add(queryParametersLocal);
 
-            methodParameters = methodParameters.Where(p => !p.Deprecated)
+            methodParameters = methodParameters
+                .Where(p => !p.Deprecated)
+                .Where(p => p.Name != "continue")
                 .OrderByDescending(p => p.Required);
 
             foreach (var methodParameter in methodParameters)
@@ -267,8 +269,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
                 else
                     statements.Add(queryParametersAssignment);
 
-                var parameterDocumentation = SyntaxEx.DocumentationParameter(
-                    parameterName, new System.Xml.Linq.XText(methodParameter.Description).ToString());
+                var parameterDocumentation = SyntaxEx.DocumentationParameter(parameterName, methodParameter.Description);
 
                 documentationElements.Add(parameterDocumentation);
             }

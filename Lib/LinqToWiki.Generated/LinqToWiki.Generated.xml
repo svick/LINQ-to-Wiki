@@ -6,306 +6,241 @@
     <members>
         <member name="M:LinqToWiki.Generated.Page.categories">
             <summary>
-            List all categories the page(s) belong to
+            List all categories the pages belong to.
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.Page.duplicatefiles">
             <summary>
-            List all files that are duplicates of the given file(s) based on hash values
+            List all files that are duplicates of the given files based on hash values.
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.Page.extlinks">
             <summary>
-            Returns all external urls (not interwikis) from the given page(s)
+            Returns all external URLs (not interwikis) from the given pages.
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.Page.imageinfo">
             <summary>
-            Returns image information and upload history
+            Returns file information and upload history.
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.Page.images">
             <summary>
-            Returns all images contained on the given page(s)
+            Returns all files contained on the given pages.
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.Page.iwlinks">
             <summary>
-            Returns all interwiki links from the given page(s)
+            Returns all interwiki links from the given pages.
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.Page.langlinks">
             <summary>
-            Returns all interlanguage links from the given page(s)
+            Returns all interlanguage links from the given pages.
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.Page.links">
             <summary>
-            Returns all links from the given page(s)
+            Returns all links from the given pages.
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.Page.revisions">
             <summary>
-            Get revision information
-            May be used in several ways:
-             1) Get data about a set of pages (last revision), by setting titles or pageids parameter
-             2) Get revisions for one given page, by using titles/pageids with start/end/limit params
-             3) Get data about a set of revisions by setting their IDs with revids parameter
-            All parameters marked as (enum) may only be used with a single page (#2)
+            <p>Get revision information.
+            </p><p>May be used in several ways:
+            </p>
+            <ol><li> Get data about a set of pages (last revision), by setting titles or pageids.</li>
+            <li> Get revisions for one given page, by using titles or pageids with start, end, or limit.</li>
+            <li> Get data about a set of revisions by setting their IDs with revids.</li></ol>
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.Page.templates">
             <summary>
-            Returns all templates from the given page(s)
-            </summary>
-        </member>
-        <member name="M:LinqToWiki.Generated.Page.videoinfo">
-            <summary>
-            Extends imageinfo to include video source information
+            Returns all pages transcluded on the given pages.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Page.categoryinfo">
             <summary>
-            Returns information about the given categories
+            Returns information about the given categories.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Page.info">
             <summary>
-            Get basic page information such as namespace, title, last touched date, ...
+            Get basic page information.
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.Wiki.block(System.String,System.String,System.String,System.String,System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean})">
             <summary>
-            Block a user
+            Block a user.
             </summary>
             <param name="user">
-            Username, IP address or IP range you want to block
+            Username, IP address, or IP range to block.
             </param >
             <param name="token">
-            A block token previously obtained through prop=info
+            A "csrf" token retrieved from <a href="/wiki/Special:ApiHelp/query%2Btokens" title="Special:ApiHelp/query+tokens">action=query&amp;meta=tokens</a>
             </param >
             <param name="expiry">
-            Relative expiry time, e.g. '5 months' or '2 weeks'. If set to 'infinite', 'indefinite' or 'never', the block will never expire.
+            Expiry time. May be relative (e.g. <kbd>5 months</kbd> or <kbd>2 weeks</kbd>) or absolute (e.g. <kbd>2014-09-18T12:34:56Z</kbd>). If set to <kbd>infinite</kbd>, <kbd>indefinite</kbd>, or <kbd>never</kbd>, the block will never expire.
             </param >
             <param name="reason">
-            Reason for block
+            Reason for block.
             </param >
             <param name="anononly">
-            Block anonymous users only (i.e. disable anonymous edits for this IP)
+            Block anonymous users only (i.e. disable anonymous edits for this IP address).
             </param >
             <param name="nocreate">
-            Prevent account creation
+            Prevent account creation.
             </param >
             <param name="autoblock">
-            Automatically block the last used IP address, and any subsequent IP addresses they try to login from
+            Automatically block the last used IP address, and any subsequent IP addresses they try to login from.
             </param >
             <param name="noemail">
-            Prevent user from sending email through the wiki. (Requires the "blockemail" right.)
+            Prevent user from sending email through the wiki. (Requires the <code>blockemail</code> right).
             </param >
             <param name="hidename">
-            Hide the username from the block log. (Requires the "hideuser" right.)
+            Hide the username from the block log. (Requires the <code>hideuser</code> right).
             </param >
             <param name="allowusertalk">
-            Allow the user to edit their own talk page (depends on $wgBlockAllowsUTEdit)
+            Allow the user to edit their own talk page (depends on <var><a href="//www.mediawiki.org/wiki/Manual:$wgBlockAllowsUTEdit" class="extiw" title="mw:Manual:$wgBlockAllowsUTEdit">$wgBlockAllowsUTEdit</a></var>).
             </param >
             <param name="reblock">
-            If the user is already blocked, overwrite the existing block
+            If the user is already blocked, overwrite the existing block.
             </param >
             <param name="watchuser">
-            Watch the user/IP's user and talk pages
+            Watch the user's or IP address's user and talk pages.
             </param >
         </member>
         <member name="M:LinqToWiki.Generated.Wiki.compare(System.String,System.Nullable{System.Int64},System.Nullable{System.Int32},System.String,System.Nullable{System.Int64},System.Nullable{System.Int32})">
             <summary>
-            Get the difference between 2 pages
-            You must pass a revision number or a page title or a page ID id for each part (1 and 2)
+            <p>Get the difference between 2 pages.
+            </p><p>A revision number, a page title, or a page ID for both "from" and "to" must be passed.
+            </p>
             </summary>
             <param name="fromtitle">
-            First title to compare
+            First title to compare.
             </param >
             <param name="fromid">
-            First page ID to compare
+            First page ID to compare.
             </param >
             <param name="fromrev">
-            First revision to compare
+            First revision to compare.
             </param >
             <param name="totitle">
-            Second title to compare
+            Second title to compare.
             </param >
             <param name="toid">
-            Second page ID to compare
+            Second page ID to compare.
             </param >
             <param name="torev">
-            Second revision to compare
-            </param >
-        </member>
-        <member name="M:LinqToWiki.Generated.Wiki.createaccount(System.String,System.String,System.String,System.String,System.String,System.String,System.Nullable{System.Boolean},System.String,System.String)">
-            <summary>
-            Create a new user account.
-            </summary>
-            <param name="name">
-            Username
-            </param >
-            <param name="password">
-            Password (ignored if mailpassword is set)
-            </param >
-            <param name="domain">
-            Domain for external authentication (optional)
-            </param >
-            <param name="token">
-            Account creation token obtained in first request
-            </param >
-            <param name="email">
-            Email address of user (optional)
-            </param >
-            <param name="realname">
-            Real name of user (optional)
-            </param >
-            <param name="mailpassword">
-            If set to any value, a random password will be emailed to the user
-            </param >
-            <param name="reason">
-            Optional reason for creating the account to be put in the logs
-            </param >
-            <param name="language">
-            Language code to set as default for the user (optional, defaults to content language)
+            Second revision to compare.
             </param >
         </member>
         <member name="M:LinqToWiki.Generated.Wiki.delete(System.String,System.String,System.Nullable{System.Int64},System.String,LinqToWiki.Generated.deletewatchlist,System.String)">
             <summary>
-            Delete a page
+            Delete a page.
             </summary>
             <param name="token">
-            A delete token previously retrieved through prop=info
+            A "csrf" token retrieved from <a href="/wiki/Special:ApiHelp/query%2Btokens" title="Special:ApiHelp/query+tokens">action=query&amp;meta=tokens</a>
             </param >
             <param name="title">
-            Title of the page you want to delete. Cannot be used together with pageid
+            Title of the page to delete. Cannot be used together with <var>pageid</var>.
             </param >
             <param name="pageid">
-            Page ID of the page you want to delete. Cannot be used together with title
+            Page ID of the page to delete. Cannot be used together with <var>title</var>.
             </param >
             <param name="reason">
-            Reason for the deletion. If not set, an automatically generated reason will be used
+            Reason for the deletion. If not set, an automatically generated reason will be used.
             </param >
             <param name="watchlist">
-            Unconditionally add or remove the page from your watchlist, use preferences or do not change watch
+            Unconditionally add or remove the page from the current user's watchlist, use preferences or do not change watch.
             </param >
             <param name="oldimage">
-            The name of the old image to delete as provided by iiprop=archivename
+            The name of the old image to delete as provided by <a href="/wiki/Special:ApiHelp/query%2Bimageinfo" title="Special:ApiHelp/query+imageinfo">action=query&amp;prop=imageinfo&amp;iiprop=archivename</a>.
             </param >
         </member>
-        <member name="M:LinqToWiki.Generated.Wiki.deleteglobalaccount(System.String,System.String,System.String)">
-            <summary>
-            Delete a global user.
-            </summary>
-            <param name="user">
-            User to delete.
-            </param >
-            <param name="token">
-            Your edit token.
-            </param >
-            <param name="reason">
-            Reason for deleting the user.
-            </param >
-        </member>
-        <member name="M:LinqToWiki.Generated.Wiki.edit(System.String,System.String,System.Nullable{System.Int64},System.String,System.String,System.String,System.String,System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.String,System.String,System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},LinqToWiki.Generated.editwatchlist,System.String,System.String,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.Nullable{System.Boolean},LinqToWiki.Generated.editcontentformat,LinqToWiki.Generated.editcontentmodel,LinqToWiki.Generated.editassert,LinqToWiki.Generated.editassert,System.String,System.String)">
+        <member name="M:LinqToWiki.Generated.Wiki.edit(System.String,System.String,System.Nullable{System.Int64},System.String,System.String,System.String,System.String,System.Collections.Generic.IEnumerable{LinqToWiki.Generated.edittags},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},LinqToWiki.Generated.editwatchlist,System.String,System.String,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.Nullable{System.Boolean},LinqToWiki.Generated.editcontentformat,LinqToWiki.Generated.editcontentmodel,System.String,System.String)">
             <summary>
             Create and edit pages.
             </summary>
             <param name="token">
-            Edit token. You can get one of these through prop=info.
-            The token should always be sent as the last parameter, or at least, after the text parameter
+            <p>A "csrf" token retrieved from <a href="/wiki/Special:ApiHelp/query%2Btokens" title="Special:ApiHelp/query+tokens">action=query&amp;meta=tokens</a>
+            </p>
+            <p>The token should always be sent as the last parameter, or at least after the text parameter.
+            </p>
             </param >
             <param name="title">
-            Title of the page you want to edit. Cannot be used together with pageid
+            Title of the page to edit. Cannot be used together with <var>pageid</var>.
             </param >
             <param name="pageid">
-            Page ID of the page you want to edit. Cannot be used together with title
+            Page ID of the page to edit. Cannot be used together with <var>title</var>.
             </param >
             <param name="section">
-            Section number. 0 for the top section, 'new' for a new section
+            Section number. <kbd>0</kbd> for the top section, <kbd>new</kbd> for a new section.
             </param >
             <param name="sectiontitle">
-            The title for a new section
+            The title for a new section.
             </param >
             <param name="text">
-            Page content
+            Page content.
             </param >
             <param name="summary">
-            Edit summary. Also section title when section=new and sectiontitle is not set
+            Edit summary. Also section title when section=new and sectiontitle is not set.
+            </param >
+            <param name="tags">
+            Change tags to apply to the revision.
             </param >
             <param name="minor">
-            Minor edit
+            Minor edit.
             </param >
             <param name="notminor">
-            Non-minor edit
+            Non-minor edit.
             </param >
             <param name="bot">
-            Mark this edit as bot
+            Mark this edit as bot.
             </param >
             <param name="basetimestamp">
-            Timestamp of the base revision (obtained through prop=revisions&amp;rvprop=timestamp).
-            Used to detect edit conflicts; leave unset to ignore conflicts
+            Timestamp of the base revision, used to detect edit conflicts. May be obtained through <a href="/wiki/Special:ApiHelp/query%2Brevisions" title="Special:ApiHelp/query+revisions">action=query&amp;prop=revisions&amp;rvprop=timestamp</a>.
             </param >
             <param name="starttimestamp">
-            Timestamp when you obtained the edit token.
-            Used to detect edit conflicts; leave unset to ignore conflicts
+            Timestamp when the editing process began, used to detect edit conflicts. An appropriate value may be obtained using <var><a href="/wiki/Special:ApiHelp/main" title="Special:ApiHelp/main">curtimestamp</a></var> when beginning the edit process (e.g. when loading the page content to edit).
             </param >
             <param name="recreate">
-            Override any errors about the article having been deleted in the meantime
+            Override any errors about the page having been deleted in the meantime.
             </param >
             <param name="createonly">
-            Don't edit the page if it exists already
+            Don't edit the page if it exists already.
             </param >
             <param name="nocreate">
-            Throw an error if the page doesn't exist
+            Throw an error if the page doesn't exist.
             </param >
             <param name="watchlist">
-            Unconditionally add or remove the page from your watchlist, use preferences or do not change watch
+            Unconditionally add or remove the page from the current user's watchlist, use preferences or do not change watch.
             </param >
             <param name="md5">
-            The MD5 hash of the text parameter, or the prependtext and appendtext parameters concatenated.
-            If set, the edit won't be done unless the hash is correct
+            The MD5 hash of the text parameter, or the prependtext and appendtext parameters concatenated. If set, the edit won't be done unless the hash is correct.
             </param >
             <param name="prependtext">
-            Add this text to the beginning of the page. Overrides text
+            Add this text to the beginning of the page. Overrides text.
             </param >
             <param name="appendtext">
-            Add this text to the end of the page. Overrides text.
-            Use section=new to append a new section
+            <p>Add this text to the end of the page. Overrides text.
+            </p><p>Use section=new to append a new section, rather than this parameter.
+            </p>
             </param >
             <param name="undo">
-            Undo this revision. Overrides text, prependtext and appendtext
+            Undo this revision. Overrides text, prependtext and appendtext.
             </param >
             <param name="undoafter">
-            Undo all revisions from undo to this one. If not set, just undo one revision
+            Undo all revisions from undo to this one. If not set, just undo one revision.
             </param >
             <param name="redirect">
-            Automatically resolve redirects
+            Automatically resolve redirects.
             </param >
             <param name="contentformat">
-            Content serialization format used for the input text
+            Content serialization format used for the input text.
             </param >
             <param name="contentmodel">
-            Content model of the new content
-            </param >
-            <param name="assert">
-            Allows bots to make assertions.
-             true   - Always true; nassert=true will fail if the extension is installed.
-             false  - Always false; assert=false will fail if the extension is installed.
-             user   - Verify that bot is logged in, to prevent anonymous edits.
-             bot    - Verify that bot is logged in and has a bot flag.
-             exists - Verify that page exists. Could be useful from other extensions, i.e. adding nassert=exists to the inputbox extension.
-             test   - Verify that this wiki allows random testing. Defaults to false, but can be overridden in LocalSettings.php.
-            </param >
-            <param name="nassert">
-            Allows bots to make negative assertions.
-             true   - Always true; nassert=true will fail if the extension is installed.
-             false  - Always false; assert=false will fail if the extension is installed.
-             user   - Verify that bot is logged in, to prevent anonymous edits.
-             bot    - Verify that bot is logged in and has a bot flag.
-             exists - Verify that page exists. Could be useful from other extensions, i.e. adding nassert=exists to the inputbox extension.
-             test   - Verify that this wiki allows random testing. Defaults to false, but can be overridden in LocalSettings.php.
+            Content model of the new content.
             </param >
             <param name="captchaword">
             Answer to the CAPTCHA
@@ -319,537 +254,525 @@
             Email a user.
             </summary>
             <param name="target">
-            User to send email to
+            User to send email to.
             </param >
             <param name="text">
-            Mail body
+            Mail body.
             </param >
             <param name="token">
-            A token previously acquired via prop=info
+            A "csrf" token retrieved from <a href="/wiki/Special:ApiHelp/query%2Btokens" title="Special:ApiHelp/query+tokens">action=query&amp;meta=tokens</a>
             </param >
             <param name="subject">
-            Subject header
+            Subject header.
             </param >
             <param name="ccme">
-            Send a copy of this mail to me
+            Send a copy of this mail to me.
             </param >
         </member>
-        <member name="M:LinqToWiki.Generated.Wiki.expandtemplates(System.String,System.String,System.Nullable{System.Boolean},System.Nullable{System.Boolean})">
+        <member name="M:LinqToWiki.Generated.Wiki.expandtemplates(System.String,System.String,System.Nullable{System.Int64},System.Collections.Generic.IEnumerable{LinqToWiki.Generated.expandtemplatesprop},System.Nullable{System.Boolean})">
             <summary>
-            Expands all templates in wikitext
+            Expands all templates in wikitext.
             </summary>
             <param name="text">
-            Wikitext to convert
+            Wikitext to convert.
             </param >
             <param name="title">
-            Title of page
+            Title of page.
             </param >
-            <param name="generatexml">
-            Generate XML parse tree
+            <param name="revid">
+            Revision ID, for {{REVISIONID}} and similar variables.
+            </param >
+            <param name="prop">
+            <p>Which pieces of information to get.
+            </p><p>Note that if no values are selected, the result will contain the wikitext, but the output will be in a deprecated format.
+            </p>
+            <dl><dt>wikitext</dt>
+            <dd>The expanded wikitext.</dd>
+            <dt>categories</dt>
+            <dd>Any categories present in the input that are not represented in the wikitext output.</dd>
+            <dt>properties</dt>
+            <dd>Page properties defined by expanded magic words in the wikitext.</dd>
+            <dt>volatile</dt>
+            <dd>Whether the output is volatile and should not be reused elsewhere within the page.</dd>
+            <dt>ttl</dt>
+            <dd>The maximum time after which caches of the result should be invalidated.</dd>
+            <dt>modules</dt>
+            <dd>Any ResourceLoader modules that parser functions have requested be added to the output. Either <kbd>jsconfigvars</kbd> or <kbd>encodedjsconfigvars</kbd> must be requested jointly with <kbd>modules</kbd>.</dd>
+            <dt>jsconfigvars</dt>
+            <dd>Gives the JavaScript configuration variables specific to the page.</dd>
+            <dt>encodedjsconfigvars</dt>
+            <dd>Gives the JavaScript configuration variables specific to the page as a JSON string.</dd>
+            <dt>parsetree</dt>
+            <dd>The XML parse tree of the input.</dd></dl>
             </param >
             <param name="includecomments">
-            Whether to include HTML comments in the output
+            Whether to include HTML comments in the output.
             </param >
         </member>
         <member name="M:LinqToWiki.Generated.Wiki.filerevert(System.String,System.String,System.String,System.String)">
             <summary>
-            Revert a file to an old version
+            Revert a file to an old version.
             </summary>
             <param name="filename">
-            Target filename without the File: prefix
+            Target filename, without the File: prefix.
             </param >
             <param name="archivename">
-            Archive name of the revision to revert to
+            Archive name of the revision to revert to.
             </param >
             <param name="token">
-            Edit token. You can get one of these through prop=info
+            A "csrf" token retrieved from <a href="/wiki/Special:ApiHelp/query%2Btokens" title="Special:ApiHelp/query+tokens">action=query&amp;meta=tokens</a>
             </param >
             <param name="comment">
-            Upload comment
+            Upload comment.
             </param >
         </member>
         <member name="M:LinqToWiki.Generated.Wiki.import(System.String,System.String,System.IO.Stream,LinqToWiki.Generated.importinterwikisource,System.String,System.Nullable{System.Boolean},System.Nullable{System.Boolean},LinqToWiki.Namespace,System.String)">
             <summary>
-            Import a page from another wiki, or an XML file.
-            Note that the HTTP POST must be done as a file upload (i.e. using multipart/form-data) when
-            sending a file for the "xml" parameter.
+            <p>Import a page from another wiki, or from an XML file.
+            </p><p>Note that the HTTP POST must be done as a file upload (i.e. using multipart/form-data) when sending a file for the <var>xml</var> parameter.
+            </p>
             </summary>
             <param name="token">
-            Import token obtained through prop=info
+            A "csrf" token retrieved from <a href="/wiki/Special:ApiHelp/query%2Btokens" title="Special:ApiHelp/query+tokens">action=query&amp;meta=tokens</a>
             </param >
             <param name="summary">
-            Import summary
+            Import summary.
             </param >
             <param name="xml">
-            Uploaded XML file
+            Uploaded XML file.
             </param >
             <param name="interwikisource">
-            For interwiki imports: wiki to import from
+            For interwiki imports: wiki to import from.
             </param >
             <param name="interwikipage">
-            For interwiki imports: page to import
+            For interwiki imports: page to import.
             </param >
             <param name="fullhistory">
-            For interwiki imports: import the full history, not just the current version
+            For interwiki imports: import the full history, not just the current version.
             </param >
             <param name="templates">
-            For interwiki imports: import all included templates as well
+            For interwiki imports: import all included templates as well.
             </param >
             <param name="ns">
-            For interwiki imports: import to this namespace
+            Import to this namespace. Cannot be used together with <var>rootpage</var>.
             </param >
             <param name="rootpage">
-            Import as subpage of this page
+            Import as subpage of this page. Cannot be used together with <var>namespace</var>.
             </param >
         </member>
         <member name="M:LinqToWiki.Generated.Wiki.login(System.String,System.String,System.String,System.String)">
             <summary>
-            Log in and get the authentication tokens.
-            In the event of a successful log-in, a cookie will be attached
-            to your session. In the event of a failed log-in, you will not
-            be able to attempt another log-in through this method for 5 seconds.
-            This is to prevent password guessing by automated password crackers
+            <p>Log in and get authentication cookies.
+            </p><p>In the event of a successful log-in, the needed cookies will be included in the HTTP response headers. In the event of a failed log-in, further attempts may be throttled to limit automated password guessing attacks.
+            </p>
             </summary>
             <param name="name">
-            User Name
+            User name.
             </param >
             <param name="password">
-            Password
+            Password.
             </param >
             <param name="domain">
-            Domain (optional)
+            Domain (optional).
             </param >
             <param name="token">
-            Login token obtained in first request
+            Login token obtained in first request.
             </param >
         </member>
         <member name="M:LinqToWiki.Generated.Wiki.logout">
             <summary>
-            Log out and clear session data
+            Log out and clear session data.
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.Wiki.move(System.String,System.String,System.String,System.Nullable{System.Int64},System.String,System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},LinqToWiki.Generated.movewatchlist,System.Nullable{System.Boolean})">
             <summary>
-            Move a page
+            Move a page.
             </summary>
             <param name="to">
-            Title you want to rename the page to
+            Title to rename the page to.
             </param >
             <param name="token">
-            A move token previously retrieved through prop=info
+            A "csrf" token retrieved from <a href="/wiki/Special:ApiHelp/query%2Btokens" title="Special:ApiHelp/query+tokens">action=query&amp;meta=tokens</a>
             </param >
             <param name="from">
-            Title of the page you want to move. Cannot be used together with fromid
+            Title of the page to rename. Cannot be used together with <var>fromid</var>.
             </param >
             <param name="fromid">
-            Page ID of the page you want to move. Cannot be used together with from
+            Page ID of the page to rename. Cannot be used together with <var>from</var>.
             </param >
             <param name="reason">
-            Reason for the move
+            Reason for the rename.
             </param >
             <param name="movetalk">
-            Move the talk page, if it exists
+            Rename the talk page, if it exists.
             </param >
             <param name="movesubpages">
-            Move subpages, if applicable
+            Rename subpages, if applicable.
             </param >
             <param name="noredirect">
-            Don't create a redirect
+            Don't create a redirect.
             </param >
             <param name="watchlist">
-            Unconditionally add or remove the page from your watchlist, use preferences or do not change watch
+            Unconditionally add or remove the page from the current user's watchlist, use preferences or do not change watch.
             </param >
             <param name="ignorewarnings">
-            Ignore any warnings
+            Ignore any warnings.
             </param >
         </member>
         <member name="M:LinqToWiki.Generated.Wiki.options(System.String,System.Nullable{System.Boolean},System.Collections.Generic.IEnumerable{LinqToWiki.Generated.optionsresetkinds},System.Collections.Generic.IEnumerable{System.String},System.String,System.String)">
             <summary>
-            Change preferences of the current user
-            Only options which are registered in core or in one of installed extensions,
-            or as options with keys prefixed with 'userjs-' (intended to be used by user scripts), can be set.
+            <p>Change preferences of the current user.
+            </p><p>Only options which are registered in core or in one of installed extensions, or options with keys prefixed with "userjs-" (intended to be used by user scripts), can be set.
+            </p>
             </summary>
             <param name="token">
-            An options token previously obtained through the action=tokens
+            A "csrf" token retrieved from <a href="/wiki/Special:ApiHelp/query%2Btokens" title="Special:ApiHelp/query+tokens">action=query&amp;meta=tokens</a>
             </param >
             <param name="reset">
-            Resets preferences to the site defaults
+            Resets preferences to the site defaults.
             </param >
             <param name="resetkinds">
-            List of types of options to reset when the "reset" option is set
+            List of types of options to reset when the <var>reset</var> option is set.
             </param >
             <param name="change">
-            List of changes, formatted name=value (e.g. skin=vector), value cannot contain pipe characters. If no value is given (not even an equals sign), e.g., optionname|otheroption|..., the option will be reset to its default value
+            List of changes, formatted name=value (e.g. skin=vector). Value cannot contain pipe characters. If no value is given (not even an equals sign), e.g., optionname|otheroption|..., the option will be reset to its default value.
             </param >
             <param name="optionname">
-            A name of a option which should have an optionvalue set
+            A name of a option which should be set to the value given by <var>optionvalue</var>.
             </param >
             <param name="optionvalue">
-            A value of the option specified by the optionname, can contain pipe characters
+            A value of the option specified by <var>optionname</var>, can contain pipe characters.
             </param >
         </member>
-        <member name="M:LinqToWiki.Generated.Wiki.patrol(System.String,System.Int64)">
+        <member name="M:LinqToWiki.Generated.Wiki.patrol(System.String,System.Nullable{System.Int64},System.Nullable{System.Int64})">
             <summary>
-            Patrol a page or revision
+            Patrol a page or revision.
             </summary>
             <param name="token">
-            Patrol token obtained from list=recentchanges
+            A "patrol" token retrieved from <a href="/wiki/Special:ApiHelp/query%2Btokens" title="Special:ApiHelp/query+tokens">action=query&amp;meta=tokens</a>
             </param >
             <param name="rcid">
-            Recentchanges ID to patrol
+            Recentchanges ID to patrol.
+            </param >
+            <param name="revid">
+            Revision ID to patrol.
             </param >
         </member>
-        <member name="M:LinqToWiki.Generated.Wiki.protect(System.String,System.Collections.Generic.IEnumerable{System.String},System.String,System.Nullable{System.Int64},System.Collections.Generic.IEnumerable{System.String},System.String,System.Nullable{System.Boolean},LinqToWiki.Generated.protectwatchlist)">
+        <member name="M:LinqToWiki.Generated.Wiki.protect(System.Collections.Generic.IEnumerable{System.String},System.String,System.String,System.Nullable{System.Int64},System.Collections.Generic.IEnumerable{System.String},System.String,System.Nullable{System.Boolean},LinqToWiki.Generated.protectwatchlist)">
             <summary>
-            Change the protection level of a page
+            Change the protection level of a page.
             </summary>
-            <param name="token">
-            A protect token previously retrieved through prop=info
-            </param >
             <param name="protections">
-            List of protection levels, formatted action=group (e.g. edit=sysop)
+            <p>List of protection levels, formatted <kbd>action=level</kbd> (e.g. <kbd>edit=sysop</kbd>).
+            </p><p><strong>Note:</strong> Any actions not listed will have restrictions removed.
+            </p>
+            </param >
+            <param name="token">
+            A "csrf" token retrieved from <a href="/wiki/Special:ApiHelp/query%2Btokens" title="Special:ApiHelp/query+tokens">action=query&amp;meta=tokens</a>
             </param >
             <param name="title">
-            Title of the page you want to (un)protect. Cannot be used together with pageid
+            Title of the page to (un)protect. Cannot be used together with pageid.
             </param >
             <param name="pageid">
-            ID of the page you want to (un)protect. Cannot be used together with title
+            ID of the page to (un)protect. Cannot be used together with title.
             </param >
             <param name="expiry">
-            Expiry timestamps. If only one timestamp is set, it'll be used for all protections.
-            Use 'infinite', 'indefinite' or 'never', for a never-expiring protection.
+            Expiry timestamps. If only one timestamp is set, it'll be used for all protections. Use <kbd>infinite</kbd>, <kbd>indefinite</kbd>, <kbd>infinity</kbd>, or <kbd>never</kbd>, for a never-expiring protection.
             </param >
             <param name="reason">
-            Reason for (un)protecting
+            Reason for (un)protecting.
             </param >
             <param name="cascade">
-            Enable cascading protection (i.e. protect pages included in this page)
-            Ignored if not all protection levels are 'sysop' or 'protect'
+            Enable cascading protection (i.e. protect pages included in this page). Ignored if all protection levels given do not support cascading.
             </param >
             <param name="watchlist">
-            Unconditionally add or remove the page from your watchlist, use preferences or do not change watch
+            Unconditionally add or remove the page from the current user's watchlist, use preferences or do not change watch.
             </param >
         </member>
-        <member name="M:LinqToWiki.Generated.Wiki.purge(System.Nullable{System.Boolean},System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.Int32},System.Collections.Generic.IEnumerable{System.Int32},System.Nullable{System.Boolean},System.Nullable{System.Boolean},LinqToWiki.Generated.purgegenerator)">
+        <member name="M:LinqToWiki.Generated.Wiki.purge(System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.Int32},System.Collections.Generic.IEnumerable{System.Int32},LinqToWiki.Generated.purgegenerator,System.Nullable{System.Boolean},System.Nullable{System.Boolean})">
             <summary>
-            Purge the cache for the given titles.
-            Requires a POST request if the user is not logged in.
+            <p>Purge the cache for the given titles.
+            </p><p>Requires a POST request if the user is not logged in.
+            </p>
             </summary>
             <param name="forcelinkupdate">
-            Update the links tables
+            Update the links tables.
+            </param >
+            <param name="forcerecursivelinkupdate">
+            Update the links table, and update the links tables for any page that uses this page as a template.
             </param >
             <param name="titles">
-            A list of titles to work on
+            A list of titles to work on.
             </param >
             <param name="pageids">
-            A list of page IDs to work on
+            A list of page IDs to work on.
             </param >
             <param name="revids">
-            A list of revision IDs to work on
-            </param >
-            <param name="redirects">
-            Automatically resolve redirects
-            </param >
-            <param name="converttitles">
-            Convert titles to other variants if necessary. Only works if the wiki's content language supports variant conversion.
-            Languages that support variant conversion include gan, iu, kk, ku, shi, sr, tg, uz, zh
+            A list of revision IDs to work on.
             </param >
             <param name="generator">
-            Get the list of pages to work on by executing the specified query module.
-            NOTE: generator parameter names must be prefixed with a 'g', see examples
+            <p>Get the list of pages to work on by executing the specified query module.
+            </p><p><strong>Note:</strong> Generator parameter names must be prefixed with a "g", see examples.
+            </p>
+            </param >
+            <param name="redirects">
+            Automatically resolve redirects in <var>titles</var>, <var>pageids</var>, and <var>revids</var>, and in pages returned by <var>generator</var>.
+            </param >
+            <param name="converttitles">
+            Convert titles to other variants if necessary. Only works if the wiki's content language supports variant conversion. Languages that support variant conversion include gan, iu, kk, ku, shi, sr, tg, uz, zh.
             </param >
         </member>
-        <member name="M:LinqToWiki.Generated.Wiki.rollback(System.String,System.String,System.String,System.String,System.Nullable{System.Boolean},LinqToWiki.Generated.rollbackwatchlist)">
+        <member name="M:LinqToWiki.Generated.Wiki.rollback(System.String,System.String,System.String,System.Nullable{System.Int64},System.String,System.Nullable{System.Boolean},LinqToWiki.Generated.rollbackwatchlist)">
             <summary>
-            Undo the last edit to the page. If the last user who edited the page made multiple edits in a row,
-            they will all be rolled back
+            <p>Undo the last edit to the page.
+            </p><p>If the last user who edited the page made multiple edits in a row, they will all be rolled back.
+            </p>
             </summary>
-            <param name="title">
-            Title of the page you want to rollback.
-            </param >
             <param name="user">
-            Name of the user whose edits are to be rolled back. If set incorrectly, you'll get a badtoken error.
+            Name of the user whose edits are to be rolled back.
             </param >
             <param name="token">
-            A rollback token previously retrieved through prop=revisions
+            <p>A "rollback" token retrieved from <a href="/wiki/Special:ApiHelp/query%2Btokens" title="Special:ApiHelp/query+tokens">action=query&amp;meta=tokens</a>
+            </p>
+            <p>For compatibility, the token used in the web UI is also accepted.
+            </p>
+            </param >
+            <param name="title">
+            Title of the page to roll back. Cannot be used together with <var>pageid</var>.
+            </param >
+            <param name="pageid">
+            Page ID of the page to roll back. Cannot be used together with <var>title</var>.
             </param >
             <param name="summary">
-            Custom edit summary. If empty, default summary will be used
+            Custom edit summary. If empty, default summary will be used.
             </param >
             <param name="markbot">
-            Mark the reverted edits and the revert as bot edits
+            Mark the reverted edits and the revert as bot edits.
             </param >
             <param name="watchlist">
-            Unconditionally add or remove the page from your watchlist, use preferences or do not change watch
-            </param >
-        </member>
-        <member name="M:LinqToWiki.Generated.Wiki.setglobalaccountstatus(System.String,System.String,LinqToWiki.Generated.setglobalaccountstatuslocked,LinqToWiki.Generated.setglobalaccountstatushidden,System.String,System.String)">
-            <summary>
-            Set a global user's status.
-            </summary>
-            <param name="user">
-            User to change the status of.
-            </param >
-            <param name="token">
-            Your edit token.
-            </param >
-            <param name="locked">
-            Change whether this user is locked or not.
-            </param >
-            <param name="hidden">
-            Change whether this user is not hidden, hidden from lists, or suppressed.
-            </param >
-            <param name="reason">
-            Reason for changing the user's status.
-            </param >
-            <param name="statecheck">
-            Optional MD5 of the expected current &lt;username&gt;:&lt;hidden&gt;:&lt;locked&gt;, to detect edit conflicts. Set &lt;locked&gt; to 1 for locked, 0 for unlocked.
-            </param >
-        </member>
-        <member name="M:LinqToWiki.Generated.Wiki.setnotificationtimestamp(System.Nullable{System.Boolean},System.String,System.Nullable{System.DateTime},System.Nullable{System.Int64},System.Nullable{System.Int64},System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.Int32},System.Collections.Generic.IEnumerable{System.Int32},System.Nullable{System.Boolean},System.Nullable{System.Boolean},LinqToWiki.Generated.setnotificationtimestampgenerator)">
-            <summary>
-            Update the notification timestamp for watched pages.
-            This affects the highlighting of changed pages in the watchlist and history,
-            and the sending of email when the "Email me when a page on my watchlist is
-            changed" preference is enabled.
-            </summary>
-            <param name="entirewatchlist">
-            Work on all watched pages
-            </param >
-            <param name="token">
-            A token previously acquired via prop=info
-            </param >
-            <param name="timestamp">
-            Timestamp to which to set the notification timestamp
-            </param >
-            <param name="torevid">
-            Revision to set the notification timestamp to (one page only)
-            </param >
-            <param name="newerthanrevid">
-            Revision to set the notification timestamp newer than (one page only)
-            </param >
-            <param name="titles">
-            A list of titles to work on
-            </param >
-            <param name="pageids">
-            A list of page IDs to work on
-            </param >
-            <param name="revids">
-            A list of revision IDs to work on
-            </param >
-            <param name="redirects">
-            Automatically resolve redirects
-            </param >
-            <param name="converttitles">
-            Convert titles to other variants if necessary. Only works if the wiki's content language supports variant conversion.
-            Languages that support variant conversion include gan, iu, kk, ku, shi, sr, tg, uz, zh
-            </param >
-            <param name="generator">
-            Get the list of pages to work on by executing the specified query module.
-            NOTE: generator parameter names must be prefixed with a 'g', see examples
+            Unconditionally add or remove the page from the current user's watchlist, use preferences or do not change watch.
             </param >
         </member>
         <member name="M:LinqToWiki.Generated.Wiki.tokens(System.Collections.Generic.IEnumerable{LinqToWiki.Generated.tokenstype})">
             <summary>
-            Gets tokens for data-modifying actions
+            <p>Get tokens for data-modifying actions.
+            </p><p>This module is deprecated in favor of <a href="/wiki/Special:ApiHelp/query%2Btokens" title="Special:ApiHelp/query+tokens">action=query&amp;meta=tokens</a>.
+            </p>
             </summary>
             <param name="type">
-            Type of token(s) to request
+            Types of token to request.
             </param >
         </member>
-        <member name="M:LinqToWiki.Generated.Wiki.unblock(System.Nullable{System.Int64},System.String,System.String,System.String)">
+        <member name="M:LinqToWiki.Generated.Wiki.unblock(System.String,System.Nullable{System.Int64},System.String,System.String)">
             <summary>
-            Unblock a user
+            Unblock a user.
             </summary>
+            <param name="token">
+            A "csrf" token retrieved from <a href="/wiki/Special:ApiHelp/query%2Btokens" title="Special:ApiHelp/query+tokens">action=query&amp;meta=tokens</a>
+            </param >
             <param name="id">
-            ID of the block you want to unblock (obtained through list=blocks). Cannot be used together with user
+            ID of the block to unblock (obtained through <kbd>list=blocks</kbd>). Cannot be used together with <var>user</var>.
             </param >
             <param name="user">
-            Username, IP address or IP range you want to unblock. Cannot be used together with id
-            </param >
-            <param name="token">
-            An unblock token previously obtained through prop=info
+            Username, IP address or IP range to unblock. Cannot be used together with <var>id</var>.
             </param >
             <param name="reason">
-            Reason for unblock
+            Reason for unblock.
             </param >
         </member>
-        <member name="M:LinqToWiki.Generated.Wiki.undelete(System.String,System.String,System.String,System.Collections.Generic.IEnumerable{System.DateTime},LinqToWiki.Generated.undeletewatchlist)">
+        <member name="M:LinqToWiki.Generated.Wiki.undelete(System.String,System.String,System.String,System.Collections.Generic.IEnumerable{System.DateTime},System.Collections.Generic.IEnumerable{System.Int32},LinqToWiki.Generated.undeletewatchlist)">
             <summary>
-            Restore certain revisions of a deleted page. A list of deleted revisions (including timestamps) can be
-            retrieved through list=deletedrevs
+            <p>Restore revisions of a deleted page.
+            </p><p>A list of deleted revisions (including timestamps) can be retrieved through <a href="/wiki/Special:ApiHelp/query%2Bdeletedrevs" title="Special:ApiHelp/query+deletedrevs">list=deletedrevs</a>, and a list of deleted file IDs can be retrieved through <a href="/wiki/Special:ApiHelp/query%2Bfilearchive" title="Special:ApiHelp/query+filearchive">list=filearchive</a>.
+            </p>
             </summary>
             <param name="title">
-            Title of the page you want to restore
+            Title of the page to restore.
             </param >
             <param name="token">
-            An undelete token previously retrieved through list=deletedrevs
+            A "csrf" token retrieved from <a href="/wiki/Special:ApiHelp/query%2Btokens" title="Special:ApiHelp/query+tokens">action=query&amp;meta=tokens</a>
             </param >
             <param name="reason">
-            Reason for restoring
+            Reason for restoring.
             </param >
             <param name="timestamps">
-            Timestamps of the revisions to restore. If not set, all revisions will be restored.
+            Timestamps of the revisions to restore. If both <var>timestamps</var> and <var>fileids</var> are empty, all will be restored.
+            </param >
+            <param name="fileids">
+            IDs of the file revisions to restore. If both <var>timestamps</var> and <var>fileids</var> are empty, all will be restored.
             </param >
             <param name="watchlist">
-            Unconditionally add or remove the page from your watchlist, use preferences or do not change watch
+            Unconditionally add or remove the page from the current user's watchlist, use preferences or do not change watch.
             </param >
         </member>
         <member name="M:LinqToWiki.Generated.Wiki.upload(System.String,System.String,System.String,System.String,LinqToWiki.Generated.uploadwatchlist,System.Nullable{System.Boolean},System.IO.Stream,System.String,System.String,System.Nullable{System.Boolean},System.String,System.String,System.IO.Stream,System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.String,System.Nullable{System.Boolean})">
             <summary>
-            Upload a file, or get the status of pending uploads. Several methods are available:
-             * Upload file contents directly, using the "file" parameter
-             * Have the MediaWiki server fetch a file from a URL, using the "url" parameter
-             * Complete an earlier upload that failed due to warnings, using the "filekey" parameter
-            Note that the HTTP POST must be done as a file upload (i.e. using multipart/form-data) when
-            sending the "file". Also you must get and send an edit token before doing any upload stuff
+            <p>Upload a file, or get the status of pending uploads.
+            </p><p>Several methods are available:
+            </p>
+            <ul><li> Upload file contents directly, using the <var>file</var> parameter.</li>
+            <li> Upload the file in pieces, using the <var>filesize</var>, <var>chunk</var>, and <var>offset</var> parameters.</li>
+            <li> Have the MediaWiki server fetch a file from a URL, using the <var>url</var> parameter.</li>
+            <li> Complete an earlier upload that failed due to warnings, using the <var>filekey</var> parameter.</li></ul>
+            <p>Note that the HTTP POST must be done as a file upload (i.e. using <code>multipart/form-data</code>) when sending the <var>file</var>.
+            </p>
             </summary>
             <param name="token">
-            Edit token. You can get one of these through prop=info
+            A "csrf" token retrieved from <a href="/wiki/Special:ApiHelp/query%2Btokens" title="Special:ApiHelp/query+tokens">action=query&amp;meta=tokens</a>
             </param >
             <param name="filename">
-            Target filename
+            Target filename.
             </param >
             <param name="comment">
-            Upload comment. Also used as the initial page text for new files if "text" is not specified
+            Upload comment. Also used as the initial page text for new files if <var>text</var> is not specified.
             </param >
             <param name="text">
-            Initial page text for new files
+            Initial page text for new files.
             </param >
             <param name="watchlist">
-            Unconditionally add or remove the page from your watchlist, use preferences or do not change watch
+            Unconditionally add or remove the page from the current user's watchlist, use preferences or do not change watch.
             </param >
             <param name="ignorewarnings">
-            Ignore any warnings
+            Ignore any warnings.
             </param >
             <param name="file">
-            File contents
+            File contents.
             </param >
             <param name="url">
-            URL to fetch the file from
+            URL to fetch the file from.
             </param >
             <param name="filekey">
             Key that identifies a previous upload that was stashed temporarily.
             </param >
             <param name="stash">
-            If set, the server will not add the file to the repository and stash it temporarily.
+            If set, the server will stash the file temporarily instead of adding it to the repository.
             </param >
             <param name="filesize">
-            Filesize of entire upload
+            Filesize of entire upload.
             </param >
             <param name="offset">
-            Offset of chunk in bytes
+            Offset of chunk in bytes.
             </param >
             <param name="chunk">
-            Chunk contents
+            Chunk contents.
             </param >
             <param name="async">
-            Make potentially large file operations asynchronous when possible
+            Make potentially large file operations asynchronous when possible.
             </param >
             <param name="asyncdownload">
-            Make fetching a URL asynchronous
+            Make fetching a URL asynchronous.
             </param >
             <param name="leavemessage">
-            If asyncdownload is used, leave a message on the user talk page if finished
+            If asyncdownload is used, leave a message on the user talk page if finished.
             </param >
             <param name="statuskey">
-            Fetch the upload status for this file key (upload by URL)
+            Fetch the upload status for this file key (upload by URL).
             </param >
             <param name="checkstatus">
-            Only fetch the upload status for the given file key
+            Only fetch the upload status for the given file key.
             </param >
         </member>
-        <member name="M:LinqToWiki.Generated.Wiki.watch(System.String,System.String,System.Nullable{System.Boolean},System.String)">
+        <member name="M:LinqToWiki.Generated.Wiki.watch(System.String,System.Nullable{System.Boolean},System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.Int32},System.Collections.Generic.IEnumerable{System.Int32},LinqToWiki.Generated.watchgenerator,System.Nullable{System.Boolean},System.Nullable{System.Boolean})">
             <summary>
-            Add or remove a page from/to the current user's watchlist
+            Add or remove pages from the current user's watchlist.
             </summary>
-            <param name="title">
-            The page to (un)watch
-            </param >
             <param name="token">
-            A token previously acquired via prop=info
+            A "watch" token retrieved from <a href="/wiki/Special:ApiHelp/query%2Btokens" title="Special:ApiHelp/query+tokens">action=query&amp;meta=tokens</a>
             </param >
             <param name="unwatch">
-            If set the page will be unwatched rather than watched
+            If set the page will be unwatched rather than watched.
             </param >
-            <param name="uselang">
-            Language to show the message in
+            <param name="titles">
+            A list of titles to work on.
+            </param >
+            <param name="pageids">
+            A list of page IDs to work on.
+            </param >
+            <param name="revids">
+            A list of revision IDs to work on.
+            </param >
+            <param name="generator">
+            <p>Get the list of pages to work on by executing the specified query module.
+            </p><p><strong>Note:</strong> Generator parameter names must be prefixed with a "g", see examples.
+            </p>
+            </param >
+            <param name="redirects">
+            Automatically resolve redirects in <var>titles</var>, <var>pageids</var>, and <var>revids</var>, and in pages returned by <var>generator</var>.
+            </param >
+            <param name="converttitles">
+            Convert titles to other variants if necessary. Only works if the wiki's content language supports variant conversion. Languages that support variant conversion include gan, iu, kk, ku, shi, sr, tg, uz, zh.
             </param >
         </member>
         <member name="M:LinqToWiki.Generated.QueryAction.allcategories">
             <summary>
-            Enumerate all categories
+            Enumerate all categories.
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.QueryAction.allimages">
             <summary>
-            Enumerate all images sequentially
+            Enumerate all images sequentially.
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.QueryAction.alllinks">
             <summary>
-            Enumerate all links that point to a given namespace
+            Enumerate all links that point to a given namespace.
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.QueryAction.allmessages">
             <summary>
-            Return messages from this site
+            Return messages from this site.
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.QueryAction.allpages">
             <summary>
-            Enumerate all pages sequentially in a given namespace
-            </summary>
-        </member>
-        <member name="M:LinqToWiki.Generated.QueryAction.alltransclusions">
-            <summary>
-            List all transclusions (pages embedded using {{x}}), including non-existing
+            Enumerate all pages sequentially in a given namespace.
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.QueryAction.allusers">
             <summary>
-            Enumerate all registered users
+            Enumerate all registered users.
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.QueryAction.backlinks">
             <summary>
-            Find all pages that link to the given page
+            Find all pages that link to the given page.
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.QueryAction.blocks">
             <summary>
-            List all blocked users and IP addresses
+            List all blocked users and IP addresses.
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.QueryAction.categorymembers">
             <summary>
-            List all pages in a given category
+            List all pages in a given category.
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.QueryAction.deletedrevs">
             <summary>
-            List deleted revisions.
-            Operates in three modes:
-             1) List deleted revisions for the given title(s), sorted by timestamp
-             2) List deleted contributions for the given user, sorted by timestamp (no titles specified)
-             3) List all deleted revisions in the given namespace, sorted by title and timestamp (no titles specified, druser not set)
-            Certain parameters only apply to some modes and are ignored in others.
-            For instance, a parameter marked (1) only applies to mode 1 and is ignored in modes 2 and 3
+            <p>List deleted revisions.
+            </p><p>Operates in three modes:
+            </p>
+            <ol><li> List deleted revisions for the given titles, sorted by timestamp.</li>
+            <li> List deleted contributions for the given user, sorted by timestamp (no titles specified).</li>
+            <li> List all deleted revisions in the given namespace, sorted by title and timestamp (no titles specified, druser not set).</li></ol>
+            <p>Certain parameters only apply to some modes and are ignored in others.
+            </p>
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.QueryAction.embeddedin">
             <summary>
-            Find all pages that embed (transclude) the given title
+            Find all pages that embed (transclude) the given title.
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.QueryAction.exturlusage">
             <summary>
-            Enumerate pages that contain a given URL
+            Enumerate pages that contain a given URL.
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.QueryAction.filearchive">
             <summary>
-            Enumerate all deleted files sequentially
+            Enumerate all deleted files sequentially.
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.QueryAction.imageusage">
@@ -859,209 +782,215 @@
         </member>
         <member name="M:LinqToWiki.Generated.QueryAction.iwbacklinks">
             <summary>
-            Find all pages that link to the given interwiki link.
-            Can be used to find all links with a prefix, or
-            all links to a title (with a given prefix).
-            Using neither parameter is effectively "All IW Links"
+            <p>Find all pages that link to the given interwiki link.
+            </p><p>Can be used to find all links with a prefix, or all links to a title (with a given prefix). Using neither parameter is effectively "all interwiki links".
+            </p>
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.QueryAction.langbacklinks">
             <summary>
-            Find all pages that link to the given language link.
-            Can be used to find all links with a language code, or
-            all links to a title (with a given language).
-            Using neither parameter is effectively "All Language Links"
+            <p>Find all pages that link to the given language link.
+            </p><p>Can be used to find all links with a language code, or all links to a title (with a given language). Using neither parameter is effectively "all language links".
+            </p><p>Note that this may not consider language links added by extensions.
+            </p>
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.QueryAction.logevents">
             <summary>
-            Get events from logs
+            Get events from logs.
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.QueryAction.protectedtitles">
             <summary>
-            List all titles protected from creation
+            List all titles protected from creation.
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.QueryAction.querypage(LinqToWiki.Generated.querypagepage)">
             <summary>
-            Get a list provided by a QueryPage-based special page
+            Get a list provided by a QueryPage-based special page.
             </summary>
             <param name="page">
-            The name of the special page. Note, this is case sensitive
+            The name of the special page. Note, this is case sensitive.
             </param >
         </member>
         <member name="M:LinqToWiki.Generated.QueryAction.random">
             <summary>
-            Get a set of random pages
-            NOTE: Pages are listed in a fixed sequence, only the starting point is random. This means that if, for example, "Main Page" is the first
-                  random page on your list, "List of fictional monkeys" will *always* be second, "List of people on stamps of Vanuatu" third, etc
-            NOTE: If the number of pages in the namespace is lower than rnlimit, you will get fewer pages. You will not get the same page twice
+            <p>Get a set of random pages.
+            </p><p>Pages are listed in a fixed sequence, only the starting point is random. This means that if, for example, <samp>Main Page</samp> is the first random page in the list, <samp>List of fictional monkeys</samp> will <em>always</em> be second, <samp>List of people on stamps of Vanuatu</samp> third, etc.
+            </p><p>If the number of pages in the namespace is lower than <var>rnlimit</var>, fewer pages will be returned. The same page will not be returned twice.
+            </p>
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.QueryAction.recentchanges">
             <summary>
-            Enumerate recent changes
+            Enumerate recent changes.
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.QueryAction.search(System.String)">
             <summary>
-            Perform a full text search
+            Perform a full text search.
             </summary>
             <param name="search">
-            Search for all page titles (or content) that has this value
+            Search for page titles or content matching this value. You can use the search string to invoke special search features, depending on what the wiki's search backend implements.
             </param >
         </member>
         <member name="M:LinqToWiki.Generated.QueryAction.tags">
             <summary>
-            List change tags
+            List change tags.
             </summary>
+        </member>
+        <member name="M:LinqToWiki.Generated.QueryAction.tokens(System.Collections.Generic.IEnumerable{LinqToWiki.Generated.tokenstype2})">
+            <summary>
+            Gets tokens for data-modifying actions.
+            </summary>
+            <param name="type">
+            Types of token to request.
+            </param >
         </member>
         <member name="M:LinqToWiki.Generated.QueryAction.usercontribs">
             <summary>
-            Get all edits by a user
+            Get all edits by a user.
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.QueryAction.userinfo">
             <summary>
-            Get information about the current user
+            Get information about the current user.
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.QueryAction.users">
             <summary>
-            Get information about a list of users
+            Get information about a list of users.
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.QueryAction.watchlist">
             <summary>
-            Get all recent changes to pages in the logged in user's watchlist
+            Get recent changes to pages in the current user's watchlist.
             </summary>
         </member>
         <member name="M:LinqToWiki.Generated.QueryAction.watchlistraw">
             <summary>
-            Get all pages on the logged in user's watchlist
+            Get all pages on the current user's watchlist.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allcategoriesWhere.from">
             <summary>
-            The category to start enumerating from
+            The category to start enumerating from.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allcategoriesWhere.to">
             <summary>
-            The category to stop enumerating at
+            The category to stop enumerating at.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allcategoriesWhere.prefix">
             <summary>
-            Search for all category titles that begin with this value
+            Search for all category titles that begin with this value.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allcategoriesWhere.min">
             <summary>
-            Minimum number of category members
+            Only return categories with at least this many members.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allcategoriesWhere.max">
             <summary>
-            Maximum number of category members
+            Only return categories with at most this many members.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allimagesWhere.from">
             <summary>
-            The image title to start enumerating from. Can only be used with aisort=name
+            The image title to start enumerating from. Can only be used with aisort=name.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allimagesWhere.to">
             <summary>
-            The image title to stop enumerating at. Can only be used with aisort=name
+            The image title to stop enumerating at. Can only be used with aisort=name.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allimagesWhere.start">
             <summary>
-            The timestamp to start enumerating from. Can only be used with aisort=timestamp
+            The timestamp to start enumerating from. Can only be used with aisort=timestamp.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allimagesWhere.end">
             <summary>
-            The timestamp to end enumerating. Can only be used with aisort=timestamp
+            The timestamp to end enumerating. Can only be used with aisort=timestamp.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allimagesWhere.prefix">
             <summary>
-            Search for all image titles that begin with this value. Can only be used with aisort=name
+            Search for all image titles that begin with this value. Can only be used with aisort=name.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allimagesWhere.minsize">
             <summary>
-            Limit to images with at least this many bytes
+            Limit to images with at least this many bytes.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allimagesWhere.maxsize">
             <summary>
-            Limit to images with at most this many bytes
+            Limit to images with at most this many bytes.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allimagesWhere.sha1">
             <summary>
-            SHA1 hash of image. Overrides aisha1base36
+            SHA1 hash of image. Overrides aisha1base36.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allimagesWhere.sha1base36">
             <summary>
-            SHA1 hash of image in base 36 (used in MediaWiki)
+            SHA1 hash of image in base 36 (used in MediaWiki).
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allimagesWhere.user">
             <summary>
-            Only return files uploaded by this user. Can only be used with aisort=timestamp. Cannot be used together with aifilterbots
+            Only return files uploaded by this user. Can only be used with aisort=timestamp. Cannot be used together with aifilterbots.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allimagesWhere.filterbots">
             <summary>
-            How to filter files uploaded by bots. Can only be used with aisort=timestamp. Cannot be used together with aiuser
+            How to filter files uploaded by bots. Can only be used with aisort=timestamp. Cannot be used together with aiuser.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allimagesWhere.mime">
             <summary>
-            What MIME type to search for. e.g. image/jpeg. Disabled in Miser Mode
+            Disabled due to <a href="//www.mediawiki.org/wiki/Manual:$wgMiserMode" class="extiw" title="mw:Manual:$wgMiserMode">miser mode</a>.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.alllinksWhere.from">
             <summary>
-            The title of the link to start enumerating from
+            The title of the link to start enumerating from.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.alllinksWhere.to">
             <summary>
-            The title of the link to stop enumerating at
+            The title of the link to stop enumerating at.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.alllinksWhere.prefix">
             <summary>
-            Search for all link titles that begin with this value
+            Search for all linked titles that begin with this value.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.alllinksWhere.unique">
             <summary>
-            Only show distinct link titles. Cannot be used with alprop=ids.
+            Only show distinct linked titles. Cannot be used with <kbd>alprop=ids</kbd>.
             When used as a generator, yields target pages instead of source pages.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.alllinksWhere.ns">
             <summary>
-            The namespace to enumerate
+            The namespace to enumerate.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allmessagesWhere.messages">
             <summary>
-            Which messages to output. "*" (default) means all messages
+            Which messages to output. <kbd>*</kbd> (default) means all messages.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allmessagesWhere.enableparser">
             <summary>
-            Set to enable parser, will preprocess the wikitext of message
-            Will substitute magic words, handle templates etc.
+            Set to enable parser, will preprocess the wikitext of message (substitute magic words, handle templates, etc.).
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allmessagesWhere.nocontent">
@@ -1072,196 +1001,174 @@
         <member name="P:LinqToWiki.Generated.Entities.allmessagesWhere.includelocal">
             <summary>
             Also include local messages, i.e. messages that don't exist in the software but do exist as a MediaWiki: page.
-            This lists all MediaWiki: pages, so it will also list those that aren't 'really' messages such as Common.js
+            This lists all MediaWiki: pages, so it will also list those that aren't really messages such as <a href="/wiki/MediaWiki:Common.js" title="MediaWiki:Common.js">Common.js</a>.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allmessagesWhere.args">
             <summary>
-            Arguments to be substituted into message
+            Arguments to be substituted into message.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allmessagesWhere.filter">
             <summary>
-            Return only messages with names that contain this string
+            Return only messages with names that contain this string.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allmessagesWhere.customised">
             <summary>
-            Return only messages in this customisation state
+            Return only messages in this customisation state.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allmessagesWhere.lang">
             <summary>
-            Return messages in this language
+            Return messages in this language.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allmessagesWhere.from">
             <summary>
-            Return messages starting at this message
+            Return messages starting at this message.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allmessagesWhere.to">
             <summary>
-            Return messages ending at this message
+            Return messages ending at this message.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allmessagesWhere.title">
             <summary>
-            Page name to use as context when parsing message (for enableparser option)
+            Page name to use as context when parsing message (for amenableparser option).
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allmessagesWhere.prefix">
             <summary>
-            Return messages with this prefix
+            Return messages with this prefix.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allpagesWhere.from">
             <summary>
-            The page title to start enumerating from
+            The page title to start enumerating from.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allpagesWhere.to">
             <summary>
-            The page title to stop enumerating at
+            The page title to stop enumerating at.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allpagesWhere.prefix">
             <summary>
-            Search for all page titles that begin with this value
+            Search for all page titles that begin with this value.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allpagesWhere.ns">
             <summary>
-            The namespace to enumerate
+            The namespace to enumerate.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allpagesWhere.filterredir">
             <summary>
-            Which pages to list
+            Which pages to list.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allpagesWhere.minsize">
             <summary>
-            Limit to pages with at least this many bytes
+            Limit to pages with at least this many bytes.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allpagesWhere.maxsize">
             <summary>
-            Limit to pages with at most this many bytes
+            Limit to pages with at most this many bytes.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allpagesWhere.prtype">
             <summary>
-            Limit to protected pages only
+            Limit to protected pages only.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allpagesWhere.prlevel">
             <summary>
-            The protection level (must be used with apprtype= parameter)
+            Filter protections based on protection level (must be used with apprtype= parameter).
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allpagesWhere.prfiltercascade">
             <summary>
-            Filter protections based on cascadingness (ignored when apprtype isn't set)
+            Filter protections based on cascadingness (ignored when apprtype isn't set).
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allpagesWhere.filterlanglinks">
             <summary>
-            Filter based on whether a page has langlinks
+            Filter based on whether a page has langlinks. Note that this may not consider langlinks added by extensions.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allpagesWhere.prexpiry">
             <summary>
-            Which protection expiry to filter the page on
-             indefinite - Get only pages with indefinite protection expiry
-             definite - Get only pages with a definite (specific) protection expiry
-             all - Get pages with any protections expiry
-            </summary>
-        </member>
-        <member name="P:LinqToWiki.Generated.Entities.alltransclusionsWhere.from">
-            <summary>
-            The title of the transclusion to start enumerating from
-            </summary>
-        </member>
-        <member name="P:LinqToWiki.Generated.Entities.alltransclusionsWhere.to">
-            <summary>
-            The title of the transclusion to stop enumerating at
-            </summary>
-        </member>
-        <member name="P:LinqToWiki.Generated.Entities.alltransclusionsWhere.prefix">
-            <summary>
-            Search for all transclusion titles that begin with this value
-            </summary>
-        </member>
-        <member name="P:LinqToWiki.Generated.Entities.alltransclusionsWhere.unique">
-            <summary>
-            Only show distinct transclusion titles. Cannot be used with atprop=ids.
-            When used as a generator, yields target pages instead of source pages.
-            </summary>
-        </member>
-        <member name="P:LinqToWiki.Generated.Entities.alltransclusionsWhere.ns">
-            <summary>
-            The namespace to enumerate
+            <p>Which protection expiry to filter the page on:
+            </p>
+            <dl><dt>indefinite</dt>
+            <dd>Get only pages with indefinite protection expiry.</dd>
+            <dt>definite</dt>
+            <dd>Get only pages with a definite (specific) protection expiry.</dd>
+            <dt>all</dt>
+            <dd>Get pages with any protections expiry.</dd></dl>
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allusersWhere.from">
             <summary>
-            The user name to start enumerating from
+            The user name to start enumerating from.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allusersWhere.to">
             <summary>
-            The user name to stop enumerating at
+            The user name to stop enumerating at.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allusersWhere.prefix">
             <summary>
-            Search for all users that begin with this value
+            Search for all users that begin with this value.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allusersWhere.group">
             <summary>
-            Limit users to given group name(s)
+            Only include users in the given groups.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allusersWhere.excludegroup">
             <summary>
-            Exclude users in given group name(s)
+            Exclude users in the given groups.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allusersWhere.rights">
             <summary>
-            Limit users to given right(s) (does not include rights granted by implicit or auto-promoted groups like *, user, or autoconfirmed)
+            Only include users with the given rights. Does not include rights granted by implicit or auto-promoted groups like *, user, or autoconfirmed.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allusersWhere.witheditsonly">
             <summary>
-            Only list users who have made edits
+            Only list users who have made edits.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.allusersWhere.activeusers">
             <summary>
-            Only list users active in the last 30 days(s)
+            Only list users active in the last 30 days.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.backlinksWhere.title">
             <summary>
-            Title to search. Cannot be used together with blpageid
+            Title to search. Cannot be used together with <var>blpageid</var>.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.backlinksWhere.pageid">
             <summary>
-            Pageid to search. Cannot be used together with bltitle
+            Page ID to search. Cannot be used together with <var>bltitle</var>.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.backlinksWhere.ns">
             <summary>
-            The namespace to enumerate
+            The namespace to enumerate.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.backlinksWhere.filterredir">
             <summary>
-            How to filter for redirects. If set to nonredirects when blredirect is enabled, this is only applied to the second level
+            How to filter for redirects. If set to <kbd>nonredirects</kbd> when <var>blredirect</var> is enabled, this is only applied to the second level.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.backlinksWhere.redirect">
@@ -1271,241 +1178,255 @@
         </member>
         <member name="P:LinqToWiki.Generated.Entities.blocksWhere.start">
             <summary>
-            The timestamp to start enumerating from
+            The timestamp to start enumerating from.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.blocksWhere.end">
             <summary>
-            The timestamp to stop enumerating at
+            The timestamp to stop enumerating at.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.blocksWhere.ids">
             <summary>
-            List of block IDs to list (optional)
+            List of block IDs to list (optional).
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.blocksWhere.users">
             <summary>
-            List of users to search for (optional)
+            List of users to search for (optional).
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.blocksWhere.ip">
             <summary>
             Get all blocks applying to this IP or CIDR range, including range blocks.
-            Cannot be used together with bkusers. CIDR ranges broader than /16 are not accepted
+            Cannot be used together with <var>bkusers</var>. CIDR ranges broader than IPv4/16 or IPv6/19 are not accepted.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.blocksWhere.show">
             <summary>
-            Show only items that meet this criteria.
-            For example, to see only indefinite blocks on IPs, set bkshow=ip|!temp
+            Show only items that meet these criteria.
+            For example, to see only indefinite blocks on IP addresses, set <kbd>bkshow=ip|!temp</kbd>.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.categoriesWhere.show">
             <summary>
-            Which kind of categories to show
+            Which kind of categories to show.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.categoriesWhere.categories">
             <summary>
-            Only list these categories. Useful for checking whether a certain page is in a certain category
+            Only list these categories. Useful for checking whether a certain page is in a certain category.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.categorymembersWhere.title">
             <summary>
-            Which category to enumerate (required). Must include Category: prefix. Cannot be used together with cmpageid
+            Which category to enumerate (required). Must include the <kbd>Category:</kbd> prefix. Cannot be used together with <var>cmpageid</var>.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.categorymembersWhere.pageid">
             <summary>
-            Page ID of the category to enumerate. Cannot be used together with cmtitle
+            Page ID of the category to enumerate. Cannot be used together with <var>cmtitle</var>.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.categorymembersWhere.ns">
             <summary>
-            Only include pages in these namespaces
-            NOTE: Due to $wgMiserMode, using this may result in fewer than "cmlimit" results
-            returned before continuing; in extreme cases, zero results may be returned.
-            Note that you can use cmtype=subcat or cmtype=file instead of cmnamespace=14 or 6.
+            <p>Only include pages in these namespaces. Note that <kbd>cmtype=subcat</kbd> or <kbd>cmtype=file</kbd> may be used instead of <kbd>cmnamespace=14</kbd> or <kbd>6</kbd>.
+            </p>
+            <p><strong>Note:</strong> Due to <a href="//www.mediawiki.org/wiki/Manual:$wgMiserMode" class="extiw" title="mw:Manual:$wgMiserMode">miser mode</a>, using this may result in fewer than <var>cmlimit</var> results returned before continuing; in extreme cases, zero results may be returned.
+            </p>
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.categorymembersWhere.type">
             <summary>
-            What type of category members to include. Ignored when cmsort=timestamp is set
+            Which type of category members to include. Ignored when <kbd>cmsort=timestamp</kbd> is set.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.categorymembersWhere.start">
             <summary>
-            Timestamp to start listing from. Can only be used with cmsort=timestamp
+            Timestamp to start listing from. Can only be used with <kbd>cmsort=timestamp</kbd>.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.categorymembersWhere.end">
             <summary>
-            Timestamp to end listing at. Can only be used with cmsort=timestamp
+            Timestamp to end listing at. Can only be used with <kbd>cmsort=timestamp</kbd>.
             </summary>
         </member>
-        <member name="P:LinqToWiki.Generated.Entities.categorymembersWhere.startsortkey">
+        <member name="P:LinqToWiki.Generated.Entities.categorymembersWhere.starthexsortkey">
             <summary>
-            Sortkey to start listing from. Must be given in binary format. Can only be used with cmsort=sortkey
+            Sortkey to start listing from, as returned by <kbd>cmprop=sortkey</kbd>. Can only be used with <kbd>cmsort=sortkey</kbd>.
             </summary>
         </member>
-        <member name="P:LinqToWiki.Generated.Entities.categorymembersWhere.endsortkey">
+        <member name="P:LinqToWiki.Generated.Entities.categorymembersWhere.endhexsortkey">
             <summary>
-            Sortkey to end listing at. Must be given in binary format. Can only be used with cmsort=sortkey
+            Sortkey to end listing from, as returned by <kbd>cmprop=sortkey</kbd>. Can only be used with <kbd>cmsort=sortkey</kbd>.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.categorymembersWhere.startsortkeyprefix">
             <summary>
-            Sortkey prefix to start listing from. Can only be used with cmsort=sortkey. Overrides cmstartsortkey
+            Sortkey prefix to start listing from. Can only be used with <kbd>cmsort=sortkey</kbd>. Overrides <var>cmstarthexsortkey</var>.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.categorymembersWhere.endsortkeyprefix">
             <summary>
-            Sortkey prefix to end listing BEFORE (not at, if this value occurs it will not be included!). Can only be used with cmsort=sortkey. Overrides cmendsortkey
+            Sortkey prefix to end listing BEFORE (not at, if this value occurs it will not be included!). Can only be used with cmsort=sortkey. Overrides cmendhexsortkey.
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.categorymembersWhere.startsortkey">
+            <summary>
+            Use cmstarthexsortkey instead.
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.categorymembersWhere.endsortkey">
+            <summary>
+            Use cmendhexsortkey instead.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.deletedrevsWhere.start">
             <summary>
-            The timestamp to start enumerating from (1, 2)
+            The timestamp to start enumerating from.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.deletedrevsWhere.end">
             <summary>
-            The timestamp to stop enumerating at (1, 2)
+            The timestamp to stop enumerating at.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.deletedrevsWhere.from">
             <summary>
-            Start listing at this title (3)
+            Start listing at this title.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.deletedrevsWhere.to">
             <summary>
-            Stop listing at this title (3)
+            Stop listing at this title.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.deletedrevsWhere.prefix">
             <summary>
-            Search for all page titles that begin with this value (3)
+            Search for all page titles that begin with this value.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.deletedrevsWhere.unique">
             <summary>
-            List only one revision for each page (3)
-            </summary>
-        </member>
-        <member name="P:LinqToWiki.Generated.Entities.deletedrevsWhere.user">
-            <summary>
-            Only list revisions by this user
-            </summary>
-        </member>
-        <member name="P:LinqToWiki.Generated.Entities.deletedrevsWhere.excludeuser">
-            <summary>
-            Don't list revisions by this user
+            List only one revision for each page.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.deletedrevsWhere.ns">
             <summary>
-            Only list pages in this namespace (3)
+            Only list pages in this namespace.
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.deletedrevsWhere.tag">
+            <summary>
+            Only list revisions tagged with this tag.
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.deletedrevsWhere.user">
+            <summary>
+            Only list revisions by this user.
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.deletedrevsWhere.excludeuser">
+            <summary>
+            Don't list revisions by this user.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.duplicatefilesWhere.localonly">
             <summary>
-            Look only for files in the local repository
+            Look only for files in the local repository.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.embeddedinWhere.title">
             <summary>
-            Title to search. Cannot be used together with eipageid
+            Title to search. Cannot be used together with eipageid.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.embeddedinWhere.pageid">
             <summary>
-            Pageid to search. Cannot be used together with eititle
+            Page ID to search. Cannot be used together with eititle.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.embeddedinWhere.ns">
             <summary>
-            The namespace to enumerate
+            The namespace to enumerate.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.embeddedinWhere.filterredir">
             <summary>
-            How to filter for redirects
+            How to filter for redirects.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.extlinksWhere.protocol">
             <summary>
-            Protocol of the url. If empty and elquery set, the protocol is http.
-            Leave both this and elquery empty to list all external links
+            Protocol of the URL. If empty and <var>elquery</var> is set, the protocol is <kbd>http</kbd>. Leave both this and <var>elquery</var> empty to list all external links.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.extlinksWhere.query">
             <summary>
-            Search string without protocol. Useful for checking whether a certain page contains a certain external url
+            Search string without protocol. Useful for checking whether a certain page contains a certain external url.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.extlinksWhere.expandurl">
             <summary>
-            Expand protocol-relative urls with the canonical protocol
+            Expand protocol-relative URLs with the canonical protocol.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.exturlusageWhere.protocol">
             <summary>
-            Protocol of the url. If empty and euquery set, the protocol is http.
-            Leave both this and euquery empty to list all external links
+            Protocol of the URL. If empty and <var>euquery</var> set, the protocol is <kbd>http</kbd>. Leave both this and <var>euquery</var> empty to list all external links.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.exturlusageWhere.query">
             <summary>
-            Search string without protocol. See [[Special:LinkSearch]]. Leave empty to list all external links
+            Search string without protocol. See <a href="/wiki/Special:LinkSearch" title="Special:LinkSearch">Special:LinkSearch</a>. Leave empty to list all external links.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.exturlusageWhere.ns">
             <summary>
-            The page namespace(s) to enumerate.
-            NOTE: Due to $wgMiserMode, using this may result in fewer than "eulimit" results
-            returned before continuing; in extreme cases, zero results may be returned
+            <p>The page namespaces to enumerate.
+            </p>
+            <p><strong>Note:</strong> Due to <a href="//www.mediawiki.org/wiki/Manual:$wgMiserMode" class="extiw" title="mw:Manual:$wgMiserMode">miser mode</a>, using this may result in fewer than <var>eulimit</var> results returned before continuing; in extreme cases, zero results may be returned.
+            </p>
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.exturlusageWhere.expandurl">
             <summary>
-            Expand protocol-relative urls with the canonical protocol
+            Expand protocol-relative URLs with the canonical protocol.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.filearchiveWhere.from">
             <summary>
-            The image title to start enumerating from
+            The image title to start enumerating from.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.filearchiveWhere.to">
             <summary>
-            The image title to stop enumerating at
+            The image title to stop enumerating at.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.filearchiveWhere.prefix">
             <summary>
-            Search for all image titles that begin with this value
+            Search for all image titles that begin with this value.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.filearchiveWhere.sha1">
             <summary>
-            SHA1 hash of image. Overrides fasha1base36
+            SHA1 hash of image. Overrides fasha1base36.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.filearchiveWhere.sha1base36">
             <summary>
-            SHA1 hash of image in base 36 (used in MediaWiki)
+            SHA1 hash of image in base 36 (used in MediaWiki).
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.imageinfoWhere.start">
             <summary>
-            Timestamp to start listing from
+            Timestamp to start listing from.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.imageinfoWhere.end">
             <summary>
-            Timestamp to stop listing at
+            Timestamp to stop listing at.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.imageinfoWhere.urlwidth">
@@ -1516,49 +1437,62 @@
         </member>
         <member name="P:LinqToWiki.Generated.Entities.imageinfoWhere.urlheight">
             <summary>
-            Similar to iiurlwidth. Cannot be used without iiurlwidth
+            Similar to iiurlwidth.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.imageinfoWhere.metadataversion">
             <summary>
-            Version of metadata to use. if 'latest' is specified, use latest version.
-            Defaults to '1' for backwards compatibility
+            Version of metadata to use. If <kbd>latest</kbd> is specified, use latest version. Defaults to <kbd>1</kbd> for backwards compatibility.
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.imageinfoWhere.extmetadatalanguage">
+            <summary>
+            What language to fetch extmetadata in. This affects both which translation to fetch, if multiple are available, as well as how things like numbers and various values are formatted.
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.imageinfoWhere.extmetadatamultilang">
+            <summary>
+            If translations for extmetadata property are available, fetch all of them.
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.imageinfoWhere.extmetadatafilter">
+            <summary>
+            If specified and non-empty, only these keys will be returned for iiprop=extmetadata.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.imageinfoWhere.urlparam">
             <summary>
-            A handler specific parameter string. For example, pdf's
-            might use 'page15-100px'. iiurlwidth must be used and be consistent with iiurlparam
+            A handler specific parameter string. For example, PDFs might use <kbd>page15-100px</kbd>. <var>iiurlwidth</var> must be used and be consistent with <var>iiurlparam</var>.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.imageinfoWhere.localonly">
             <summary>
-            Look only for files in the local repository
+            Look only for files in the local repository.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.imagesWhere.images">
             <summary>
-            Only list these images. Useful for checking whether a certain page has a certain Image.
+            Only list these files. Useful for checking whether a certain page has a certain file.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.imageusageWhere.title">
             <summary>
-            Title to search. Cannot be used together with iupageid
+            Title to search. Cannot be used together with iupageid.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.imageusageWhere.pageid">
             <summary>
-            Pageid to search. Cannot be used together with iutitle
+            Page ID to search. Cannot be used together with iutitle.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.imageusageWhere.ns">
             <summary>
-            The namespace to enumerate
+            The namespace to enumerate.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.imageusageWhere.filterredir">
             <summary>
-            How to filter for redirects. If set to nonredirects when iuredirect is enabled, this is only applied to the second level
+            How to filter for redirects. If set to nonredirects when iuredirect is enabled, this is only applied to the second level.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.imageusageWhere.redirect">
@@ -1568,57 +1502,62 @@
         </member>
         <member name="P:LinqToWiki.Generated.Entities.iwbacklinksWhere.prefix">
             <summary>
-            Prefix for the interwiki
+            Prefix for the interwiki.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.iwbacklinksWhere.title">
             <summary>
-            Interwiki link to search for. Must be used with iwblprefix
-            </summary>
-        </member>
-        <member name="P:LinqToWiki.Generated.Entities.iwlinksWhere.url">
-            <summary>
-            Whether to get the full URL
+            Interwiki link to search for. Must be used with <var>iwblblprefix</var>.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.iwlinksWhere.prefix">
             <summary>
-            Prefix for the interwiki
+            Only return interwiki links with this prefix.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.iwlinksWhere.title">
             <summary>
-            Interwiki link to search for. Must be used with iwprefix
+            Interwiki link to search for. Must be used with <var>iwprefix</var>.
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.iwlinksWhere.url">
+            <summary>
+            Whether to get the full URL (cannot be used with iwprop).
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.langbacklinksWhere.lang">
             <summary>
-            Language for the language link
+            Language for the language link.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.langbacklinksWhere.title">
             <summary>
-            Language link to search for. Must be used with lbllang
-            </summary>
-        </member>
-        <member name="P:LinqToWiki.Generated.Entities.langlinksWhere.url">
-            <summary>
-            Whether to get the full URL
+            Language link to search for. Must be used with lbllang.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.langlinksWhere.lang">
             <summary>
-            Language code
+            Only return language links with this language code.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.langlinksWhere.title">
             <summary>
-            Link to search for. Must be used with lllang
+            Link to search for. Must be used with <var>lllang</var>.
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.langlinksWhere.inlanguagecode">
+            <summary>
+            Language code for localised language names.
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.langlinksWhere.url">
+            <summary>
+            Whether to get the full URL (cannot be used with <var>llprop</var>).
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.linksWhere.ns">
             <summary>
-            Show links in this namespace(s) only
+            Show links in these namespaces only.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.linksWhere.titles">
@@ -1628,226 +1567,227 @@
         </member>
         <member name="P:LinqToWiki.Generated.Entities.logeventsWhere.type">
             <summary>
-            Filter log entries to only this type
+            Filter log entries to only this type.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.logeventsWhere.action">
             <summary>
-            Filter log actions to only this type. Overrides letype
+            Filter log actions to only this action. Overrides <var>letype</var>. Wildcard actions like <kbd>action/*</kbd> allows to specify any string for the asterisk.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.logeventsWhere.start">
             <summary>
-            The timestamp to start enumerating from
+            The timestamp to start enumerating from.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.logeventsWhere.end">
             <summary>
-            The timestamp to end enumerating
+            The timestamp to end enumerating.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.logeventsWhere.user">
             <summary>
-            Filter entries to those made by the given user
+            Filter entries to those made by the given user.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.logeventsWhere.title">
             <summary>
-            Filter entries to those related to a page
+            Filter entries to those related to a page.
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.logeventsWhere.ns">
+            <summary>
+            Filter entries to those in the given namespace.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.logeventsWhere.prefix">
             <summary>
-            Filter entries that start with this prefix. Disabled in Miser Mode
+            Disabled due to <a href="//www.mediawiki.org/wiki/Manual:$wgMiserMode" class="extiw" title="mw:Manual:$wgMiserMode">miser mode</a>.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.logeventsWhere.tag">
             <summary>
-            Only list event entries tagged with this tag
+            Only list event entries tagged with this tag.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.protectedtitlesWhere.ns">
             <summary>
-            Only list titles in these namespaces
+            Only list titles in these namespaces.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.protectedtitlesWhere.level">
             <summary>
-            Only list titles with these protection levels
+            Only list titles with these protection levels.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.protectedtitlesWhere.start">
             <summary>
-            Start listing at this protection timestamp
+            Start listing at this protection timestamp.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.protectedtitlesWhere.end">
             <summary>
-            Stop listing at this protection timestamp
+            Stop listing at this protection timestamp.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.randomWhere.ns">
             <summary>
-            Return pages in these namespaces only
+            Return pages in these namespaces only.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.randomWhere.redirect">
             <summary>
-            Load a random redirect instead of a random page
+            Load a random redirect instead of a random page.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.recentchangesWhere.start">
             <summary>
-            The timestamp to start enumerating from
+            The timestamp to start enumerating from.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.recentchangesWhere.end">
             <summary>
-            The timestamp to end enumerating
+            The timestamp to end enumerating.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.recentchangesWhere.ns">
             <summary>
-            Filter log entries to only this namespace(s)
+            Filter changes to only these namespaces.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.recentchangesWhere.user">
             <summary>
-            Only list changes by this user
+            Only list changes by this user.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.recentchangesWhere.excludeuser">
             <summary>
-            Don't list changes by this user
+            Don't list changes by this user.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.recentchangesWhere.tag">
             <summary>
-            Only list changes tagged with this tag
+            Only list changes tagged with this tag.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.recentchangesWhere.token">
             <summary>
-            Which tokens to obtain for each change
+            Use <kbd><a href="/wiki/Special:ApiHelp/query%2Btokens" title="Special:ApiHelp/query+tokens">action=query&amp;meta=tokens</a></kbd> instead.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.recentchangesWhere.show">
             <summary>
-            Show only items that meet this criteria.
-            For example, to see only minor edits done by logged-in users, set rcshow=minor|!anon
+            Show only items that meet these criteria. For example, to see only minor edits done by logged-in users, set rcshow=minor|!anon.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.recentchangesWhere.type">
             <summary>
-            Which types of changes to show
+            Which types of changes to show.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.recentchangesWhere.toponly">
             <summary>
-            Only list changes which are the latest revision
-            </summary>
-        </member>
-        <member name="P:LinqToWiki.Generated.Entities.revisionsWhere.startid">
-            <summary>
-            From which revision id to start enumeration (enum)
-            </summary>
-        </member>
-        <member name="P:LinqToWiki.Generated.Entities.revisionsWhere.endid">
-            <summary>
-            Stop revision enumeration on this revid (enum)
-            </summary>
-        </member>
-        <member name="P:LinqToWiki.Generated.Entities.revisionsWhere.start">
-            <summary>
-            From which revision timestamp to start enumeration (enum)
-            </summary>
-        </member>
-        <member name="P:LinqToWiki.Generated.Entities.revisionsWhere.end">
-            <summary>
-            Enumerate up to this timestamp (enum)
-            </summary>
-        </member>
-        <member name="P:LinqToWiki.Generated.Entities.revisionsWhere.user">
-            <summary>
-            Only include revisions made by user (enum)
-            </summary>
-        </member>
-        <member name="P:LinqToWiki.Generated.Entities.revisionsWhere.excludeuser">
-            <summary>
-            Exclude revisions made by user (enum)
-            </summary>
-        </member>
-        <member name="P:LinqToWiki.Generated.Entities.revisionsWhere.tag">
-            <summary>
-            Only list revisions tagged with this tag
+            Only list changes which are the latest revision.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.revisionsWhere.expandtemplates">
             <summary>
-            Expand templates in revision content (requires rvprop=content)
+            Expand templates in revision content (requires rvprop=content).
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.revisionsWhere.generatexml">
             <summary>
-            Generate XML parse tree for revision content (requires rvprop=content)
+            Generate XML parse tree for revision content (requires rvprop=content).
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.revisionsWhere.parse">
             <summary>
-            Parse revision content (requires rvprop=content).
-            For performance reasons if this option is used, rvlimit is enforced to 1.
+            Parse revision content (requires rvprop=content). For performance reasons, if this option is used, rvlimit is enforced to 1.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.revisionsWhere.section">
             <summary>
-            Only retrieve the content of this section number
-            </summary>
-        </member>
-        <member name="P:LinqToWiki.Generated.Entities.revisionsWhere.token">
-            <summary>
-            Which tokens to obtain for each revision
+            Only retrieve the content of this section number.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.revisionsWhere.diffto">
             <summary>
-            Revision ID to diff each revision to.
-            Use "prev", "next" and "cur" for the previous, next and current revision respectively
+            Revision ID to diff each revision to. Use <kbd>prev</kbd>, <kbd>next</kbd> and <kbd>cur</kbd> for the previous, next and current revision respectively.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.revisionsWhere.difftotext">
             <summary>
-            Text to diff each revision to. Only diffs a limited number of revisions.
-            Overrides rvdiffto. If rvsection is set, only that section will be diffed against this text
+            Text to diff each revision to. Only diffs a limited number of revisions. Overrides <var>rvdiffto</var>. If <var>rvsection</var> is set, only that section will be diffed against this text
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.revisionsWhere.contentformat">
             <summary>
-            Serialization format used for difftotext and expected for output of content
+            Serialization format used for <var>rvdifftotext</var> and expected for output of content.
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.revisionsWhere.startid">
+            <summary>
+            From which revision ID to start enumeration.
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.revisionsWhere.endid">
+            <summary>
+            Stop revision enumeration on this revision ID.
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.revisionsWhere.start">
+            <summary>
+            From which revision timestamp to start enumeration.
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.revisionsWhere.end">
+            <summary>
+            Enumerate up to this timestamp.
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.revisionsWhere.user">
+            <summary>
+            Only include revisions made by user.
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.revisionsWhere.excludeuser">
+            <summary>
+            Exclude revisions made by user.
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.revisionsWhere.tag">
+            <summary>
+            Only list revisions tagged with this tag.
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.revisionsWhere.token">
+            <summary>
+            Which tokens to obtain for each revision.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.searchWhere.ns">
             <summary>
-            The namespace(s) to enumerate
+            Search only within these namespaces.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.searchWhere.what">
             <summary>
-            Search inside the text or titles
+            Which type of search to perform.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.searchWhere.info">
             <summary>
-            What metadata to return
+            Which metadata to return.
             </summary>
         </member>
-        <member name="P:LinqToWiki.Generated.Entities.searchWhere.redirects">
+        <member name="P:LinqToWiki.Generated.Entities.searchWhere.interwiki">
             <summary>
-            Include redirect pages in the search
+            Include interwiki results in the search, if available.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.templatesWhere.ns">
             <summary>
-            Show templates in this namespace(s) only
+            Show templates in this namespaces only.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.templatesWhere.templates">
@@ -1857,146 +1797,143 @@
         </member>
         <member name="P:LinqToWiki.Generated.Entities.usercontribsWhere.start">
             <summary>
-            The start timestamp to return from
+            The start timestamp to return from.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.usercontribsWhere.end">
             <summary>
-            The end timestamp to return to
+            The end timestamp to return to.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.usercontribsWhere.user">
             <summary>
-            The users to retrieve contributions for
+            The users to retrieve contributions for.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.usercontribsWhere.userprefix">
             <summary>
-            Retrieve contributions for all users whose names begin with this value. Overrides ucuser
+            Retrieve contributions for all users whose names begin with this value. Overrides ucuser.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.usercontribsWhere.ns">
             <summary>
-            Only list contributions in these namespaces
+            Only list contributions in these namespaces.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.usercontribsWhere.show">
             <summary>
-            Show only items that meet this criteria, e.g. non minor edits only: ucshow=!minor
-            NOTE: if ucshow=patrolled or ucshow=!patrolled is set, revisions older than $wgRCMaxAge (2592000) won't be shown
+            <p>Show only items that meet these criteria, e.g. non minor edits only: <kbd>ucshow=!minor</kbd>.
+            </p><p>If <kbd>ucshow=patrolled</kbd> or <kbd>ucshow=!patrolled</kbd> is set, revisions older than <var><a href="//www.mediawiki.org/wiki/Manual:$wgRCMaxAge" class="extiw" title="mw:Manual:$wgRCMaxAge">$wgRCMaxAge</a></var> (2592000 seconds) won't be shown.
+            </p>
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.usercontribsWhere.tag">
             <summary>
-            Only list revisions tagged with this tag
+            Only list revisions tagged with this tag.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.usercontribsWhere.toponly">
             <summary>
-            Only list changes which are the latest revision
+            Only list changes which are the latest revision.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.usersWhere.users">
             <summary>
-            A list of users to obtain the same information for
+            A list of users to obtain information for.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.usersWhere.token">
             <summary>
-            Which tokens to obtain for each user
-            </summary>
-        </member>
-        <member name="P:LinqToWiki.Generated.Entities.videoinfoWhere.start">
-            <summary>
-            Timestamp to start listing from
-            </summary>
-        </member>
-        <member name="P:LinqToWiki.Generated.Entities.videoinfoWhere.end">
-            <summary>
-            Timestamp to stop listing at
-            </summary>
-        </member>
-        <member name="P:LinqToWiki.Generated.Entities.videoinfoWhere.urlwidth">
-            <summary>
-            If viprop=url is set, a URL to an image scaled to this width will be returned.
-            For performance reasons if this option is used, no more than 50 scaled images will be returned.
-            </summary>
-        </member>
-        <member name="P:LinqToWiki.Generated.Entities.videoinfoWhere.urlheight">
-            <summary>
-            Similar to viurlwidth. Cannot be used without viurlwidth
-            </summary>
-        </member>
-        <member name="P:LinqToWiki.Generated.Entities.videoinfoWhere.urlparam">
-            <summary>
-            A handler specific parameter string. For example, pdf's
-            might use 'page15-100px'. viurlwidth must be used and be consistent with viurlparam
+            Use <kbd><a href="/wiki/Special:ApiHelp/query%2Btokens" title="Special:ApiHelp/query+tokens">action=query&amp;meta=tokens</a></kbd> instead.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.watchlistWhere.allrev">
             <summary>
-            Include multiple revisions of the same page within given timeframe
+            Include multiple revisions of the same page within given timeframe.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.watchlistWhere.start">
             <summary>
-            The timestamp to start enumerating from
+            The timestamp to start enumerating from.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.watchlistWhere.end">
             <summary>
-            The timestamp to end enumerating
+            The timestamp to end enumerating.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.watchlistWhere.ns">
             <summary>
-            Filter changes to only the given namespace(s)
+            Filter changes to only the given namespaces.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.watchlistWhere.user">
             <summary>
-            Only list changes by this user
+            Only list changes by this user.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.watchlistWhere.excludeuser">
             <summary>
-            Don't list changes by this user
+            Don't list changes by this user.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.watchlistWhere.show">
             <summary>
-            Show only items that meet this criteria.
-            For example, to see only minor edits done by logged-in users, set wlshow=minor|!anon
+            Show only items that meet these criteria. For example, to see only minor edits done by logged-in users, set wlshow=minor|!anon.
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.watchlistWhere.type">
+            <summary>
+            <p>Which types of changes to show:
+            </p>
+            <dl><dt>edit</dt>
+            <dd>Regular page edits.</dd>
+            <dt>external</dt>
+            <dd>External changes.</dd>
+            <dt>new</dt>
+            <dd>Page creations.</dd>
+            <dt>log</dt>
+            <dd>Log entries.</dd></dl>
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.watchlistWhere.owner">
             <summary>
-            The name of the user whose watchlist you'd like to access
+            Used along with wltoken to access a different user's watchlist.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.watchlistWhere.token">
             <summary>
-            Give a security token (settable in preferences) to allow access to another user's watchlist
+            A security token (available in the user's <a href="/wiki/Special:Preferences#mw-prefsection-watchlist" title="Special:Preferences">preferences</a>) to allow access to another user's watchlist.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.watchlistrawWhere.ns">
             <summary>
-            Only list pages in the given namespace(s)
+            Only list pages in the given namespaces.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.watchlistrawWhere.show">
             <summary>
-            Only list items that meet these criteria
+            Only list items that meet these criteria.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.watchlistrawWhere.owner">
             <summary>
-            The name of the user whose watchlist you'd like to access
+            Used along with wrtoken to access a different user's watchlist.
             </summary>
         </member>
         <member name="P:LinqToWiki.Generated.Entities.watchlistrawWhere.token">
             <summary>
-            Give a security token (settable in preferences) to allow access to another user's watchlist
+            A security token (available in the user's <a href="/wiki/Special:Preferences#mw-prefsection-watchlist" title="Special:Preferences">preferences</a>) to allow access to another user's watchlist.
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.watchlistrawWhere.fromtitle">
+            <summary>
+            Title (with namespace prefix) to begin enumerating from.
+            </summary>
+        </member>
+        <member name="P:LinqToWiki.Generated.Entities.watchlistrawWhere.totitle">
+            <summary>
+            Title (with namespace prefix) to stop enumerating at.
             </summary>
         </member>
     </members>

@@ -242,6 +242,7 @@
           <property name="emailtoken" type="string" nullable="" />
           <property name="importtoken" type="string" nullable="" />
           <property name="watchtoken" type="string" nullable="" />
+          <property name="optionstoken" type="string" nullable="" />
         </properties>
       </prop>
     </props>
@@ -1135,7 +1136,9 @@
           <property name="level">
             <type>
               <t>autoconfirmed</t>
+              <t>templateeditor</t>
               <t>sysop</t>
+              <t>superprotect</t>
             </type>
           </property>
         </properties>

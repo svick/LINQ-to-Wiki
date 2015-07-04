@@ -84,7 +84,7 @@ namespace LinqToWiki.Codegen
 
             if (multi)
                 result = string.Format(useItemOrCollection ? "ItemOrCollection<{0}>" : "IEnumerable<{0}>", result);
-            else if (nullable && simpleType.Name != "string" && simpleType.Name != "namespace")
+            else if (nullable && result != "string" && result != "Namespace")
                 result += '?';
 
             return result;
