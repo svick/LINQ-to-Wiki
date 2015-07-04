@@ -72,7 +72,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="props-defaults-sample.xml">
+    <Content Include="props.xml">
       <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
