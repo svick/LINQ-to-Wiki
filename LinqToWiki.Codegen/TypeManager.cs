@@ -60,6 +60,8 @@ namespace LinqToWiki.Codegen
             {
             case "string":
             case "user":
+            case "text":
+            case "password":
                 result = "string";
                 break;
             case "timestamp":
