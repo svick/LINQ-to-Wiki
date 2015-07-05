@@ -8,10 +8,11 @@ using LinqToWiki.Codegen.ModuleGenerators;
 using LinqToWiki.Codegen.ModuleInfo;
 using LinqToWiki.Collections;
 using LinqToWiki.Internals;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CSharp;
-using Roslyn.Compilers.CSharp;
-using Roslyn.Services;
-using Roslyn.Services.Formatting;
 
 namespace LinqToWiki.Codegen
 {
@@ -65,8 +66,6 @@ namespace LinqToWiki.Codegen
         /// </summary>
         internal static readonly TupleList<string, string> QueryBaseParameters =
             new TupleList<string, string> { { "action", "query" } };
-
-        private static readonly FormattingOptions FormattingOptions = new FormattingOptions(false, 4, 4);
 
         public Wiki(string baseUri, string apiPath, string ns = null, string propsFilePath = null)
         {
@@ -140,10 +139,10 @@ namespace LinqToWiki.Codegen
             var pagesSourcePageSizePropertyName = "PagesSourcePageSize";
             var wikiFieldPagesSourcePageSizeProperty = SyntaxEx.MemberAccess(wikiField, pagesSourcePageSizePropertyName);
             var pagesSourcePageSizeProperty = SyntaxEx.PropertyDeclaration(
-                new[] { SyntaxKind.PublicKeyword }, Syntax.ParseTypeName("int"), pagesSourcePageSizePropertyName,
+                new[] { SyntaxKind.PublicKeyword }, SyntaxFactory.ParseTypeName("int"), pagesSourcePageSizePropertyName,
                 getStatements: new[] { SyntaxEx.Return(wikiFieldPagesSourcePageSizeProperty) },
                 setStatements:
-                    new[] { SyntaxEx.Assignment(wikiFieldPagesSourcePageSizeProperty, Syntax.IdentifierName("value")) });
+                    new[] { SyntaxEx.Assignment(wikiFieldPagesSourcePageSizeProperty, SyntaxFactory.IdentifierName("value")) });
 
             var userAgentParameter = SyntaxEx.Parameter("string", "userAgent");
             var baseUriParameter = SyntaxEx.Parameter("string", "baseUri", SyntaxEx.NullLiteral());
@@ -402,7 +401,7 @@ namespace LinqToWiki.Codegen
             {
                 var path = Path.Combine(directoryPath, file.Item1 + Extension);
                 File.WriteAllText(
-                    path, file.Item2.Format(FormattingOptions).GetFormattedRoot().ToString());
+                    path, Formatter.Format(file.Item2, new AdhocWorkspace()).ToString());
                 result.Add(path);
             }
 
@@ -423,7 +422,7 @@ namespace LinqToWiki.Codegen
                     builder.AppendLine();
 
                 builder.AppendLine(file.Item1 + Extension + ':');
-                builder.AppendLine(file.Item2.Format(FormattingOptions).ToString());
+                builder.AppendLine(Formatter.Format(file.Item2, new AdhocWorkspace()).ToString());
             }
 
             return builder.ToString();

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using LinqToWiki.Codegen.ModuleInfo;
-using Roslyn.Compilers.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace LinqToWiki.Codegen.ModuleGenerators
 {

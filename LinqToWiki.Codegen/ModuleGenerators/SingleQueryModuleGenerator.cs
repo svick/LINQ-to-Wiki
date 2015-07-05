@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using LinqToWiki.Codegen.ModuleInfo;
 using LinqToWiki.Collections;
-using Roslyn.Compilers;
-using Roslyn.Compilers.CSharp;
 using LinqToWiki.Internals;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace LinqToWiki.Codegen.ModuleGenerators
 {
@@ -49,7 +50,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             var statements = parseMethodBody.Statements;
 
             var newStatement = SyntaxEx.Assignment(
-                Syntax.IdentifierName("element"),
+                SyntaxFactory.IdentifierName("element"),
                 SyntaxEx.Invocation(
                     SyntaxEx.MemberAccess(SyntaxEx.Invocation(SyntaxEx.MemberAccess("element", "Elements")), "Single")));
 

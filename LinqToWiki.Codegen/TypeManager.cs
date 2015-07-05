@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using LinqToWiki.Codegen.ModuleInfo;
 using LinqToWiki.Collections;
-using Roslyn.Compilers;
-using Roslyn.Compilers.CSharp;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace LinqToWiki.Codegen
 {
@@ -152,12 +153,12 @@ namespace LinqToWiki.Codegen
 
             Func<SyntaxKind, ExpressionSyntax, OperatorDeclarationSyntax> createOperator =
                 (op, result) => SyntaxEx.OperatorDeclaration(
-                    Syntax.ParseTypeName("bool"), op,
+                    SyntaxFactory.ParseTypeName("bool"), op,
                     new[] { firstParameter, secondParameter },
                     new[] { SyntaxEx.Return(result) });
 
             var equalsExpression = SyntaxEx.Invocation(
-                Syntax.IdentifierName("Equals"), (NamedNode)firstParameter, (NamedNode)secondParameter);
+                SyntaxFactory.IdentifierName("Equals"), (NamedNode)firstParameter, (NamedNode)secondParameter);
             var notEqualsExpression = SyntaxEx.Not(equalsExpression);
 
             var equalsOperator = createOperator(SyntaxKind.EqualsEqualsToken, equalsExpression);
@@ -176,7 +177,7 @@ namespace LinqToWiki.Codegen
                 SyntaxEx.Return(SyntaxEx.Invocation(SyntaxEx.MemberAccess("base", "GetHashCode"))));
 
             var classDeclaration =
-                SyntaxEx.ClassDeclaration(typeName, Syntax.ParseTypeName("StringValue"), contructor)
+                SyntaxEx.ClassDeclaration(typeName, SyntaxFactory.ParseTypeName("StringValue"), contructor)
                         .AddMembers(equalsOperator, notEqualsOPerator, equalsMethod, getHashCodeMethod)
                         .AddMembers(members.ToArray<MemberDeclarationSyntax>());
 

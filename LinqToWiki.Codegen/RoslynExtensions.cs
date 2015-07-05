@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using LinqToWiki.Collections;
-using Roslyn.Compilers.CSharp;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace LinqToWiki.Codegen
 {
@@ -33,7 +35,7 @@ namespace LinqToWiki.Codegen
 
         public static SyntaxList<T> ToSyntaxList<T>(this IEnumerable<T> nodes) where T : SyntaxNode
         {
-            return Syntax.List(nodes);
+            return SyntaxFactory.List(nodes);
         }
 
         public static SeparatedSyntaxList<T> ToSeparatedList<T>(
@@ -41,13 +43,13 @@ namespace LinqToWiki.Codegen
             where T : SyntaxNode
         {
             var nodesArray = nodes == null ? new T[0] : nodes.ToArray();
-            return Syntax.SeparatedList(
-                nodesArray, Enumerable.Repeat(Syntax.Token(separator), Math.Max(nodesArray.Length - 1, 0)));
+            return SyntaxFactory.SeparatedList(
+                nodesArray, Enumerable.Repeat(SyntaxFactory.Token(separator), Math.Max(nodesArray.Length - 1, 0)));
         }
 
         public static TNode WithDocumentationSummary<TNode>(this TNode node, string summary) where TNode : SyntaxNode
         {
-            return node.WithLeadingTrivia(Syntax.Trivia(SyntaxEx.DocumentationComment(SyntaxEx.DocumentationSummary(summary))));
+            return node.WithLeadingTrivia(SyntaxFactory.Trivia(SyntaxEx.DocumentationComment(SyntaxEx.DocumentationSummary(summary))));
         }
 
         public static T SingleDescendant<T>(this SyntaxNode node) where T : SyntaxNode
@@ -64,29 +66,29 @@ namespace LinqToWiki.Codegen
         public static FieldDeclarationSyntax FieldDeclaration(
             IEnumerable<SyntaxKind> modifiers, string typeName, string fieldName, ExpressionSyntax initializer = null)
         {
-            return FieldDeclaration(modifiers, Syntax.ParseTypeName(typeName), fieldName, initializer);
+            return FieldDeclaration(modifiers, SyntaxFactory.ParseTypeName(typeName), fieldName, initializer);
         }
 
         public static FieldDeclarationSyntax FieldDeclaration(
             IEnumerable<SyntaxKind> modifiers, TypeSyntax type, string fieldName, ExpressionSyntax initializer = null)
         {
-            return Syntax.FieldDeclaration(
-                Syntax.VariableDeclaration(
-                    type, Syntax.SeparatedList(
-                        Syntax.VariableDeclarator(
-                            Syntax.Identifier(fieldName))
-                            .WithInitializer(initializer == null ? null : Syntax.EqualsValueClause(initializer)))))
+            return SyntaxFactory.FieldDeclaration(
+                SyntaxFactory.VariableDeclaration(
+                    type, SyntaxFactory.SingletonSeparatedList(
+                        SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier(fieldName))
+                            .WithInitializer(
+                                initializer == null ? null : SyntaxFactory.EqualsValueClause(initializer)))))
                 .WithModifiers(TokenList(modifiers));
         }
 
         private static SyntaxTokenList TokenList(IEnumerable<SyntaxKind> modifiers)
         {
-            return Syntax.TokenList(modifiers.Select(Syntax.Token));
+            return SyntaxFactory.TokenList(modifiers.Select(SyntaxFactory.Token));
         }
 
         private static SyntaxTokenList TokenList(SyntaxKind? modifier)
         {
-            return modifier == null ? Syntax.TokenList() : Syntax.TokenList(Syntax.Token(modifier.Value));
+            return modifier == null ? SyntaxFactory.TokenList() : SyntaxFactory.TokenList(SyntaxFactory.Token(modifier.Value));
         }
 
         public static ClassDeclarationSyntax ClassDeclaration(
@@ -144,12 +146,15 @@ namespace LinqToWiki.Codegen
         {
             var typeParameterListSyntax = typeParameters == null
                                               ? null
-                                              : Syntax.TypeParameterList(typeParameters.ToSeparatedList());
-            var baseTypeSyntax = baseType == null ? null : Syntax.BaseList(new[] { baseType }.ToSeparatedList());
+                                              : SyntaxFactory.TypeParameterList(typeParameters.ToSeparatedList());
+            var baseTypeSyntax = baseType == null
+                ? null
+                : SyntaxFactory.BaseList(
+                    SyntaxFactory.SingletonSeparatedList<BaseTypeSyntax>(SyntaxFactory.SimpleBaseType(baseType)));
 
             var modifiers = new[] { SyntaxKind.PublicKeyword, classType };
 
-            return Syntax.ClassDeclaration(className)
+            return SyntaxFactory.ClassDeclaration(className)
                 .WithModifiers(TokenList(modifiers))
                 .WithTypeParameterList(typeParameterListSyntax)
                 .WithBaseList(baseTypeSyntax)
@@ -158,7 +163,7 @@ namespace LinqToWiki.Codegen
 
         public static TypeParameterSyntax TypeParameter(string typeParameterName)
         {
-            return Syntax.TypeParameter(Syntax.Identifier(typeParameterName));
+            return SyntaxFactory.TypeParameter(SyntaxFactory.Identifier(typeParameterName));
         }
 
         public static EnumDeclarationSyntax EnumDeclaration(string enumName, IEnumerable<string> members)
@@ -170,32 +175,33 @@ namespace LinqToWiki.Codegen
         public static EnumDeclarationSyntax EnumDeclaration(
             string enumName, IEnumerable<EnumMemberDeclarationSyntax> members, SyntaxKind? baseType = null)
         {
-            return Syntax.EnumDeclaration(enumName)
+            return SyntaxFactory.EnumDeclaration(enumName)
                 .WithModifiers(TokenList(SyntaxKind.PublicKeyword))
                 .WithBaseList(
                     baseType == null
                         ? null
-                        : Syntax.BaseList(
-                            new TypeSyntax[] { Syntax.PredefinedType(Syntax.Token(baseType.Value)) }
-                                .ToSeparatedList()))
+                        : SyntaxFactory.BaseList(
+                            SyntaxFactory.SingletonSeparatedList<BaseTypeSyntax>(
+                                SyntaxFactory.SimpleBaseType(
+                                    SyntaxFactory.PredefinedType(SyntaxFactory.Token(baseType.Value))))))
                 .WithMembers(members.ToSeparatedList());
         }
 
         public static EnumMemberDeclarationSyntax EnumMemberDeclaration(
             string name, long? value = null, bool useHex = true)
         {
-            var valueClause = value == null ? null : Syntax.EqualsValueClause(Literal(value.Value, useHex));
-            return Syntax.EnumMemberDeclaration(name).WithEqualsValue(valueClause);
+            var valueClause = value == null ? null : SyntaxFactory.EqualsValueClause(Literal(value.Value, useHex));
+            return SyntaxFactory.EnumMemberDeclaration(name).WithEqualsValue(valueClause);
         }
 
         public static ConstructorDeclarationSyntax ConstructorDeclaration(
             IEnumerable<SyntaxKind> modifiers, string className, IEnumerable<ParameterSyntax> parameters = null,
             IEnumerable<StatementSyntax> statements = null, ConstructorInitializerSyntax constructorInitializer = null)
         {
-            return Syntax.ConstructorDeclaration(className)
+            return SyntaxFactory.ConstructorDeclaration(className)
                 .WithModifiers(TokenList(modifiers))
-                .WithParameterList(Syntax.ParameterList(parameters.ToSeparatedList()))
-                .WithBody(Syntax.Block(statements.ToSyntaxList()))
+                .WithParameterList(SyntaxFactory.ParameterList(parameters.ToSeparatedList()))
+                .WithBody(SyntaxFactory.Block(statements.ToSyntaxList()))
                 .WithInitializer(constructorInitializer);
         }
 
@@ -203,10 +209,10 @@ namespace LinqToWiki.Codegen
             TypeSyntax returnType, SyntaxKind operatorToken, IEnumerable<ParameterSyntax> parameters,
             IEnumerable<StatementSyntax> statements = null)
         {
-            return Syntax.OperatorDeclaration(returnType, Syntax.Token(operatorToken))
+            return SyntaxFactory.OperatorDeclaration(returnType, SyntaxFactory.Token(operatorToken))
                          .WithModifiers(TokenList(new[] { SyntaxKind.PublicKeyword, SyntaxKind.StaticKeyword }))
-                         .WithParameterList(Syntax.ParameterList(parameters.ToSeparatedList()))
-                         .WithBody(Syntax.Block(statements.ToSyntaxList()));
+                         .WithParameterList(SyntaxFactory.ParameterList(parameters.ToSeparatedList()))
+                         .WithBody(SyntaxFactory.Block(statements.ToSyntaxList()));
         }
 
         public static ConstructorInitializerSyntax ThisConstructorInitializer(params ExpressionSyntax[] arguments)
@@ -222,88 +228,88 @@ namespace LinqToWiki.Codegen
         private static ConstructorInitializerSyntax ConstructorInitializer(
             SyntaxKind kind, IEnumerable<ExpressionSyntax> arguments)
         {
-            return Syntax.ConstructorInitializer(
-                kind, Syntax.ArgumentList(arguments.Select(Syntax.Argument).ToSeparatedList()));
+            return SyntaxFactory.ConstructorInitializer(
+                kind, SyntaxFactory.ArgumentList(arguments.Select(SyntaxFactory.Argument).ToSeparatedList()));
         }
 
         public static ParameterSyntax Parameter(
             string typeName, string name, ExpressionSyntax defaultValue = null,
             IEnumerable<SyntaxKind> modifiers = null)
         {
-            return Parameter(Syntax.ParseTypeName(typeName), name, defaultValue, modifiers);
+            return Parameter(SyntaxFactory.ParseTypeName(typeName), name, defaultValue, modifiers);
         }
 
         public static ParameterSyntax Parameter(
             TypeSyntax type, string name, ExpressionSyntax defaultValue = null,
             IEnumerable<SyntaxKind> modifiers = null)
         {
-            return Syntax.Parameter(Syntax.Identifier(name))
+            return SyntaxFactory.Parameter(SyntaxFactory.Identifier(name))
                 .WithType(type)
-                .WithDefault(defaultValue == null ? null : Syntax.EqualsValueClause(defaultValue))
+                .WithDefault(defaultValue == null ? null : SyntaxFactory.EqualsValueClause(defaultValue))
                 .WithModifiers(modifiers == null ? default(SyntaxTokenList) : TokenList(modifiers));
         }
 
         public static ExpressionStatementSyntax Assignment(NamedNode left, NamedNode right)
         {
-            return Assignment(Syntax.IdentifierName(left.Name), Syntax.IdentifierName(right.Name));
+            return Assignment(SyntaxFactory.IdentifierName(left.Name), SyntaxFactory.IdentifierName(right.Name));
         }
 
         public static ExpressionStatementSyntax Assignment(NamedNode left, ExpressionSyntax right)
         {
-            return Assignment(Syntax.IdentifierName(left.Name), right);
+            return Assignment(SyntaxFactory.IdentifierName(left.Name), right);
         }
 
         public static ExpressionStatementSyntax Assignment(ExpressionSyntax left, ExpressionSyntax right)
         {
             return
-                Syntax.ExpressionStatement(
-                    Syntax.BinaryExpression(SyntaxKind.AssignExpression, left, right));
+                SyntaxFactory.ExpressionStatement(
+                    SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, left, right));
         }
 
         public static ExpressionSyntax Coalesce(ExpressionSyntax left, ExpressionSyntax right)
         {
-            return Syntax.BinaryExpression(SyntaxKind.CoalesceExpression, left, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.CoalesceExpression, left, right);
         }
 
         public static LiteralExpressionSyntax Literal(string value)
         {
             // TODO: escaping
-            return Syntax.LiteralExpression(
-                SyntaxKind.StringLiteralExpression, Syntax.Literal('"' + value + '"', value));
+            return SyntaxFactory.LiteralExpression(
+                SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal('"' + value + '"', value));
         }
 
         public static LiteralExpressionSyntax Literal(bool value)
         {
-            return Syntax.LiteralExpression(
+            return SyntaxFactory.LiteralExpression(
                 value ? SyntaxKind.TrueLiteralExpression : SyntaxKind.FalseLiteralExpression);
         }
 
         public static LiteralExpressionSyntax Literal(long value, bool useHex = false)
         {
-            return Syntax.LiteralExpression(
+            return SyntaxFactory.LiteralExpression(
                 SyntaxKind.NumericLiteralExpression,
-                Syntax.Literal(
+                SyntaxFactory.Literal(
                     string.Format(System.Globalization.CultureInfo.InvariantCulture, useHex ? "0x{0:X}" : "{0}", value),
                     value));
         }
 
         public static LiteralExpressionSyntax NullLiteral()
         {
-            return Syntax.LiteralExpression(SyntaxKind.NullLiteralExpression);
+            return SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression);
         }
 
         public static NamespaceDeclarationSyntax NamespaceDeclaration(
             string name, params MemberDeclarationSyntax[] members)
         {
-            return Syntax.NamespaceDeclaration(Syntax.ParseName(name))
+            return SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName(name))
                 .WithMembers(members.Where(m => m != null).ToSyntaxList());
         }
 
         public static CompilationUnitSyntax CompilationUnit(NamespaceDeclarationSyntax member, params string[] usings)
         {
-            return Syntax.CompilationUnit()
-                .WithUsings(usings.Select(u => Syntax.UsingDirective(Syntax.ParseName(u))).ToSyntaxList())
-                .WithMembers(Syntax.List<MemberDeclarationSyntax>(member));
+            return SyntaxFactory.CompilationUnit()
+                .WithUsings(usings.Select(u => SyntaxFactory.UsingDirective(SyntaxFactory.ParseName(u))).ToSyntaxList())
+                .WithMembers(SyntaxFactory.SingletonList<MemberDeclarationSyntax>(member));
         }
 
         public static PropertyDeclarationSyntax AutoPropertyDeclaration(
@@ -311,7 +317,7 @@ namespace LinqToWiki.Codegen
             SyntaxKind? setModifier = null, SyntaxKind? getModifier = null, bool isAbstract = false)
         {
             return AutoPropertyDeclaration(
-                modifiers, Syntax.ParseTypeName(typeName), propertyName, setModifier, getModifier, isAbstract);
+                modifiers, SyntaxFactory.ParseTypeName(typeName), propertyName, setModifier, getModifier, isAbstract);
         }
 
         public static PropertyDeclarationSyntax AutoPropertyDeclaration(
@@ -321,18 +327,18 @@ namespace LinqToWiki.Codegen
             var accesors = new List<AccessorDeclarationSyntax>();
             if (!(isAbstract && getModifier == SyntaxKind.PrivateKeyword))
                 accesors.Add(
-                    Syntax.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
+                    SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
                     .WithModifiers(TokenList(getModifier))
-                    .WithSemicolonToken(Syntax.Token(SyntaxKind.SemicolonToken)));
+                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)));
             if (!(isAbstract && setModifier == SyntaxKind.PrivateKeyword))
                 accesors.Add(
-                    Syntax.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
+                    SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
                         .WithModifiers(TokenList(setModifier))
-                        .WithSemicolonToken(Syntax.Token(SyntaxKind.SemicolonToken)));
+                        .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)));
 
-            return Syntax.PropertyDeclaration(type, propertyName)
+            return SyntaxFactory.PropertyDeclaration(type, propertyName)
                 .WithModifiers(TokenList(modifiers))
-                .WithAccessorList(Syntax.AccessorList(accesors.ToSyntaxList()));
+                .WithAccessorList(SyntaxFactory.AccessorList(accesors.ToSyntaxList()));
         }
 
         public static PropertyDeclarationSyntax PropertyDeclaration(
@@ -343,19 +349,19 @@ namespace LinqToWiki.Codegen
             var accessors = new List<AccessorDeclarationSyntax>();
 
             accessors.Add(
-                Syntax.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
+                SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
                     .WithModifiers(TokenList(getModifier))
-                    .WithBody(Syntax.Block(getStatements.ToSyntaxList())));
+                    .WithBody(SyntaxFactory.Block(getStatements.ToSyntaxList())));
 
             if (setStatements != null)
                 accessors.Add(
-                    Syntax.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
+                    SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
                     .WithModifiers(TokenList(setModifier))
-                    .WithBody(Syntax.Block(setStatements.ToSyntaxList())));
+                    .WithBody(SyntaxFactory.Block(setStatements.ToSyntaxList())));
 
-            return Syntax.PropertyDeclaration(type, propertyName)
+            return SyntaxFactory.PropertyDeclaration(type, propertyName)
                 .WithModifiers(TokenList(modifiers))
-                .WithAccessorList(Syntax.AccessorList(accessors.ToSyntaxList()));
+                .WithAccessorList(SyntaxFactory.AccessorList(accessors.ToSyntaxList()));
         }
 
         public static MethodDeclarationSyntax MethodDeclaration(
@@ -371,7 +377,7 @@ namespace LinqToWiki.Codegen
             IEnumerable<ParameterSyntax> parameters, IEnumerable<StatementSyntax> statements)
         {
             return MethodDeclaration(
-                modifiers, Syntax.ParseTypeName(returnTypeName), methodName, parameters, statements);
+                modifiers, SyntaxFactory.ParseTypeName(returnTypeName), methodName, parameters, statements);
         }
 
         public static MethodDeclarationSyntax MethodDeclaration(
@@ -405,14 +411,14 @@ namespace LinqToWiki.Codegen
             var typeParameterListSyntax =
                 typeParameters == null
                     ? null
-                    : Syntax.TypeParameterList(typeParameters.ToSeparatedList());
-            var statmentsSyntax = statements == null ? null : Syntax.Block(statements.ToSyntaxList());
-            var semicolonToken = statements == null ? Syntax.Token(SyntaxKind.SemicolonToken) : default(SyntaxToken);
+                    : SyntaxFactory.TypeParameterList(typeParameters.ToSeparatedList());
+            var statmentsSyntax = statements == null ? null : SyntaxFactory.Block(statements.ToSyntaxList());
+            var semicolonToken = statements == null ? SyntaxFactory.Token(SyntaxKind.SemicolonToken) : default(SyntaxToken);
 
-            return Syntax.MethodDeclaration(returnType, methodName)
+            return SyntaxFactory.MethodDeclaration(returnType, methodName)
                 .WithModifiers(TokenList(modifiers))
                 .WithTypeParameterList(typeParameterListSyntax)
-                .WithParameterList(Syntax.ParameterList(parameters.ToSeparatedList()))
+                .WithParameterList(SyntaxFactory.ParameterList(parameters.ToSeparatedList()))
                 .WithBody(statmentsSyntax)
                 .WithSemicolonToken(semicolonToken);
         }
@@ -421,7 +427,7 @@ namespace LinqToWiki.Codegen
             string typeName, IEnumerable<ExpressionSyntax> arguments,
             IEnumerable<IEnumerable<ExpressionSyntax>> initializers = null)
         {
-            return ObjectCreation(Syntax.ParseTypeName(typeName), arguments, initializers);
+            return ObjectCreation(SyntaxFactory.ParseTypeName(typeName), arguments, initializers);
         }
 
         public static ObjectCreationExpressionSyntax ObjectCreation(
@@ -449,16 +455,16 @@ namespace LinqToWiki.Codegen
             var argumentsArray = arguments == null ? new ExpressionSyntax[0] : arguments.ToArray();
             var argumentList =
                 argumentsArray.Length == 0
-                    ? Syntax.ArgumentList()
-                    : Syntax.ArgumentList(argumentsArray.Select(Syntax.Argument).ToSeparatedList());
+                    ? SyntaxFactory.ArgumentList()
+                    : SyntaxFactory.ArgumentList(argumentsArray.Select(SyntaxFactory.Argument).ToSeparatedList());
 
             InitializerExpressionSyntax initializer =
                 initializers == null
                     ? null
-                    : Syntax.InitializerExpression(
+                    : SyntaxFactory.InitializerExpression(
                         SyntaxKind.CollectionInitializerExpression, initializers.Select(ToInitializer).ToSeparatedList());
 
-            return Syntax.ObjectCreationExpression(type, argumentList, initializer);
+            return SyntaxFactory.ObjectCreationExpression(type, argumentList, initializer);
         }
 
         private static ExpressionSyntax ToInitializer(IEnumerable<ExpressionSyntax> expressions)
@@ -468,72 +474,72 @@ namespace LinqToWiki.Codegen
             if (expressionsArray.Length == 1)
                 return expressionsArray[0];
 
-            return Syntax.InitializerExpression(
+            return SyntaxFactory.InitializerExpression(
                 SyntaxKind.ObjectInitializerExpression, expressionsArray.ToSeparatedList());
         }
 
         public static ExpressionSyntax ArrayCreation(string typeName, IEnumerable<ExpressionSyntax> expressions)
         {
-            var initializer = Syntax.InitializerExpression(
+            var initializer = SyntaxFactory.InitializerExpression(
                 SyntaxKind.ArrayInitializerExpression, expressions.ToSeparatedList());
 
             if (string.IsNullOrEmpty(typeName))
-                return Syntax.ImplicitArrayCreationExpression(initializer);
+                return SyntaxFactory.ImplicitArrayCreationExpression(initializer);
 
-            return Syntax.ArrayCreationExpression(
-                Syntax.ArrayType(Syntax.ParseTypeName(typeName), Syntax.List(Syntax.ArrayRankSpecifier())),
+            return SyntaxFactory.ArrayCreationExpression(
+                SyntaxFactory.ArrayType(SyntaxFactory.ParseTypeName(typeName), SyntaxFactory.SingletonList(SyntaxFactory.ArrayRankSpecifier())),
                 initializer);
         }
 
         public static LocalDeclarationStatementSyntax LocalDeclaration(
             string type, string localName, ExpressionSyntax value)
         {
-            return Syntax.LocalDeclarationStatement(
-                Syntax.VariableDeclaration(
-                    Syntax.ParseTypeName(type),
-                    Syntax.SeparatedList(
-                        Syntax.VariableDeclarator(Syntax.Identifier(localName))
-                            .WithInitializer(Syntax.EqualsValueClause(value)))));
+            return SyntaxFactory.LocalDeclarationStatement(
+                SyntaxFactory.VariableDeclaration(
+                    SyntaxFactory.ParseTypeName(type),
+                    SyntaxFactory.SingletonSeparatedList(
+                        SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier(localName))
+                            .WithInitializer(SyntaxFactory.EqualsValueClause(value)))));
         }
 
         public static ReturnStatementSyntax Return(NamedNode namedNode)
         {
-            return Syntax.ReturnStatement(namedNode);
+            return SyntaxFactory.ReturnStatement(namedNode);
         }
 
         public static ReturnStatementSyntax Return(ExpressionSyntax expression)
         {
-            return Syntax.ReturnStatement(expression);
+            return SyntaxFactory.ReturnStatement(expression);
         }
 
         public static ThrowStatementSyntax Throw(ExpressionSyntax expression)
         {
-            return Syntax.ThrowStatement(expression);
+            return SyntaxFactory.ThrowStatement(expression);
         }
 
         public static IfStatementSyntax If(
             ExpressionSyntax condition, StatementSyntax ifStatement, StatementSyntax elseStatement = null)
         {
-            return Syntax.IfStatement(
-                condition, ifStatement, elseStatement == null ? null : Syntax.ElseClause(elseStatement));
+            return SyntaxFactory.IfStatement(
+                condition, ifStatement, elseStatement == null ? null : SyntaxFactory.ElseClause(elseStatement));
         }
 
         public static SwitchStatementSyntax Switch(
             ExpressionSyntax expression, IEnumerable<SwitchSectionSyntax> sections)
         {
-            return Syntax.SwitchStatement(expression, sections.ToSyntaxList());
+            return SyntaxFactory.SwitchStatement(expression, sections.ToSyntaxList());
         }
 
         public static SwitchSectionSyntax SwitchCase(ExpressionSyntax value, params StatementSyntax[] statements)
         {
-            return Syntax.SwitchSection(
-                new[] { Syntax.SwitchLabel(SyntaxKind.CaseSwitchLabel, value) }.ToSyntaxList(),
+            return SyntaxFactory.SwitchSection(
+                SyntaxFactory.SingletonList<SwitchLabelSyntax>(SyntaxFactory.CaseSwitchLabel(value)),
                 statements.ToSyntaxList());
         }
 
         public static BlockSyntax Block(IEnumerable<StatementSyntax> statements)
         {
-            return Syntax.Block(statements.ToSyntaxList());
+            return SyntaxFactory.Block(statements.ToSyntaxList());
         }
 
         public static InvocationExpressionSyntax Invocation(
@@ -545,22 +551,22 @@ namespace LinqToWiki.Codegen
         public static InvocationExpressionSyntax Invocation(
             ExpressionSyntax expression, IEnumerable<ExpressionSyntax> arguments)
         {
-            return Syntax.InvocationExpression(
+            return SyntaxFactory.InvocationExpression(
                 expression,
-                Syntax.ArgumentList(arguments.Select(Syntax.Argument).ToSeparatedList()));
+                SyntaxFactory.ArgumentList(arguments.Select(SyntaxFactory.Argument).ToSeparatedList()));
         }
 
         public static ElementAccessExpressionSyntax ElementAccess(
             ExpressionSyntax expression, params ExpressionSyntax[] arguments)
         {
-            return Syntax.ElementAccessExpression(
+            return SyntaxFactory.ElementAccessExpression(
                 expression,
-                Syntax.BracketedArgumentList(arguments.Select(Syntax.Argument).ToSeparatedList()));
+                SyntaxFactory.BracketedArgumentList(arguments.Select(SyntaxFactory.Argument).ToSeparatedList()));
         }
 
         public static MemberAccessExpressionSyntax MemberAccess(string name, string memberName)
         {
-            return MemberAccess(Syntax.ParseExpression(name), memberName);
+            return MemberAccess(SyntaxFactory.ParseExpression(name), memberName);
         }
 
         public static MemberAccessExpressionSyntax MemberAccess(NamedNode namedNode, string memberName)
@@ -570,48 +576,48 @@ namespace LinqToWiki.Codegen
 
         public static MemberAccessExpressionSyntax MemberAccess(ExpressionSyntax expression, string memberName)
         {
-            return MemberAccess(expression, (SimpleNameSyntax)Syntax.ParseName(memberName));
+            return MemberAccess(expression, (SimpleNameSyntax)SyntaxFactory.ParseName(memberName));
         }
 
         public static MemberAccessExpressionSyntax MemberAccess(string name, SimpleNameSyntax memberName)
         {
-            return MemberAccess(Syntax.ParseExpression(name), memberName);
+            return MemberAccess(SyntaxFactory.ParseExpression(name), memberName);
         }
 
         public static MemberAccessExpressionSyntax MemberAccess(
             ExpressionSyntax expression, SimpleNameSyntax memberName)
         {
-            return Syntax.MemberAccessExpression(SyntaxKind.MemberAccessExpression, expression, memberName);
+            return SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, expression, memberName);
         }
 
         public static BinaryExpressionSyntax Equals(ExpressionSyntax left, ExpressionSyntax right)
         {
-            return Syntax.BinaryExpression(SyntaxKind.EqualsExpression, left, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.EqualsExpression, left, right);
         }
 
         public static BinaryExpressionSyntax NotEquals(ExpressionSyntax left, ExpressionSyntax right)
         {
-            return Syntax.BinaryExpression(SyntaxKind.NotEqualsExpression, left, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.NotEqualsExpression, left, right);
         }
 
         public static BinaryExpressionSyntax And(ExpressionSyntax left, ExpressionSyntax right)
         {
-            return Syntax.BinaryExpression(SyntaxKind.LogicalAndExpression, left, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.LogicalAndExpression, left, right);
         }
 
         public static PrefixUnaryExpressionSyntax Not(ExpressionSyntax operand)
         {
-            return Syntax.PrefixUnaryExpression(SyntaxKind.LogicalNotExpression, operand);
+            return SyntaxFactory.PrefixUnaryExpression(SyntaxKind.LogicalNotExpression, operand);
         }
 
         public static TypeOfExpressionSyntax TypeOf(string typeName)
         {
-            return Syntax.TypeOfExpression(Syntax.ParseTypeName(typeName));
+            return SyntaxFactory.TypeOfExpression(SyntaxFactory.ParseTypeName(typeName));
         }
 
         public static CastExpressionSyntax Cast(string typeName, ExpressionSyntax expression)
         {
-            return Syntax.CastExpression(Syntax.ParseTypeName(typeName), expression);
+            return SyntaxFactory.CastExpression(SyntaxFactory.ParseTypeName(typeName), expression);
         }
 
         public static GenericNameSyntax GenericName(string name, params string[] typeArgumentNames)
@@ -621,7 +627,7 @@ namespace LinqToWiki.Codegen
 
         public static GenericNameSyntax GenericName(string name, IEnumerable<string> typeArgumentNames)
         {
-            return GenericName(name, typeArgumentNames.Select(Syntax.IdentifierName));
+            return GenericName(name, typeArgumentNames.Select(SyntaxFactory.IdentifierName));
         }
 
         public static GenericNameSyntax GenericName(string name, params TypeSyntax[] typeArguments)
@@ -631,8 +637,8 @@ namespace LinqToWiki.Codegen
 
         public static GenericNameSyntax GenericName(string name, IEnumerable<TypeSyntax> typeArguments)
         {
-            return Syntax.GenericName(
-                Syntax.Identifier(name), Syntax.TypeArgumentList(typeArguments.ToSeparatedList()));
+            return SyntaxFactory.GenericName(
+                SyntaxFactory.Identifier(name), SyntaxFactory.TypeArgumentList(typeArguments.ToSeparatedList()));
         }
 
         public static XmlElementSyntax DocumentationSummary(string summary)
@@ -642,13 +648,13 @@ namespace LinqToWiki.Codegen
 
         public static XmlElementSyntax DocumentationParameter(string name, string text)
         {
-            return DocumentationElement("param ", text, new TupleList<string, string> { { "name", name } });
+            return DocumentationElement("param ", text, name);
         }
 
         private static SyntaxToken XmlTextNewLine()
         {
-            return Syntax.XmlTextNewLine(
-                Syntax.TriviaList(), Environment.NewLine, Environment.NewLine, Syntax.TriviaList());
+            return SyntaxFactory.XmlTextNewLine(
+                SyntaxFactory.TriviaList(), Environment.NewLine, Environment.NewLine, SyntaxFactory.TriviaList());
         }
 
         public static DocumentationCommentTriviaSyntax DocumentationComment(params XmlElementSyntax[] elements)
@@ -658,16 +664,17 @@ namespace LinqToWiki.Codegen
 
         public static DocumentationCommentTriviaSyntax DocumentationComment(IEnumerable<XmlElementSyntax> elements)
         {
-            return Syntax.DocumentationCommentTrivia(
-                elements.AddAfterEach<XmlNodeSyntax>(Syntax.XmlText(Syntax.TokenList(XmlTextNewLine())))
+            return SyntaxFactory.DocumentationCommentTrivia(
+                SyntaxKind.SingleLineDocumentationCommentTrivia,
+                elements.AddAfterEach<XmlNodeSyntax>(SyntaxFactory.XmlText(SyntaxFactory.TokenList(XmlTextNewLine())))
                     .ToSyntaxList());
         }
 
         private static XmlElementSyntax DocumentationElement(
-            string elementName, string text, IEnumerable<Tuple<string, string>> attributes = null)
+            string elementName, string text, string name = null)
         {
             var nameSyntax = XmlName(elementName);
-            var exteriorTrivia = Syntax.DocumentationCommentExterior("///");
+            var exteriorTrivia = SyntaxFactory.DocumentationCommentExterior("///");
 
             string[] lines = text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -686,37 +693,33 @@ namespace LinqToWiki.Codegen
 
             var attributeSyntaxes = new List<XmlAttributeSyntax>();
 
-            if (attributes != null)
-                foreach (var attribute in attributes)
-                    attributeSyntaxes.Add(
-                        Syntax.XmlAttribute(
-                            XmlName(attribute.Item1), Syntax.Token(SyntaxKind.DoubleQuoteToken),
-                            Syntax.TokenList(XmlText(attribute.Item2)), Syntax.Token(SyntaxKind.DoubleQuoteToken)));
+            if (name != null)
+                attributeSyntaxes.Add(
+                    SyntaxFactory.XmlNameAttribute(
+                        XmlName("name"), SyntaxFactory.Token(SyntaxKind.DoubleQuoteToken),
+                        name, SyntaxFactory.Token(SyntaxKind.DoubleQuoteToken)));
 
-            return Syntax.XmlElement(
-                Syntax.XmlElementStartTag(nameSyntax, attributeSyntaxes.ToSyntaxList())
+            return SyntaxFactory.XmlElement(
+                SyntaxFactory.XmlElementStartTag(nameSyntax, attributeSyntaxes.ToSyntaxList())
                     .WithLeadingTrivia(exteriorTrivia),
-                new XmlNodeSyntax[]
-                {
-                    Syntax.XmlText(Syntax.TokenList(tokens))
-                }.ToSyntaxList(),
-                Syntax.XmlElementEndTag(nameSyntax).WithLeadingTrivia(exteriorTrivia));
+                SyntaxFactory.SingletonList<XmlNodeSyntax>(SyntaxFactory.XmlText(SyntaxFactory.TokenList(tokens))),
+                SyntaxFactory.XmlElementEndTag(nameSyntax).WithLeadingTrivia(exteriorTrivia));
         }
 
         private static SyntaxToken XmlText(string text)
         {
-            return Syntax.XmlTextLiteral(new SyntaxTriviaList(), text, text, new SyntaxTriviaList());
+            return SyntaxFactory.XmlTextLiteral(new SyntaxTriviaList(), text, text, new SyntaxTriviaList());
         }
 
         private static XmlNameSyntax XmlName(string name)
         {
-            return Syntax.XmlName(Syntax.Identifier(name));
+            return SyntaxFactory.XmlName(name);
         }
 
-        public static SimpleLambdaExpressionSyntax LambdaExpression(string parameterName, SyntaxNode body)
+        public static SimpleLambdaExpressionSyntax LambdaExpression(string parameterName, CSharpSyntaxNode body)
         {
-            return Syntax.SimpleLambdaExpression(
-                Syntax.Parameter(Syntax.Identifier(parameterName)), body);
+            return SyntaxFactory.SimpleLambdaExpression(
+                SyntaxFactory.Parameter(SyntaxFactory.Identifier(parameterName)), body);
         }
     }
 
@@ -758,7 +761,7 @@ namespace LinqToWiki.Codegen
 
         public static implicit operator IdentifierNameSyntax(NamedNode namedNode)
         {
-            return Syntax.IdentifierName(namedNode.Name);
+            return SyntaxFactory.IdentifierName(namedNode.Name);
         }
 
         public string Name

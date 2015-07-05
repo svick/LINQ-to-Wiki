@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using LinqToWiki.Codegen.ModuleInfo;
 using LinqToWiki.Collections;
-using Roslyn.Compilers.CSharp;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace LinqToWiki.Codegen.ModuleGenerators
 {
@@ -37,7 +39,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             return SyntaxEx.AutoPropertyDeclaration(
                 new[] { SyntaxKind.PublicKeyword, SyntaxKind.AbstractKeyword }, GenerateMethodResultType(),
                 ClassNameBase, isAbstract: true, setModifier: SyntaxKind.PrivateKeyword)
-                .WithLeadingTrivia(Syntax.Trivia(SyntaxEx.DocumentationComment(summary)));
+                .WithLeadingTrivia(SyntaxFactory.Trivia(SyntaxEx.DocumentationComment(summary)));
         }
 
         protected override IEnumerable<Tuple<string, string>> GetBaseParameters(Module module)

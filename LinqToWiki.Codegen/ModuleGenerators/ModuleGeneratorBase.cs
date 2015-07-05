@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using LinqToWiki.Codegen.ModuleInfo;
 using LinqToWiki.Internals;
-using Roslyn.Compilers;
-using Roslyn.Compilers.CSharp;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace LinqToWiki.Codegen.ModuleGenerators
 {
@@ -56,7 +57,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             var propertiesArray = properties.ToArray();
 
             return SyntaxEx.ClassDeclaration(
-                className, baseType == null ? null : Syntax.ParseTypeName(baseType),
+                className, baseType == null ? null : SyntaxFactory.ParseTypeName(baseType),
                 propertiesArray.Select(p => GenerateProperty(p.Name, p.Type, p.Nullable)))
                 .AddPrivateConstructor()
                 .AddMembers(
@@ -139,7 +140,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
             var parameters = new List<ExpressionSyntax> { SyntaxEx.Literal(formatString) };
 
-            parameters.AddRange(properties.Select(p => Syntax.IdentifierName(GetPropertyName(p.Name))));
+            parameters.AddRange(properties.Select(p => SyntaxFactory.IdentifierName(GetPropertyName(p.Name))));
 
             var returnStatement = SyntaxEx.Return(SyntaxEx.Invocation(SyntaxEx.MemberAccess("string", "Format"), parameters));
 
@@ -277,7 +278,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
             statements = GenerateMethodBody(
                 SyntaxEx.ObjectCreation(
                     SyntaxEx.GenericName("QueryProcessor", resultClassName),
-                    Syntax.IdentifierName("m_wiki"),
+                    SyntaxFactory.IdentifierName("m_wiki"),
                     (NamedNode)propertiesField), (NamedNode)queryParametersLocal, statements);
 
             var modifiers = new List<SyntaxKind> { SyntaxKind.PublicKeyword };
@@ -286,7 +287,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
             var method = SyntaxEx.MethodDeclaration(
                 modifiers, GenerateMethodResultType(), ClassNameBase, parameters, statements)
-                .WithLeadingTrivia(Syntax.Trivia(SyntaxEx.DocumentationComment(documentationElements)));
+                .WithLeadingTrivia(SyntaxFactory.Trivia(SyntaxEx.DocumentationComment(documentationElements)));
 
             AddMembersToClass(fileName, propertiesField, method);
         }

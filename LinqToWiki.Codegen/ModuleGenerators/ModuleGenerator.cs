@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using LinqToWiki.Codegen.ModuleInfo;
 using LinqToWiki.Collections;
-using Roslyn.Compilers.CSharp;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace LinqToWiki.Codegen.ModuleGenerators
 {
@@ -101,7 +102,7 @@ namespace LinqToWiki.Codegen.ModuleGenerators
 
             var statement =
                 m_voidResult
-                    ? (StatementSyntax)Syntax.ExpressionStatement(invocation)
+                    ? (StatementSyntax)SyntaxFactory.ExpressionStatement(invocation)
                     : SyntaxEx.Return(invocation);
 
             statements.Add(statement);
@@ -111,9 +112,9 @@ namespace LinqToWiki.Codegen.ModuleGenerators
         protected override TypeSyntax GenerateMethodResultType()
         {
             if (m_voidResult)
-                return Syntax.ParseTypeName("void");
+                return SyntaxFactory.ParseTypeName("void");
 
-            var resultType = Syntax.ParseTypeName(ResultClassName);
+            var resultType = SyntaxFactory.ParseTypeName(ResultClassName);
 
             if (m_listResult)
                 resultType = SyntaxEx.GenericName("IEnumerable", resultType);
