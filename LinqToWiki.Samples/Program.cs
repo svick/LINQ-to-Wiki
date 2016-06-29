@@ -13,7 +13,7 @@ namespace LinqToWiki.Samples
         {
             Downloader.LogDownloading = true;
 
-            var wiki = new Wiki("LinqToWiki.Samples", "en.wikipedia.org", "/w/api.php");
+            var wiki = new Wiki("LinqToWiki.Samples", "https://en.wikipedia.org", "/w/api.php");
             // Login(wiki, "username", "password");
 
             Compare(wiki);
