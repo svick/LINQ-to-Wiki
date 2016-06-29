@@ -1,3 +1,5 @@
+* set HTTPS as default
+
 * XML documentation of generated types (e.g. Wiki)
 * web application
 * optionally turn off getting namespaces every time (or maybe cache them?)
