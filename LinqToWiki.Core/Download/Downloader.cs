@@ -22,7 +22,7 @@ namespace LinqToWiki.Download
 
         /// <summary>
         /// Whether to set the <c>maxlag</c> parameter to limit queries in times of high load.
-        /// See <see cref="http://www.mediawiki.org/wiki/Manual:Maxlag_parameter">Maxlag parameter in the MediaWiki manual</see>.
+        /// See http://www.mediawiki.org/wiki/Manual:Maxlag_parameter.
         /// </summary>
         public static bool UseMaxlag { get; set; }
 
@@ -45,7 +45,7 @@ namespace LinqToWiki.Download
         }
 
         /// <summary>
-        /// Downloads the results of query defined by <see cref="parameters"/>.
+        /// Downloads the results of query defined by <paramref name="parameters"/>.
         /// </summary>
         public XDocument Download(IEnumerable<HttpQueryParameterBase> parameters)
         {

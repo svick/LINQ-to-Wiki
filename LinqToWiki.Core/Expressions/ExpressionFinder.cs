@@ -11,7 +11,7 @@ namespace LinqToWiki.Expressions
     public static class ExpressionFinder
     {
         /// <summary>
-        /// Helper class that looks for a subexpression of type <see cref="T"/>
+        /// Helper class that looks for a subexpression of type <typeparamref name="T"/>
         /// that satisfies a condition.
         /// </summary>
         private class Finder<T> : ExpressionVisitor where T : Expression
@@ -34,7 +34,7 @@ namespace LinqToWiki.Expressions
             }
 
             /// <summary>
-            /// Searches for matching subexpressions in <see cref="node"/>.
+            /// Searches for matching subexpressions in <paramref name="node"/>.
             /// </summary>
             public override Expression Visit(Expression node)
             {
@@ -48,8 +48,8 @@ namespace LinqToWiki.Expressions
         }
 
         /// <summary>
-        /// Searches <see cref="expression"/> for a single subexpression of type <see cref="T"/>
-        /// that satisfies <see cref="condition"/>.
+        /// Searches <paramref name="expression"/> for a single subexpression of type <typeparamref name="T"/>
+        /// that satisfies <paramref name="condition"/>.
         /// Behaves similarly to <see cref="Enumerable.Single{TSource}(System.Collections.Generic.IEnumerable{TSource})"/>.
         /// </summary>
         public static T Single<T>(Expression expression, Func<T, bool> condition) where T : Expression

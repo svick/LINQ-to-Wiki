@@ -7,7 +7,7 @@ namespace LinqToWiki
 {
     /// <summary>
     /// Represenst a namespace on a wiki.
-    /// See <see cref="http://www.mediawiki.org/wiki/Manual:Namespace">Namespace in the MediaWiki manual</see>.
+    /// See http://www.mediawiki.org/wiki/Manual:Namespace.
     /// </summary>
     public class Namespace : IEquatable<Namespace>
     {

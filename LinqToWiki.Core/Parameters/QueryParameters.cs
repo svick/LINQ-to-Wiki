@@ -34,7 +34,7 @@ namespace LinqToWiki.Parameters
         public IEnumerable<string> Properties { get; protected set; }
 
         /// <summary>
-        /// Copies properties of this instance to <see cref="target"/>.
+        /// Copies properties of this instance to <paramref name="target"/>.
         /// Copies only properties of <see cref="QueryParameters"/> and not the inherited classes.
         /// </summary>
         internal void CopyTo(QueryParameters target)
@@ -85,7 +85,7 @@ namespace LinqToWiki.Parameters
 
         /// <summary>
         /// Adds a single name-value pair to the current query and returns the result.
-        /// The parameter <see cref="value"/> can actually represent multiple values.
+        /// The parameter <paramref name="value"/> can actually represent multiple values.
         /// </summary>
         public QueryParameters<TSource, TResult> AddSingleValue(string name, string value)
         {

@@ -49,7 +49,7 @@ namespace LinqToWiki.Parameters
         }
 
         /// <summary>
-        /// Copies the data from <see cref="parameters"/> into current instance.
+        /// Copies the data from <paramref name="parameters"/> into current instance.
         /// </summary>
         public void CopyFrom(QueryParameters parameters)
         {
@@ -58,7 +58,7 @@ namespace LinqToWiki.Parameters
 
         /// <summary>
         /// Adds a single name-value pair to the current query and returns the result.
-        /// The parameter <see cref="value"/> can actually represent multiple values.
+        /// The parameter <paramref name="value"/> can actually represent multiple values.
         /// </summary>
         public PropQueryParameters AddSingleValue(string name, string value)
         {

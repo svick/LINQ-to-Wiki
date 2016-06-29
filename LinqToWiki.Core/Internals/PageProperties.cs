@@ -6,7 +6,7 @@ namespace LinqToWiki.Internals
 {
     /// <summary>
     /// Contains <see cref="QueryTypeProperties"/> objects for the properties
-    /// of a page type <see cref="TPage"/>.
+    /// of a page type <typeparamref name="TPage"/>.
     /// </summary>
     static class PageProperties<TPage>
     {

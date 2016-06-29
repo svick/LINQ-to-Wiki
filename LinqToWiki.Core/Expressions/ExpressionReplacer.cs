@@ -25,8 +25,8 @@ namespace LinqToWiki.Expressions
         }
 
         /// <summary>
-        /// Returns <see cref="expression"/> with instances of <see cref="toReplace"/>
-        /// replaced by <see cref="replaceWith"/>.
+        /// Returns <paramref name="expression"/> with instances of <paramref name="toReplace"/>
+        /// replaced by <paramref name="replaceWith"/>.
         /// </summary>
         public static Expression Replace(
             Expression expression, Expression toReplace, Expression replaceWith)

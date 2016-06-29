@@ -25,7 +25,7 @@ namespace LinqToWiki.Expressions
         public bool UsedDirectly { get; private set; }
 
         /// <summary>
-        /// Gathers information about properties of <see cref="needle"/> in <see cref="haystack"/>.
+        /// Gathers information about properties of <paramref name="needle"/> in <paramref name="haystack"/>.
         /// </summary>
         public void Gather(Expression haystack, Expression needle)
         {

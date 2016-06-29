@@ -22,7 +22,7 @@ namespace LinqToWiki.Internals
         }
 
         /// <summary>
-        /// Executes a query based on the <see cref="parameters"/> and returns a lazy collection of results.
+        /// Executes a query based on the <paramref name="parameters"/> and returns a lazy collection of results.
         /// </summary>
         public IEnumerable<TResult> ExecuteList<TResult>(QueryParameters<T, TResult> parameters)
         {
@@ -69,7 +69,7 @@ namespace LinqToWiki.Internals
         }
 
         /// <summary>
-        /// Executes a query based on the <see cref="parameters"/> and returns a single result.
+        /// Executes a query based on the <paramref name="parameters"/> and returns a single result.
         /// </summary>
         public TResult ExecuteSingle<TResult>(QueryParameters<T, TResult> parameters)
         {

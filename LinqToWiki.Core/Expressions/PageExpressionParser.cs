@@ -189,7 +189,7 @@ namespace LinqToWiki.Expressions
         }
 
         /// <summary>
-        /// Lists base types of a given <see cref="type"/>.
+        /// Lists base types of a given <paramref name="type"/>.
         /// For generic types, the result contains their generic type definitions.
         /// </summary>
         private static IEnumerable<Type> BaseTypes(Type type)
