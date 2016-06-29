@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using System.Globalization;
 
 namespace LinqToWiki.Internals
@@ -34,6 +35,8 @@ namespace LinqToWiki.Internals
         /// </summary>
         public static Namespace ParseNamespace(string value, WikiInfo wiki)
         {
+            Contract.Requires(wiki != null);
+
             return wiki.Namespaces[ParseInt32(value)];
         }
 

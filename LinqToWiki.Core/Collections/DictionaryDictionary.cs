@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace LinqToWiki.Collections
 {
@@ -16,6 +17,9 @@ namespace LinqToWiki.Collections
         {
             get
             {
+                Contract.Requires(key1 != null);
+                Contract.Requires(key2 != null);
+
                 TValue result;
                 if (TryGetValue(key1, key2, out result))
                     return result;
@@ -23,6 +27,9 @@ namespace LinqToWiki.Collections
             }
             set
             {
+                Contract.Requires(key1 != null);
+                Contract.Requires(key2 != null);
+
                 GetOrCreateInnerDictionary(key1)[key2] = value;
             }
         }
@@ -33,6 +40,8 @@ namespace LinqToWiki.Collections
         /// </summary>
         private Dictionary<TKey2, TValue> GetOrCreateInnerDictionary(TKey1 key1)
         {
+            Contract.Requires(key1 != null);
+
             Dictionary<TKey2, TValue> innerDict;
             bool found = TryGetValue(key1, out innerDict);
             if (!found)
@@ -49,6 +58,9 @@ namespace LinqToWiki.Collections
         /// <returns><c>>true</c> if the Dictionary contains an element with the specified key; otherwise, <c>false</c>.</returns>
         public bool TryGetValue(TKey1 key1, TKey2 key2, out TValue value)
         {
+            Contract.Requires(key1 != null);
+            Contract.Requires(key2 != null);
+
             Dictionary<TKey2, TValue> innerDict;
             bool found = TryGetValue(key1, out innerDict);
             if (found)
@@ -63,6 +75,9 @@ namespace LinqToWiki.Collections
         /// </summary>
         public void Add(TKey1 key1, TKey2 key2, TValue value)
         {
+            Contract.Requires(key1 != null);
+            Contract.Requires(key2 != null);
+
             GetOrCreateInnerDictionary(key1).Add(key2, value);
         }
     }

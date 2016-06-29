@@ -181,6 +181,9 @@ namespace LinqToWiki.Expressions
                 var argument = ((UnaryExpression)node.Arguments.Single()).Operand;
                 var genericArguments = argument.Type.GetGenericArguments();
 
+                if (genericArguments.Length != 2)
+                    throw new InvalidOperationException($"Invalid method {node.Method}.");
+
                 return Expression.Call(
                     typeof(Enumerable), methodName, new[] { genericArguments[0], genericArguments[1] }, obj, argument);
             }

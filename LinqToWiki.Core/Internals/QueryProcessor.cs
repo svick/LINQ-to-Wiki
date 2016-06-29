@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Xml.Linq;
 using LinqToWiki.Download;
@@ -73,6 +74,8 @@ namespace LinqToWiki.Internals
         /// </summary>
         public TResult ExecuteSingle<TResult>(QueryParameters<T, TResult> parameters)
         {
+            Contract.Requires(parameters != null);
+
             var downloaded = Download(ProcessParameters(parameters, false));
 
             switch (m_queryTypeProperties.QueryType)
@@ -141,6 +144,8 @@ namespace LinqToWiki.Internals
             WikiInfo wiki, IEnumerable<HttpQueryParameterBase> processedParameters,
             HttpQueryParameter queryContinue = null)
         {
+            Contract.Requires(wiki != null);
+
             return Download(wiki, processedParameters, new[] { queryContinue });
         }
 
@@ -152,6 +157,8 @@ namespace LinqToWiki.Internals
             WikiInfo wiki, IEnumerable<HttpQueryParameterBase> processedParameters,
             IEnumerable<HttpQueryParameter> queryContinues = null)
         {
+            Contract.Requires(wiki != null);
+
             if (queryContinues != null)
                 processedParameters = processedParameters.Concat(queryContinues.Where(x => x != null));
 
@@ -198,6 +205,9 @@ namespace LinqToWiki.Internals
             QueryTypeProperties queryTypeProperties, QueryParameters parameters,
             bool list, bool generator = false, int limit = -1)
         {
+            Contract.Requires(queryTypeProperties != null);
+            Contract.Requires(parameters != null);
+
             var parsedParameters = new List<HttpQueryParameterBase>();
 
             Action<string, string> addParameter = (name, value) => parsedParameters.Add(new HttpQueryParameter(name, value));
@@ -286,6 +296,9 @@ namespace LinqToWiki.Internals
         /// </summary>
         public static HttpQueryParameter GetQueryContinue(XElement downloaded, string moduleName)
         {
+            Contract.Requires(downloaded != null);
+            Contract.Requires(moduleName != null);
+
             HttpQueryParameter result;
             GetQueryContinues(downloaded).TryGetValue(moduleName, out result);
             return result;
@@ -296,6 +309,8 @@ namespace LinqToWiki.Internals
         /// </summary>
         public static Dictionary<string, HttpQueryParameter> GetQueryContinues(XElement downloaded)
         {
+            Contract.Requires(downloaded != null);
+
             var queryContinueElement = downloaded.Element("query-continue");
 
             if (queryContinueElement == null)

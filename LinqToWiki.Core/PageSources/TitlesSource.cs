@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using LinqToWiki.Internals;
 
 namespace LinqToWiki
@@ -10,6 +11,8 @@ namespace LinqToWiki
     {
         public TitlesSource(WikiInfo wiki, IEnumerable<string> titles)
             : base(wiki, "titles", titles)
-        {}
+        {
+            Contract.Requires(wiki != null);
+        }
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using LinqToWiki.Internals;
 
@@ -11,6 +12,9 @@ namespace LinqToWiki
     {
         public RevIdsSource(WikiInfo wiki, IEnumerable<long> revIds)
             : base(wiki, "revids", revIds.Select(id => id.ToQueryString()))
-        {}
+        {
+            Contract.Requires(wiki != null);
+            Contract.Requires(revIds != null);
+        }
     }
 }

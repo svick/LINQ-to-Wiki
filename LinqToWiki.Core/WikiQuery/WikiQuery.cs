@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using LinqToWiki.Expressions;
 using LinqToWiki.Internals;
@@ -20,6 +21,8 @@ namespace LinqToWiki
         /// </summary>
         public new WikiQuerySortable<TWhere, TOrderBy, TSelect> Where(Expression<Func<TWhere, bool>> predicate)
         {
+            Contract.Requires(predicate != null);
+
             return new WikiQuerySortable<TWhere, TOrderBy, TSelect>(QueryProcessor, ExpressionParser.ParseWhere(predicate, Parameters));
         }
 
@@ -28,6 +31,8 @@ namespace LinqToWiki
         /// </summary>
         public WikiQuery<TWhere, TSelect> OrderBy<TKey>(Expression<Func<TOrderBy, TKey>> keySelector)
         {
+            Contract.Requires(keySelector != null);
+
             return new WikiQuery<TWhere, TSelect>(QueryProcessor, ExpressionParser.ParseOrderBy(keySelector, Parameters, true));
         }
 
@@ -36,6 +41,8 @@ namespace LinqToWiki
         /// </summary>
         public WikiQuery<TWhere, TSelect> OrderByDescending<TKey>(Expression<Func<TOrderBy, TKey>> keySelector)
         {
+            Contract.Requires(keySelector != null);
+
             return new WikiQuery<TWhere, TSelect>(QueryProcessor, ExpressionParser.ParseOrderBy(keySelector, Parameters, false));
         }
 
@@ -45,6 +52,8 @@ namespace LinqToWiki
         /// </summary>
         public new WikiQuerySortable<TWhere, TOrderBy, TSelect> Select(Expression<Func<TSelect, TSelect>> selector)
         {
+            Contract.Requires(selector != null);
+
             return new WikiQuerySortable<TWhere, TOrderBy, TSelect>(QueryProcessor, ExpressionParser.ParseIdentitySelect(selector, Parameters));
         }
     }
@@ -63,6 +72,8 @@ namespace LinqToWiki
         /// </summary>
         public WikiQuery<TWhere, TSelect> Where(Expression<Func<TWhere, bool>> predicate)
         {
+            Contract.Requires(predicate != null);
+
             return new WikiQuery<TWhere, TSelect>(QueryProcessor, ExpressionParser.ParseWhere(predicate, Parameters));
         }
 
@@ -72,6 +83,8 @@ namespace LinqToWiki
         /// </summary>
         public WikiQuery<TWhere, TSelect> Select(Expression<Func<TSelect, TSelect>> selector)
         {
+            Contract.Requires(selector != null);
+
             return new WikiQuery<TWhere, TSelect>(QueryProcessor, ExpressionParser.ParseIdentitySelect(selector, Parameters));
         }
 
@@ -80,6 +93,9 @@ namespace LinqToWiki
         /// </summary>
         public WikiQueryResult<TSelect, TResult> Select<TResult>(Expression<Func<TSelect, TResult>> selector)
         {
+            Contract.Requires(selector != null);
+            Contract.Requires(selector.Parameters.Count == 1);
+
             return new WikiQueryResult<TSelect, TResult>(QueryProcessor, ExpressionParser.ParseSelect(selector, Parameters));
         }
     }

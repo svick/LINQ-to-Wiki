@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
 
@@ -15,6 +16,8 @@ namespace LinqToWiki.Internals
         /// </summary>
         public static string ToQueryString(this Namespace ns)
         {
+            Contract.Requires(ns != null);
+
             return ns.Id.ToQueryString();
         }
 
@@ -66,6 +69,8 @@ namespace LinqToWiki.Internals
         /// </summary>
         public static string ToQueryString(this StringValue stringValue)
         {
+            Contract.Requires(stringValue != null);
+
             return stringValue.ToString();
         }
 
@@ -75,6 +80,8 @@ namespace LinqToWiki.Internals
         /// </summary>
         public static string ToQueryString<T>(this IEnumerable<T> collection)
         {
+            Contract.Requires(collection != null);
+
             return string.Join("|", collection.Select(x => ToQueryStringDynamic(x)));
         }
 

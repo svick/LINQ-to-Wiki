@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using LinqToWiki.Expressions;
 using LinqToWiki.Internals;
@@ -31,6 +32,9 @@ namespace LinqToWiki
         /// </summary>
         public WikiQueryPageResult<TResult> Select<TResult>(Expression<Func<TPage, TResult>> selector)
         {
+            Contract.Requires(selector != null);
+            Contract.Requires(selector.Parameters.Count == 1);
+
             Func<PageData, TResult> processedSelector;
             var parameters = PageExpressionParser.ParseSelect(
                 selector, new PageQueryParameters(GetPagesCollection()), out processedSelector);

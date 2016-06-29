@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace LinqToWiki.Parameters
@@ -53,6 +54,8 @@ namespace LinqToWiki.Parameters
         /// </summary>
         public void CopyFrom(QueryParameters parameters)
         {
+            Contract.Requires(parameters != null);
+
             parameters.CopyTo(this);
         }
 

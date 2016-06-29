@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -49,6 +50,8 @@ namespace LinqToWiki.Download
         /// </summary>
         public XDocument Download(IEnumerable<HttpQueryParameterBase> parameters)
         {
+            Contract.Requires(parameters != null);
+
             parameters = parameters.ToArray();
 
             if (LogDownloading)

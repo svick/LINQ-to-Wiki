@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using LinqToWiki.Internals;
 
 namespace LinqToWiki
@@ -15,6 +16,8 @@ namespace LinqToWiki
         protected ListSourceBase(WikiInfo wiki, string parameterName, IEnumerable<string> values)
             : base(new QueryPageProcessor(wiki))
         {
+            Contract.Requires(wiki != null);
+
             m_parameterName = parameterName;
             m_values = values;
             m_pageSize = wiki.PagesSourcePageSize;

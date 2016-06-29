@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using LinqToWiki.Expressions;
 using LinqToWiki.Internals;
@@ -20,6 +21,8 @@ namespace LinqToWiki
         /// </summary>
         public new WikiQuerySortableGenerator<TPage, TWhere, TOrderBy, TSelect> Where(Expression<Func<TWhere, bool>> predicate)
         {
+            Contract.Requires(predicate != null);
+
             return new WikiQuerySortableGenerator<TPage, TWhere, TOrderBy, TSelect>(QueryProcessor, ExpressionParser.ParseWhere(predicate, Parameters));
         }
 
@@ -28,6 +31,8 @@ namespace LinqToWiki
         /// </summary>
         public new WikiQueryGenerator<TPage, TWhere, TSelect> OrderBy<TKey>(Expression<Func<TOrderBy, TKey>> keySelector)
         {
+            Contract.Requires(keySelector != null);
+
             return new WikiQueryGenerator<TPage, TWhere, TSelect>(QueryProcessor, ExpressionParser.ParseOrderBy(keySelector, Parameters, true));
         }
 
@@ -36,6 +41,8 @@ namespace LinqToWiki
         /// </summary>
         public new WikiQueryGenerator<TPage, TWhere, TSelect> OrderByDescending<TKey>(Expression<Func<TOrderBy, TKey>> keySelector)
         {
+            Contract.Requires(keySelector != null);
+
             return new WikiQueryGenerator<TPage, TWhere, TSelect>(QueryProcessor, ExpressionParser.ParseOrderBy(keySelector, Parameters, false));
         }
 
@@ -45,6 +52,8 @@ namespace LinqToWiki
         /// </summary>
         public new WikiQuerySortableGenerator<TPage, TWhere, TOrderBy, TSelect> Select(Expression<Func<TSelect, TSelect>> selector)
         {
+            Contract.Requires(selector != null);
+
             return new WikiQuerySortableGenerator<TPage, TWhere, TOrderBy, TSelect>(QueryProcessor, ExpressionParser.ParseIdentitySelect(selector, Parameters));
         }
 
@@ -75,6 +84,8 @@ namespace LinqToWiki
         /// </summary>
         public new WikiQueryGenerator<TPage, TWhere, TSelect> Where(Expression<Func<TWhere, bool>> predicate)
         {
+            Contract.Requires(predicate != null);
+
             return new WikiQueryGenerator<TPage, TWhere, TSelect>(QueryProcessor, ExpressionParser.ParseWhere(predicate, Parameters));
         }
 
@@ -84,6 +95,8 @@ namespace LinqToWiki
         /// </summary>
         public new WikiQueryGenerator<TPage, TWhere, TSelect> Select(Expression<Func<TSelect, TSelect>> selector)
         {
+            Contract.Requires(selector != null);
+
             return new WikiQueryGenerator<TPage, TWhere, TSelect>(QueryProcessor, ExpressionParser.ParseIdentitySelect(selector, Parameters));
         }
 

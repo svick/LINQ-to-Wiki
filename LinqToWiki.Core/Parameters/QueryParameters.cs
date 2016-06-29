@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using LinqToWiki.Internals;
@@ -106,6 +107,8 @@ namespace LinqToWiki.Parameters
         /// </summary>
         public QueryParameters<TSource, TResult> AddMultipleValues(string name, IEnumerable<string> values)
         {
+            Contract.Requires(values != null);
+
             return AddSingleValue(name, values.ToQueryString());
         }
 

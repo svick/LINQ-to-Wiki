@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -81,6 +82,8 @@ namespace LinqToWiki
         /// <returns></returns>
         public static IEnumerable<Namespace> Parse(XElement element)
         {
+            Contract.Requires(element != null);
+
             return element.Element("namespaces").Elements()
                 .Select(e => new Namespace((int)e.Attribute("id"), (string)e));
         }
