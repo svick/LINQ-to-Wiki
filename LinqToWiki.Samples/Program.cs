@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using LinqToWiki.Download;
@@ -162,6 +163,9 @@ namespace LinqToWiki.Samples
                         .Select(r => r.rollbacktoken).
                         ToEnumerable())
                     .ToEnumerable().Single();
+
+            Contract.Assume(tokens.Any());
+
             var result = wiki.rollback(title, "127.0.0.1", tokens.First());
             Console.WriteLine(result);
         }

@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Linq.Expressions;
 using LinqToWiki.Expressions;
 using LinqToWiki.Internals;
@@ -53,6 +54,7 @@ namespace LinqToWiki
         public new WikiQuerySortableGenerator<TPage, TWhere, TOrderBy, TSelect> Select(Expression<Func<TSelect, TSelect>> selector)
         {
             Contract.Requires(selector != null);
+            Contract.Requires(selector.Parameters.Count() == 1);
 
             return new WikiQuerySortableGenerator<TPage, TWhere, TOrderBy, TSelect>(QueryProcessor, ExpressionParser.ParseIdentitySelect(selector, Parameters));
         }
@@ -96,6 +98,7 @@ namespace LinqToWiki
         public new WikiQueryGenerator<TPage, TWhere, TSelect> Select(Expression<Func<TSelect, TSelect>> selector)
         {
             Contract.Requires(selector != null);
+            Contract.Requires(selector.Parameters.Count() == 1);
 
             return new WikiQueryGenerator<TPage, TWhere, TSelect>(QueryProcessor, ExpressionParser.ParseIdentitySelect(selector, Parameters));
         }

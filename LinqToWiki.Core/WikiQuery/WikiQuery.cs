@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Linq.Expressions;
 using LinqToWiki.Expressions;
 using LinqToWiki.Internals;
@@ -53,6 +54,7 @@ namespace LinqToWiki
         public new WikiQuerySortable<TWhere, TOrderBy, TSelect> Select(Expression<Func<TSelect, TSelect>> selector)
         {
             Contract.Requires(selector != null);
+            Contract.Requires(selector.Parameters.Count() == 1);
 
             return new WikiQuerySortable<TWhere, TOrderBy, TSelect>(QueryProcessor, ExpressionParser.ParseIdentitySelect(selector, Parameters));
         }

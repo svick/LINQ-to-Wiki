@@ -274,6 +274,8 @@ namespace LinqToWiki.Internals
                         .OrderBy(ps => ps.Length);
                 foreach (var props in requiredPropsCollection)
                 {
+                    Contract.Assume(props.Any());
+
                     if (!props.Intersect(selectedProps).Any())
                         selectedProps.Add(props.First());
                 }

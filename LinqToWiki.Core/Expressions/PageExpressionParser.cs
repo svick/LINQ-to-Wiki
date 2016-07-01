@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -134,8 +135,12 @@ namespace LinqToWiki.Expressions
                             "Each prop module can be use at most once in a single query, but you used the module '{0}' more than once.",
                             propName));
 
+                var genericArguments = propExpression.Type.GetGenericArguments();
+
+                Contract.Assume(genericArguments.Any());
+
                 var createQueryParametersMethod = typeof(QueryParameters).GetMethod("Create")
-                    .MakeGenericMethod(propExpression.Type.GetGenericArguments().Last());
+                    .MakeGenericMethod(genericArguments.Last());
 
                 var queryObject = Activator.CreateInstance(
                     propExpression.Type, new[] { null, createQueryParametersMethod.Invoke(null, null) });
