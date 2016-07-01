@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using LinqToWiki.Download;
 using LinqToWiki.Parameters;
@@ -76,7 +77,11 @@ namespace LinqToWiki.Internals
 
                 PageData pageData;
                 if (m_pages.TryGetValue(pageId, out pageData))
+                {
+                    Contract.Assume(pageData != null);
+
                     pageData.AddData(pageElement);
+                }
             }
 
             m_secondaryQueryContinues = queryContinues;

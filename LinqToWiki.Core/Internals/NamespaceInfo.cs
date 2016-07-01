@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using LinqToWiki.Collections;
 using LinqToWiki.Parameters;
@@ -35,6 +36,8 @@ namespace LinqToWiki.Internals
         /// </summary>
         private static IEnumerable<Namespace> GetNamespaces(WikiInfo wiki)
         {
+            Contract.Ensures(Contract.Result<object>() != null);
+
             var queryProcessor = new QueryProcessor<IEnumerable<Namespace>>(
                 wiki,
                 new QueryTypeProperties<IEnumerable<Namespace>>(

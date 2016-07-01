@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -72,6 +73,8 @@ namespace LinqToWiki.Internals
         /// </summary>
         private List<object> GetOrCreateDataList(string name)
         {
+            Contract.Ensures(Contract.Result<object>() != null);
+
             List<object> dataList;
             if (!m_data.TryGetValue(name, out dataList))
             {

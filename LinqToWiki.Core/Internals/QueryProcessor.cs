@@ -75,8 +75,11 @@ namespace LinqToWiki.Internals
         public TResult ExecuteSingle<TResult>(QueryParameters<T, TResult> parameters)
         {
             Contract.Requires(parameters != null);
+            Contract.Ensures(Contract.Result<object>() != null);
 
             var downloaded = Download(ProcessParameters(parameters, false));
+
+            XElement element;
 
             switch (m_queryTypeProperties.QueryType)
             {
@@ -84,17 +87,22 @@ namespace LinqToWiki.Internals
             case QueryType.Prop:
                 throw new InvalidOperationException();
             case QueryType.Meta:
-                return parameters.Selector(m_queryTypeProperties.Parse(downloaded.Element("query"), m_wiki));
+                element = downloaded.Element("query");
+                break;
             case null:
-                var element = downloaded.Element(m_queryTypeProperties.ModuleName);
+                element = downloaded.Element(m_queryTypeProperties.ModuleName);
                 var attribute = downloaded.Attribute(m_queryTypeProperties.ModuleName);
                 if (element == null && attribute != null)
                     element = new XElement(attribute.Name, attribute.Value);
-                return
-                    parameters.Selector(m_queryTypeProperties.Parse(element, m_wiki));
+                break;
+            default:
+                throw new NotSupportedException();
             }
 
-            throw new NotSupportedException();
+            var result = parameters.Selector(m_queryTypeProperties.Parse(element, m_wiki));
+
+            Contract.Assume(result != null);
+            return result;
         }
 
         /// <summary>
@@ -103,6 +111,8 @@ namespace LinqToWiki.Internals
         private XElement Download(
             IEnumerable<HttpQueryParameterBase> processedParameters, HttpQueryParameter queryContinue = null)
         {
+            Contract.Ensures(Contract.Result<object>() != null);
+
             return Download(m_wiki, processedParameters, queryContinue);
         }
 
@@ -145,6 +155,7 @@ namespace LinqToWiki.Internals
             HttpQueryParameter queryContinue = null)
         {
             Contract.Requires(wiki != null);
+            Contract.Ensures(Contract.Result<object>() != null);
 
             return Download(wiki, processedParameters, new[] { queryContinue });
         }
@@ -158,6 +169,7 @@ namespace LinqToWiki.Internals
             IEnumerable<HttpQueryParameter> queryContinues = null)
         {
             Contract.Requires(wiki != null);
+            Contract.Ensures(Contract.Result<object>() != null);
 
             if (queryContinues != null)
                 processedParameters = processedParameters.Concat(queryContinues.Where(x => x != null));
@@ -207,6 +219,7 @@ namespace LinqToWiki.Internals
         {
             Contract.Requires(queryTypeProperties != null);
             Contract.Requires(parameters != null);
+            Contract.Ensures(Contract.Result<object>() != null);
 
             var parsedParameters = new List<HttpQueryParameterBase>();
 

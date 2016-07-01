@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.Diagnostics.Contracts;
+using System.Linq.Expressions;
 
 namespace LinqToWiki.Expressions
 {
@@ -12,6 +13,8 @@ namespace LinqToWiki.Expressions
         /// </summary>
         public static BinaryExpression Switch(this BinaryExpression expression)
         {
+            Contract.Ensures((Contract.Result<object>() == null) == (expression == null));
+
             if (expression == null)
                 return null;
 

@@ -112,9 +112,13 @@ namespace LinqToWiki.Expressions
                     throw new InvalidOperationException(
                         string.Format("The method '{0}' is not supported.", methodName));
 
+                var genericArguments = node.Method.ReturnType.GetGenericArguments();
+
+                Contract.Assume(genericArguments.Any());
+
                 return Expression.Call(
                     m_pageDataParameter,
-                    PageDataGetDataMethod.MakeGenericMethod(node.Method.ReturnType.GetGenericArguments().Last()),
+                    PageDataGetDataMethod.MakeGenericMethod(genericArguments.Last()),
                     Expression.Constant(methodName));
             }
 

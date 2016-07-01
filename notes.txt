@@ -1,0 +1,2 @@
+level 2:
+PagingManager: Contract.Invariant(Contract.ForAll(m_pages, kvp => kvp.Value != null)); nepomohl

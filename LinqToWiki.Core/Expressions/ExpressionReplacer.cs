@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.Diagnostics.Contracts;
+using System.Linq.Expressions;
 
 namespace LinqToWiki.Expressions
 {
@@ -31,6 +32,8 @@ namespace LinqToWiki.Expressions
         public static Expression Replace(
             Expression expression, Expression toReplace, Expression replaceWith)
         {
+            Contract.Ensures(Contract.Result<object>() != null);
+
             var replacer = new ExpressionReplacer(toReplace, replaceWith);
             return replacer.Visit(expression);
         }

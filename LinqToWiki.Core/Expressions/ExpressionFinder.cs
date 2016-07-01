@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using System.Linq;
 
@@ -54,6 +55,8 @@ namespace LinqToWiki.Expressions
         /// </summary>
         public static T Single<T>(Expression expression, Func<T, bool> condition) where T : Expression
         {
+            Contract.Ensures(Contract.Result<T>() != null);
+
             var finder = new Finder<T>(condition);
             finder.Visit(expression);
             return finder.Results.Single();

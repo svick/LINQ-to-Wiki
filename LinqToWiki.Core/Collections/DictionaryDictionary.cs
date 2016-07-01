@@ -41,6 +41,7 @@ namespace LinqToWiki.Collections
         private Dictionary<TKey2, TValue> GetOrCreateInnerDictionary(TKey1 key1)
         {
             Contract.Requires(key1 != null);
+            Contract.Ensures(Contract.Result<object>() != null);
 
             Dictionary<TKey2, TValue> innerDict;
             bool found = TryGetValue(key1, out innerDict);

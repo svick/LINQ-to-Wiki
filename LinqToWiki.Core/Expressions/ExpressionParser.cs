@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
 using IQToolkit;
@@ -31,6 +32,9 @@ namespace LinqToWiki.Expressions
         private static QueryParameters<TSource, TResult> ParseWhereSubexpression<TSource, TResult>(
             Expression body, QueryParameters<TSource, TResult> previousParameters)
         {
+            Contract.Requires(previousParameters != null);
+            Contract.Ensures(Contract.Result<object>() != null);
+
             var memberExpression = body as MemberExpression;
 
             if (memberExpression != null)
@@ -129,6 +133,8 @@ namespace LinqToWiki.Expressions
         /// </summary>
         public static string ReversePropertyName(string propertyName)
         {
+            Contract.Ensures(Contract.Result<string>() != null);
+
             if (propertyName == "value")
                 return "*";
             if (propertyName == "defaultvalue")

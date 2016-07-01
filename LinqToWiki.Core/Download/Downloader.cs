@@ -90,6 +90,8 @@ namespace LinqToWiki.Download
         /// </summary>
         private static void WriteParameters(IEnumerable<HttpQueryParameterBase> parameters, RestRequest request)
         {
+            Contract.Requires(request != null);
+
             foreach (var parameter in parameters)
             {
                 var normalParameter = parameter as HttpQueryParameter;
