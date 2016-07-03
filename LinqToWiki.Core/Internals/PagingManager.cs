@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using LinqToWiki.Download;
@@ -40,6 +41,8 @@ namespace LinqToWiki.Internals
         /// </summary>
         public void SetPages(IEnumerable<PageData> pages)
         {
+            Contract.Requires(pages != null);
+
             m_pages = pages.Where(p => p.PageId != null).ToDictionary(p => p.PageId.Value);
         }
 
@@ -57,6 +60,9 @@ namespace LinqToWiki.Internals
         /// </summary>
         public void GetMore()
         {
+            if (m_pages == null)
+                throw new InvalidOperationException("Before calling GetMore, you have to call SetPages.");
+
             var downloaded = QueryProcessor.Download(
                 m_wiki,
                 QueryPageProcessor.ProcessParameters(
@@ -69,11 +75,25 @@ namespace LinqToWiki.Internals
             if (m_generator != null)
                 queryContinues.Remove(m_generator);
 
-            var pageElements = downloaded.Element("query").Element("pages").Elements("page");
+            var queryElement = downloaded.Element("query");
+
+            Contract.Assume(queryElement != null);
+
+            var pagesElement = queryElement.Element("pages");
+
+            Contract.Assume(pagesElement != null);
+
+            var pageElements = pagesElement.Elements("page");
 
             foreach (var pageElement in pageElements)
             {
-                long pageId = ValueParser.ParseInt64(pageElement.Attribute("pageid").Value);
+                Contract.Assume(pageElement != null);
+
+                var pageIdAttribute = pageElement.Attribute("pageid");
+
+                Contract.Assume(pageIdAttribute != null);
+
+                long pageId = ValueParser.ParseInt64(pageIdAttribute.Value);
 
                 PageData pageData;
                 if (m_pages.TryGetValue(pageId, out pageData))
@@ -85,6 +105,16 @@ namespace LinqToWiki.Internals
             }
 
             m_secondaryQueryContinues = queryContinues;
+        }
+
+        [ContractInvariantMethod]
+        private void Invariants()
+        {
+            Contract.Invariant(m_wiki != null);
+            Contract.Invariant(m_propQueryParametersCollection != null);
+            Contract.Invariant(m_currentParameters != null);
+            Contract.Invariant(m_pageProperties != null);
+            Contract.Invariant(m_secondaryQueryContinues != null);
         }
     }
 }

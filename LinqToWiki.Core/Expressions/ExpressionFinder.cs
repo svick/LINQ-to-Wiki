@@ -46,6 +46,13 @@ namespace LinqToWiki.Expressions
 
                 return base.Visit(node);
             }
+
+            [ContractInvariantMethod]
+            private void Invariants()
+            {
+                Contract.Invariant(m_condition != null);
+                Contract.Invariant(m_results != null);
+            }
         }
 
         /// <summary>
@@ -59,7 +66,14 @@ namespace LinqToWiki.Expressions
 
             var finder = new Finder<T>(condition);
             finder.Visit(expression);
-            return finder.Results.Single();
+
+            Contract.Assume(finder.Results.Count() == 1);
+
+            var result = finder.Results.Single();
+
+            Contract.Assume(result != null);
+
+            return result;
         }
     }
 }

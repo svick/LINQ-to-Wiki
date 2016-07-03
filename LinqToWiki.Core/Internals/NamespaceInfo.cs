@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
@@ -42,8 +43,12 @@ namespace LinqToWiki.Internals
                 wiki,
                 new QueryTypeProperties<IEnumerable<Namespace>>(
                     "siteinfo", "", QueryType.Meta, null,
-                    new TupleList<string, string>
-                    { { "action", "query" }, { "meta", "siteinfo" }, { "siprop", "namespaces" } },
+                    new List<Tuple<string, string>>
+                    {
+                        Tuple.Create("action", "query"),
+                        Tuple.Create("meta", "siteinfo"),
+                        Tuple.Create("siprop", "namespaces")
+                    },
                     null, Namespace.Parse));
 
             return queryProcessor.ExecuteSingle(QueryParameters.Create<IEnumerable<Namespace>>());
@@ -65,6 +70,12 @@ namespace LinqToWiki.Internals
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        [ContractInvariantMethod]
+        private void Invariants()
+        {
+            Contract.Invariant(m_namespaces != null);
         }
     }
 }

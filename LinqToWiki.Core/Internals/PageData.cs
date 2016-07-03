@@ -30,7 +30,11 @@ namespace LinqToWiki.Internals
             m_pageProperties = pageProperties;
             m_pagingManager = pagingManager;
 
-            GetOrCreateDataList("info").Add(m_pageProperties["info"].Parser(element, wiki));
+            var property = m_pageProperties["info"];
+
+            Contract.Assume(property != null);
+
+            GetOrCreateDataList("info").Add(property.Parser(element, wiki));
 
             var pageIdAttribute = element.Attribute("pageid");
 
@@ -54,7 +58,11 @@ namespace LinqToWiki.Internals
         {
             foreach (var dataElement in element.Elements())
             {
+                Contract.Assume(dataElement != null);
+
                 string name = dataElement.Name.LocalName;
+
+                Contract.Assume(m_pageProperties[name] != null);
 
                 var parser = m_pageProperties[name].Parser;
 
@@ -76,7 +84,11 @@ namespace LinqToWiki.Internals
             Contract.Ensures(Contract.Result<object>() != null);
 
             List<object> dataList;
-            if (!m_data.TryGetValue(name, out dataList))
+            if (m_data.TryGetValue(name, out dataList))
+            {
+                Contract.Assume(dataList != null);
+            }
+            else
             {
                 dataList = new List<object>();
                 m_data.Add(name, dataList);
@@ -105,6 +117,12 @@ namespace LinqToWiki.Internals
 
                 yield return (T)dataList[i++];
             }
+        }
+
+        [ContractInvariantMethod]
+        private void Invariants()
+        {
+            Contract.Invariant(m_pageProperties != null);
         }
     }
 }

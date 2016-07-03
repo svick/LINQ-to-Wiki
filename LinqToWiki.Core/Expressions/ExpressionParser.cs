@@ -96,6 +96,8 @@ namespace LinqToWiki.Expressions
         /// <param name="expression">Subexpression to parse.</param>
         private static Tuple<MemberExpression, object> ParseWhereEqualExpression(BinaryExpression expression)
         {
+            Contract.Ensures(Contract.Result<Tuple<MemberExpression, object>>().Item1 != null);
+
             var result = ParsePropertyEqualsConstantExpression(expression)
                          ?? ParsePropertyEqualsConstantExpression(expression.Switch());
 
@@ -110,6 +112,8 @@ namespace LinqToWiki.Expressions
         /// </summary>
         private static Tuple<MemberExpression, object> ParsePropertyEqualsConstantExpression(BinaryExpression expression)
         {
+            Contract.Ensures(Contract.Result<Tuple<MemberExpression, object>>() == null || Contract.Result<Tuple<MemberExpression, object>>().Item1 != null);
+
             var memberAccess = expression.Left as MemberExpression;
 
             if (memberAccess == null)

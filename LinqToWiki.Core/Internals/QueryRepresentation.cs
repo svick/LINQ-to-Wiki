@@ -101,6 +101,8 @@ namespace LinqToWiki.Internals
         /// </summary>
         public static string ToQueryStringDynamic(object obj)
         {
+            Contract.Requires(obj != null);
+
             return ToQueryString((dynamic)obj);
         }
     }

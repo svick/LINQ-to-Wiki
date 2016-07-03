@@ -74,7 +74,13 @@ namespace LinqToWiki.Download
 
             var response = client.Execute(request);
 
-            return XDocument.Parse(response.Content);
+            Contract.Assume(response != null);
+
+            var content = response.Content;
+
+            Contract.Assume(content != null);
+
+            return XDocument.Parse(content);
         }
 
         /// <summary>
@@ -106,6 +112,12 @@ namespace LinqToWiki.Download
                     request.AddFile(fileParameter.Name, stream => fileParameter.File.CopyTo(stream), "noname");
                 }
             }
+        }
+
+        [ContractInvariantMethod]
+        private void Invariants()
+        {
+            Contract.Invariant(m_wiki != null);
         }
     }
 }

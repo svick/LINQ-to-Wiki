@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace LinqToWiki.Collections
 {
@@ -45,7 +46,11 @@ namespace LinqToWiki.Collections
         {
             get
             {
-                return this.Find(x => KeyEqualityComparer.Equals(x.Item1, key)).Item2;
+                var tuple = this.Find(x => KeyEqualityComparer.Equals(x.Item1, key));
+
+                Contract.Assume(tuple != null);
+
+                return tuple.Item2;
             }
             set
             {

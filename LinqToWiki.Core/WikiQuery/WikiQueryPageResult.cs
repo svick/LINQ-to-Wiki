@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using LinqToWiki.Internals;
 using LinqToWiki.Parameters;
@@ -40,6 +41,12 @@ namespace LinqToWiki
         public IEnumerable<TResult> ToEnumerable()
         {
             return m_queryProcessor.ExecuteList(m_parameters, m_selector, m_pageProperties);
+        }
+
+        [ContractInvariantMethod]
+        private void Invariants()
+        {
+            Contract.Invariant(m_queryProcessor != null);
         }
     }
 }

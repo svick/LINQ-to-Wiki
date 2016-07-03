@@ -85,7 +85,7 @@ namespace LinqToWiki
         /// </summary>
         public WikiQuery<TWhere, TSelect> Select(Expression<Func<TSelect, TSelect>> selector)
         {
-            Contract.Requires(selector != null);
+            Contract.Requires(selector != null && selector.Parameters.Count() == 1);
 
             return new WikiQuery<TWhere, TSelect>(QueryProcessor, ExpressionParser.ParseIdentitySelect(selector, Parameters));
         }

@@ -10,6 +10,7 @@ namespace LinqToWiki.Internals
     /// Represents a module and its properties.
     /// Non-generic part of <see cref="QueryTypeProperties{T}"/>.
     /// </summary>
+    [ContractClass(typeof(QueryTypePropertiesContracts))]
     public abstract class QueryTypeProperties
     {
         private readonly IDictionary<string, string[]> m_props;
@@ -18,6 +19,9 @@ namespace LinqToWiki.Internals
             string moduleName, string prefix, QueryType? queryType, SortType? sortType,
             IEnumerable<Tuple<string, string>> baseParameters, IDictionary<string, string[]> props)
         {
+            Contract.Requires(!string.IsNullOrEmpty(moduleName));
+            Contract.Requires(baseParameters != null && baseParameters.Any());
+
             ModuleName = moduleName;
             Prefix = prefix;
             QueryType = queryType;
@@ -57,6 +61,8 @@ namespace LinqToWiki.Internals
         /// </summary>
         public string[] GetProps(string property)
         {
+            Contract.Requires(property != null);
+
             return m_props[Expressions.ExpressionParser.ReversePropertyName(property)];
         }
 
@@ -73,6 +79,35 @@ namespace LinqToWiki.Internals
         /// Non-generic version of <see cref="QueryTypeProperties{T}.Parse"/>.
         /// </summary>
         public abstract Func<XElement, WikiInfo, object> Parser { get; }
+
+        [ContractInvariantMethod]
+        private void Invariants()
+        {
+            Contract.Invariant(m_props != null);
+            Contract.Invariant(!string.IsNullOrEmpty(ModuleName));
+            Contract.Invariant(BaseParameters != null && BaseParameters.Any());
+        }
+    }
+
+    [ContractClassFor(typeof(QueryTypeProperties))]
+    public abstract class QueryTypePropertiesContracts : QueryTypeProperties
+    {
+        protected QueryTypePropertiesContracts(
+            string moduleName, string prefix, QueryType? queryType, SortType? sortType,
+            IEnumerable<Tuple<string, string>> baseParameters, IDictionary<string, string[]> props)
+            : base(moduleName, prefix, queryType, sortType, baseParameters, props)
+        {
+        }
+
+        public override Func<XElement, WikiInfo, object> Parser
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<object>() != null);
+
+                return null;
+            }
+        }
     }
 
     /// <summary>
@@ -88,6 +123,9 @@ namespace LinqToWiki.Internals
             Func<XElement, WikiInfo, T> parser)
             : base(moduleName, prefix, queryType, sortType, baseParameters, props)
         {
+            Contract.Requires(!string.IsNullOrEmpty(moduleName));
+            Contract.Requires(baseParameters != null && baseParameters.Any());
+
             m_parser = parser;
         }
 
@@ -96,7 +134,10 @@ namespace LinqToWiki.Internals
             IEnumerable<Tuple<string, string>> baseParameters, IDictionary<string, string[]> props,
             Func<XElement, T> parser)
             : this(moduleName, prefix, queryType, sortType, baseParameters, props, (elem, _) => parser(elem))
-        {}
+        {
+            Contract.Requires(!string.IsNullOrEmpty(moduleName));
+            Contract.Requires(baseParameters != null && baseParameters.Any());
+        }
 
         /// <summary>
         /// Parses an XML element representing one item from the result.
@@ -111,6 +152,12 @@ namespace LinqToWiki.Internals
         public override Func<XElement, WikiInfo, object> Parser
         {
             get { return (element, info) => m_parser(element, info); }
+        }
+
+        [ContractInvariantMethod]
+        private void Invariants()
+        {
+            Contract.Invariant(m_parser != null);
         }
     }
 }

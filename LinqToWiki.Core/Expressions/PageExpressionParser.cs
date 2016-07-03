@@ -55,13 +55,20 @@ namespace LinqToWiki.Expressions
         {
             m_pageParameter = pageParameter;
 
-            m_infoType = pageParameter.Type.GetProperty("info").PropertyType;
+            var infoProperty = pageParameter.Type.GetProperty("info");
+
+            if (infoProperty == null)
+                throw new InvalidOperationException($"Could not find 'info' property on type {pageParameter.Type}.");
+
+            m_infoType = infoProperty.PropertyType;
 
             m_pageDataGetInfoCall = CreateGetDataExpression(m_infoType, "info");
         }
 
         public override Expression Visit(Expression node)
         {
+            Contract.Ensures((Contract.Result<object>() == null) == (node == null));
+
             if (!m_canUsePage && node != null)
             {
                 var type = node.Type;
@@ -70,7 +77,11 @@ namespace LinqToWiki.Expressions
                         "Can't use the result of a query directly, you have to use ToEnumerable or ToList.");
             }
 
-            return base.Visit(node);
+            var result = base.Visit(node);
+
+            Contract.Assume((result == null) == (node == null));
+
+            return result;
         }
 
         protected override Expression VisitMember(MemberExpression node)
@@ -106,6 +117,8 @@ namespace LinqToWiki.Expressions
             var methodName = node.Method.Name;
             var declaringType = node.Method.DeclaringType;
 
+            Contract.Assume(declaringType != null);
+
             if (node.Object == m_pageParameter)
             {
                 if (declaringType == typeof(object))
@@ -114,7 +127,7 @@ namespace LinqToWiki.Expressions
 
                 var genericArguments = node.Method.ReturnType.GetGenericArguments();
 
-                Contract.Assume(genericArguments.Any());
+                Contract.Assume(genericArguments != null && genericArguments.Any());
 
                 return Expression.Call(
                     m_pageDataParameter,
@@ -127,7 +140,16 @@ namespace LinqToWiki.Expressions
             var first = declaringType == typeof(WikiQueryFirstExtension);
             if (toEnumerableOrToList || first)
             {
-                var instance = first ? node.Arguments.Single() : node.Object;
+                Expression instance;
+                if (first)
+                {
+                    Contract.Assume(node.Arguments.Count() == 1);
+                    instance = node.Arguments.Single();
+                }
+                else
+                {
+                    instance = node.Object;
+                }
                 var propExpression = ExpressionFinder.Single<MethodCallExpression>(
                     instance, e => e.Object == m_pageParameter && e.Method.DeclaringType == m_pageParameter.Type);
 
@@ -141,10 +163,13 @@ namespace LinqToWiki.Expressions
 
                 var genericArguments = propExpression.Type.GetGenericArguments();
 
-                Contract.Assume(genericArguments.Any());
+                Contract.Assume(genericArguments != null && genericArguments.Any());
 
-                var createQueryParametersMethod = typeof(QueryParameters).GetMethod("Create")
-                    .MakeGenericMethod(genericArguments.Last());
+                var createQueryParametersOpenMethod = typeof(QueryParameters).GetMethod("Create");
+
+                Contract.Assume(createQueryParametersOpenMethod != null);
+
+                var createQueryParametersMethod = createQueryParametersOpenMethod.MakeGenericMethod(genericArguments.Last());
 
                 var queryObject = Activator.CreateInstance(
                     propExpression.Type, new[] { null, createQueryParametersMethod.Invoke(null, null) });
@@ -154,6 +179,8 @@ namespace LinqToWiki.Expressions
 
                 var processedQueryObject =
                     Expression.Lambda<Func<IWikiQueryResult>>(withQueryObject).Compile().Invoke();
+
+                Contract.Assume(processedQueryObject != null);
 
                 var parameter = new PropQueryParameters(propName);
 
@@ -166,6 +193,8 @@ namespace LinqToWiki.Expressions
 
                 m_canUsePage = true;
 
+                Contract.Assume(instance != null);
+
                 var obj = Visit(instance);
 
                 m_canUsePage = false;
@@ -176,8 +205,12 @@ namespace LinqToWiki.Expressions
                 if (first)
                     methodName = "SingleOrDefault";
 
+                var arguments = obj.Type.GetGenericArguments();
+
+                Contract.Assume(arguments != null && arguments.Count() == 1);
+
                 return Expression.Call(
-                    typeof(Enumerable), methodName, new[] { obj.Type.GetGenericArguments().Single() }, obj);
+                    typeof(Enumerable), methodName, new[] { arguments.Single() }, obj);
             }
             // one of the LINQ methods
             if (BaseTypes(declaringType).Contains(typeof(WikiQueryResult<,>)))
@@ -187,8 +220,14 @@ namespace LinqToWiki.Expressions
                 if (methodName != "Select")
                     return obj;
 
-                var argument = ((UnaryExpression)node.Arguments.Single()).Operand;
+                var arguments = node.Arguments;
+
+                Contract.Assume(arguments.Count() == 1 && arguments.Single() != null);
+
+                var argument = ((UnaryExpression)arguments.Single()).Operand;
                 var genericArguments = argument.Type.GetGenericArguments();
+
+                Contract.Assume(genericArguments != null);
 
                 if (genericArguments.Length != 2)
                     throw new InvalidOperationException($"Invalid method {node.Method}.");
@@ -234,6 +273,8 @@ namespace LinqToWiki.Expressions
 
             var parameters = visitor.m_parameters;
 
+            Contract.Assume(parameters != null);
+
             if (!gatherer.UsedDirectly && gatherer.UsedProperties.Any(p => !NonInfoProperties.Contains(p)))
             {
                 var propQueryParameters = new PropQueryParameters("info").WithProperties(gatherer.UsedProperties);
@@ -249,10 +290,18 @@ namespace LinqToWiki.Expressions
                 parameters["info"] = propQueryParameters;
             }
 
+            Contract.Assume(body != null);
+
 	        processedExpression =
                 Expression.Lambda<Func<PageData, TResult>>(body, visitor.m_pageDataParameter).Compile();
 
             return parameters.Values;
+        }
+
+        [ContractInvariantMethod]
+        private void Invariants()
+        {
+            Contract.Invariant(m_parameters != null);
         }
     }
 }

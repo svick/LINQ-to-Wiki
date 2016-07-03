@@ -84,7 +84,11 @@ namespace LinqToWiki
         {
             Contract.Requires(element != null);
 
-            return element.Element("namespaces").Elements()
+            var namespacesElement = element.Element("namespaces");
+
+            Contract.Assume(namespacesElement != null);
+
+            return namespacesElement.Elements()
                 .Select(e => new Namespace((int)e.Attribute("id"), (string)e));
         }
 

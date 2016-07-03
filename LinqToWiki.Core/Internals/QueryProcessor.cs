@@ -54,7 +54,10 @@ namespace LinqToWiki.Internals
             {
             case QueryType.List:
             case QueryType.Meta:
-                var moduleElement = downloaded.Element("query").Element(m_queryTypeProperties.ModuleName);
+                var queryElement = downloaded.Element("query");
+                Contract.Assume(queryElement != null);
+                var moduleElement = queryElement.Element(m_queryTypeProperties.ModuleName);
+                Contract.Assume(moduleElement != null);
                 resultsElement = moduleElement.Element("results") ?? moduleElement;
                 break;
             case null:
@@ -63,6 +66,8 @@ namespace LinqToWiki.Internals
             default:
                 throw new NotSupportedException();
             }
+
+            Contract.Assume(resultsElement != null);
 
             return resultsElement
                 .Elements()
@@ -75,7 +80,7 @@ namespace LinqToWiki.Internals
         public TResult ExecuteSingle<TResult>(QueryParameters<T, TResult> parameters)
         {
             Contract.Requires(parameters != null);
-            Contract.Ensures(Contract.Result<object>() != null);
+            Contract.Ensures(Contract.Result<TResult>() != null);
 
             var downloaded = Download(ProcessParameters(parameters, false));
 
@@ -102,6 +107,7 @@ namespace LinqToWiki.Internals
             var result = parameters.Selector(m_queryTypeProperties.Parse(element, m_wiki));
 
             Contract.Assume(result != null);
+
             return result;
         }
 
@@ -155,6 +161,7 @@ namespace LinqToWiki.Internals
             HttpQueryParameter queryContinue = null)
         {
             Contract.Requires(wiki != null);
+            Contract.Requires(processedParameters != null);
             Contract.Ensures(Contract.Result<object>() != null);
 
             return Download(wiki, processedParameters, new[] { queryContinue });
@@ -169,6 +176,7 @@ namespace LinqToWiki.Internals
             IEnumerable<HttpQueryParameter> queryContinues = null)
         {
             Contract.Requires(wiki != null);
+            Contract.Requires(processedParameters != null);
             Contract.Ensures(Contract.Result<object>() != null);
 
             if (queryContinues != null)
@@ -181,6 +189,8 @@ namespace LinqToWiki.Internals
                 var downloaded = wiki.Downloader.Download(processedParameters);
 
                 var root = downloaded.Root;
+
+                Contract.Assume(root != null);
 
                 var error = root.Element("error");
                 if (error != null)
@@ -228,6 +238,9 @@ namespace LinqToWiki.Internals
             if (generator)
             {
                 var generatorParameter = queryTypeProperties.BaseParameters.Single(p => p.Item1 != "action");
+
+                Contract.Assume(generatorParameter != null);
+
                 addParameter("generator", generatorParameter.Item2);
             }
             else
@@ -242,6 +255,8 @@ namespace LinqToWiki.Internals
             if (parameters.Value != null)
                 foreach (var value in parameters.Value)
                 {
+                    Contract.Assume(value != null);
+
                     var fileParameter = value as NameFileParameter;
                     if (fileParameter != null)
                     {
@@ -287,7 +302,7 @@ namespace LinqToWiki.Internals
                         .OrderBy(ps => ps.Length);
                 foreach (var props in requiredPropsCollection)
                 {
-                    Contract.Assume(props.Any());
+                    Contract.Assume(props != null && props.Any());
 
                     if (!props.Intersect(selectedProps).Any())
                         selectedProps.Add(props.First());
@@ -325,6 +340,7 @@ namespace LinqToWiki.Internals
         public static Dictionary<string, HttpQueryParameter> GetQueryContinues(XElement downloaded)
         {
             Contract.Requires(downloaded != null);
+            Contract.Ensures(Contract.Result<object>() != null);
 
             var queryContinueElement = downloaded.Element("query-continue");
 

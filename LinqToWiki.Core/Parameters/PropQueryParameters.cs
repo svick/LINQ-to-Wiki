@@ -79,5 +79,10 @@ namespace LinqToWiki.Parameters
             return result;
         }
 
+        [ContractInvariantMethod]
+        private void Invariants()
+        {
+            Contract.Invariant(PropName != null);
+        }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using LinqToWiki.Download;
 
 namespace LinqToWiki
@@ -24,6 +25,12 @@ namespace LinqToWiki
         public IEnumerable<HttpQueryParameterBase> GetNextPage(int limit)
         {
             return m_baseParametersSelector(limit);
+        }
+
+        [ContractInvariantMethod]
+        private void Invariants()
+        {
+            Contract.Invariant(m_baseParametersSelector != null);
         }
     }
 }

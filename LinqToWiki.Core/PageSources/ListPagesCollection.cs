@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using LinqToWiki.Collections;
 using LinqToWiki.Download;
 using LinqToWiki.Internals;
@@ -61,6 +62,12 @@ namespace LinqToWiki
                 MoveIfNecessary();
             }
             return new[] { new HttpQueryParameter(m_parameterName, formattedValues.ToQueryString()) };
+        }
+
+        [ContractInvariantMethod]
+        private void Invariants()
+        {
+            Contract.Invariant(m_enumerator != null);
         }
     }
 }

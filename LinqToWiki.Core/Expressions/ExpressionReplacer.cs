@@ -19,10 +19,16 @@ namespace LinqToWiki.Expressions
 
         public override Expression Visit(Expression exp)
         {
+            Contract.Ensures(Contract.Result<object>() != null || exp == null);
+
             if (exp == m_toReplace)
                 return m_replaceWith;
 
-            return base.Visit(exp);
+            var baseResult = base.Visit(exp);
+
+            Contract.Assume(baseResult != null || exp == null);
+
+            return baseResult;
         }
 
         /// <summary>
@@ -35,7 +41,17 @@ namespace LinqToWiki.Expressions
             Contract.Ensures(Contract.Result<object>() != null);
 
             var replacer = new ExpressionReplacer(toReplace, replaceWith);
-            return replacer.Visit(expression);
+            var result = replacer.Visit(expression);
+
+            Contract.Assume(result != null);
+
+            return result;
+        }
+
+        [ContractInvariantMethod]
+        private void Invariants()
+        {
+            Contract.Invariant(m_replaceWith != null);
         }
     }
 }

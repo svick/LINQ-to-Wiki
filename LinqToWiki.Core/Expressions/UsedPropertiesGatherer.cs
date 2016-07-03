@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 
 namespace LinqToWiki.Expressions
@@ -9,14 +10,19 @@ namespace LinqToWiki.Expressions
     class UsedPropertiesGatherer : ExpressionVisitor
     {
         private Expression m_needle;
-        private HashSet<string> m_usedProperties;
+        private HashSet<string> m_usedProperties = new HashSet<string>();
 
         /// <summary>
         /// List of properties of an object used in the expression
         /// </summary>
         public IEnumerable<string> UsedProperties
         {
-            get { return m_usedProperties; }
+            get
+            {
+                Contract.Ensures(Contract.Result<object>() != null);
+
+                return m_usedProperties;
+            }
         }
 
         /// <summary>
@@ -56,6 +62,12 @@ namespace LinqToWiki.Expressions
             }
 
             return base.VisitMember(node);
+        }
+
+        [ContractInvariantMethod]
+        private void Invarinats()
+        {
+            Contract.Invariant(m_usedProperties != null);
         }
     }
 }

@@ -27,5 +27,11 @@ namespace LinqToWiki
         {
             return new ListPagesCollection(m_parameterName, m_values, m_pageSize);
         }
+
+        [ContractInvariantMethod]
+        private void Invariants()
+        {
+            Contract.Invariant(m_values != null);
+        }
     }
 }

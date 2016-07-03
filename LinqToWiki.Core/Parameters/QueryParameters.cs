@@ -153,5 +153,11 @@ namespace LinqToWiki.Parameters
             result.Properties = properties;
             return result;
         }
+
+        [ContractInvariantMethod]
+        private void Invariants()
+        {
+            Contract.Invariant(Selector != null);
+        }
     }
 }

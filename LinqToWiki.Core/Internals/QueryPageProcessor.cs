@@ -89,6 +89,7 @@ namespace LinqToWiki.Internals
         {
             Contract.Requires(currentParameters != null);
             Contract.Requires(pageProperties != null);
+            Contract.Ensures(Contract.Result<object>() != null);
 
             var propParameters = new List<HttpQueryParameterBase>();
 
@@ -103,6 +104,8 @@ namespace LinqToWiki.Internals
 
             foreach (var propQueryParameters in propQueryParametersCollection)
             {
+                Contract.Assume(propQueryParameters != null);
+
                 propNames.Add(propQueryParameters.PropName);
 
                 var queryTypeProperties = pageProperties[propQueryParameters.PropName];

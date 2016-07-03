@@ -45,6 +45,9 @@ namespace LinqToWiki.Collections
 
             Dictionary<TKey2, TValue> innerDict;
             bool found = TryGetValue(key1, out innerDict);
+
+            Contract.Assume(!found || innerDict != null);
+
             if (!found)
             {
                 innerDict = new Dictionary<TKey2, TValue>();
@@ -64,6 +67,9 @@ namespace LinqToWiki.Collections
 
             Dictionary<TKey2, TValue> innerDict;
             bool found = TryGetValue(key1, out innerDict);
+
+            Contract.Assume(!found || innerDict != null);
+
             if (found)
                 return innerDict.TryGetValue(key2, out value);
 
