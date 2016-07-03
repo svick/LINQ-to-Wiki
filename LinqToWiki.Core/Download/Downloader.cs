@@ -41,6 +41,9 @@ namespace LinqToWiki.Download
 
         public Downloader(WikiInfo wiki)
         {
+            if (wiki == null)
+                throw new ArgumentNullException(nameof(wiki));
+
             m_wiki = wiki;
         }
 
@@ -49,6 +52,9 @@ namespace LinqToWiki.Download
         /// </summary>
         public XDocument Download(IEnumerable<HttpQueryParameterBase> parameters)
         {
+            if (parameters == null)
+                throw new ArgumentNullException(nameof(parameters));
+
             parameters = parameters.ToArray();
 
             if (LogDownloading)

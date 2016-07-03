@@ -1,4 +1,8 @@
-﻿// <copyright file="PexAssemblyInfo.cs">Copyright ©  2011</copyright>
+﻿using System.Globalization;
+using System;
+using LinqToWiki.Download;
+using Microsoft.Pex.Framework.Using;
+// <copyright file="PexAssemblyInfo.cs">Copyright ©  2011</copyright>
 using Microsoft.Pex.Framework.Coverage;
 using Microsoft.Pex.Framework.Creatable;
 using Microsoft.Pex.Framework.Instrumentation;
@@ -29,4 +33,5 @@ using Microsoft.Pex.Framework.Validation;
 [assembly: PexCoverageFilterAssembly(PexCoverageDomain.UserOrTestCode, "RestSharp")]
 [assembly: PexCoverageFilterAssembly(PexCoverageDomain.UserOrTestCode, "System.Core")]
 [assembly: PexCoverageFilterAssembly(PexCoverageDomain.UserOrTestCode, "System.Xml.Linq")]
-
+[assembly: PexUseType(typeof(HttpQueryParameter))]
+[assembly: PexUseType(typeof(HttpQueryFileParameter))]
