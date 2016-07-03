@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqToWiki.Core", "LinqToWi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqToWiki.Samples", "LinqToWiki.Samples\LinqToWiki.Samples.csproj", "{8FDD3001-7AAA-498E-A17E-ECE63C6E1865}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqToWiki.Core.Tests", "LinqToWiki.Core.Tests\LinqToWiki.Core.Tests.csproj", "{3CF4A558-AA41-4049-A8D7-56FE4D5C3EA1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,18 @@ Global
 		{8FDD3001-7AAA-498E-A17E-ECE63C6E1865}.Release|Mixed Platforms.Build.0 = Release|x86
 		{8FDD3001-7AAA-498E-A17E-ECE63C6E1865}.Release|x86.ActiveCfg = Release|x86
 		{8FDD3001-7AAA-498E-A17E-ECE63C6E1865}.Release|x86.Build.0 = Release|x86
+		{3CF4A558-AA41-4049-A8D7-56FE4D5C3EA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3CF4A558-AA41-4049-A8D7-56FE4D5C3EA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3CF4A558-AA41-4049-A8D7-56FE4D5C3EA1}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{3CF4A558-AA41-4049-A8D7-56FE4D5C3EA1}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{3CF4A558-AA41-4049-A8D7-56FE4D5C3EA1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3CF4A558-AA41-4049-A8D7-56FE4D5C3EA1}.Debug|x86.Build.0 = Debug|Any CPU
+		{3CF4A558-AA41-4049-A8D7-56FE4D5C3EA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3CF4A558-AA41-4049-A8D7-56FE4D5C3EA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3CF4A558-AA41-4049-A8D7-56FE4D5C3EA1}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{3CF4A558-AA41-4049-A8D7-56FE4D5C3EA1}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{3CF4A558-AA41-4049-A8D7-56FE4D5C3EA1}.Release|x86.ActiveCfg = Release|Any CPU
+		{3CF4A558-AA41-4049-A8D7-56FE4D5C3EA1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

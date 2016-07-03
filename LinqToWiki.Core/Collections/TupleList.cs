@@ -45,11 +45,16 @@ namespace LinqToWiki.Collections
         {
             get
             {
-                return this.Find(x => KeyEqualityComparer.Equals(x.Item1, key)).Item2;
+                var result = this.Find(x => x != null && KeyEqualityComparer.Equals(x.Item1, key));
+
+                if (result == null)
+                    throw new InvalidOperationException();
+
+                return result.Item2;
             }
             set
             {
-                var index = this.FindIndex(x => KeyEqualityComparer.Equals(x.Item1, key));
+                var index = this.FindIndex(x => x != null && KeyEqualityComparer.Equals(x.Item1, key));
                 if (index < 0)
                     throw new InvalidOperationException();
                 this[index] = Tuple.Create(key, value);
