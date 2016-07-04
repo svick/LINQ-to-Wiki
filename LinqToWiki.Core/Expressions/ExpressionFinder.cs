@@ -54,6 +54,11 @@ namespace LinqToWiki.Expressions
         /// </summary>
         public static T Single<T>(Expression expression, Func<T, bool> condition) where T : Expression
         {
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression));
+            if (condition == null)
+                throw new ArgumentNullException(nameof(condition));
+
             var finder = new Finder<T>(condition);
             finder.Visit(expression);
             return finder.Results.Single();

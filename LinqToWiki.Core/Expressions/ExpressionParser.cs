@@ -20,6 +20,11 @@ namespace LinqToWiki.Expressions
         public static QueryParameters<TSource, TResult> ParseWhere<TSource, TResult, TWhere>(
             Expression<Func<TWhere, bool>> expression, QueryParameters<TSource, TResult> previousParameters)
         {
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression));
+            if (previousParameters == null)
+                throw new ArgumentNullException(nameof(previousParameters));
+
             var body = EnumFixer.Fix(PartialEvaluator.Eval(expression.Body));
 
             return ParseWhereSubexpression(body, previousParameters);
@@ -148,6 +153,11 @@ namespace LinqToWiki.Expressions
             QueryParameters<TSource, TResult> previousParameters,
             bool ascending)
         {
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression));
+            if (previousParameters == null)
+                throw new ArgumentNullException(nameof(previousParameters));
+
             var parameter = expression.Body as ParameterExpression;
             var memberAccess = expression.Body as MemberExpression;
 
@@ -175,6 +185,11 @@ namespace LinqToWiki.Expressions
         public static QueryParameters<TSource, TResult> ParseSelect<TSource, TResult>(
             Expression<Func<TSource, TResult>> expression, QueryParameters<TSource, TSource> previousParameters)
         {
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression));
+            if (previousParameters == null)
+                throw new ArgumentNullException(nameof(previousParameters));
+
             var parameter = expression.Parameters.Single();
 
             var gatherer = new UsedPropertiesGatherer();
@@ -193,6 +208,11 @@ namespace LinqToWiki.Expressions
         /// <param name="previousParameters">Previous parameters, whose values should be included in the result.</param>
         public static QueryParameters<T, T> ParseIdentitySelect<T>(Expression<Func<T, T>> expression, QueryParameters<T, T> previousParameters)
         {
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression));
+            if (previousParameters == null)
+                throw new ArgumentNullException(nameof(previousParameters));
+
             var parameter = expression.Parameters.Single();
 
             var body = expression.Body as ParameterExpression;

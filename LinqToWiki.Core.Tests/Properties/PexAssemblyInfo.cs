@@ -1,5 +1,8 @@
-﻿using System.Globalization;
+﻿using Microsoft.Pex.Framework.Suppression;
+using System.Linq.Expressions;
+using System.Globalization;
 using System;
+using System.Dynamic;
 using LinqToWiki.Download;
 using Microsoft.Pex.Framework.Using;
 // <copyright file="PexAssemblyInfo.cs">Copyright ©  2011</copyright>
@@ -35,3 +38,17 @@ using Microsoft.Pex.Framework.Validation;
 [assembly: PexCoverageFilterAssembly(PexCoverageDomain.UserOrTestCode, "System.Xml.Linq")]
 [assembly: PexUseType(typeof(HttpQueryParameter))]
 [assembly: PexUseType(typeof(HttpQueryFileParameter))]
+[assembly: PexUseType(typeof(BinaryExpression))]
+[assembly: PexUseType(typeof(ConstantExpression))]
+//[assembly: PexUseType(typeof(MemberExpression))]
+//[assembly: PexUseType(typeof(MethodCallExpression))]
+//[assembly: PexUseType(typeof(ParameterExpression))]
+[assembly: PexUseType(typeof(UnaryExpression))]
+[assembly: PexUseType(typeof(GC), "System.RuntimeType")]
+[assembly: PexUseType(typeof(GC), "System.Reflection.RtFieldInfo")]
+[assembly: PexUseType(typeof(GC), "System.Reflection.RuntimeMethodInfo")]
+[assembly: PexUseType(typeof(GC), "System.Reflection.RuntimePropertyInfo")]
+[assembly: PexUseType(typeof(GC), "System.Reflection.RuntimeConstructorInfo")]
+[assembly: PexSuppressStaticFieldStore("System.Linq.Expressions.SR", "loader")]
+[assembly: PexSuppressStaticFieldStore("System.Linq.SR", "loader")]
+

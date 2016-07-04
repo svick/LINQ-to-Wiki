@@ -23,6 +23,11 @@ namespace LinqToWiki.Expressions
             Expression<Func<TSource, TResult>> expression, PageQueryParameters baseParameters,
             out Func<PageData, TResult> processedExpression)
         {
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression));
+            if (baseParameters == null)
+                throw new ArgumentNullException(nameof(baseParameters));
+
             var parameters = PageSelectVisitor.Process(expression, out processedExpression);
             return baseParameters.WithParameters(parameters);
         }

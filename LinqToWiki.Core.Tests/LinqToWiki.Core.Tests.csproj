@@ -37,6 +37,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.ExtendedReflection, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\Pex\Microsoft.ExtendedReflection.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Pex.Framework">
       <HintPath>C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\Pex\Microsoft.Pex.Framework.dll</HintPath>
     </Reference>
@@ -74,11 +78,60 @@
     <Compile Include="DownloaderTest.Download.g.cs">
       <DependentUpon>DownloaderTest.cs</DependentUpon>
     </Compile>
+    <Compile Include="EnumFixerTest.cs" />
+    <Compile Include="EnumFixerTest.Fix.g.cs">
+      <DependentUpon>EnumFixerTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ExpressionExtensionsTest.cs" />
+    <Compile Include="ExpressionExtensionsTest.Switch.g.cs">
+      <DependentUpon>ExpressionExtensionsTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ExpressionFinderTest.cs" />
+    <Compile Include="ExpressionFinderTest.Single.g.cs">
+      <DependentUpon>ExpressionFinderTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ExpressionParserTest.cs" />
+    <Compile Include="ExpressionParserTest.ParseIdentitySelect.g.cs">
+      <DependentUpon>ExpressionParserTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ExpressionParserTest.ParseOrderBy.g.cs">
+      <DependentUpon>ExpressionParserTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ExpressionParserTest.ParseSelect.g.cs">
+      <DependentUpon>ExpressionParserTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ExpressionParserTest.ParseWhere.g.cs">
+      <DependentUpon>ExpressionParserTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ExpressionParserTest.ReversePropertyName.g.cs">
+      <DependentUpon>ExpressionParserTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ExpressionReplacerTest.cs" />
+    <Compile Include="ExpressionReplacerTest.Replace.g.cs">
+      <DependentUpon>ExpressionReplacerTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Factories\LabelTargetFactory.cs" />
+    <Compile Include="Factories\RuntimeConstructorInfoFactory.cs" />
+    <Compile Include="Factories\RuntimePropertyInfoFactory.cs" />
+    <Compile Include="Factories\RuntimeFieldInfoFactory.cs" />
+    <Compile Include="Factories\RuntimeMethodInfoFactory.cs" />
+    <Compile Include="Factories\System.Linq.Expressions\BinaryExpressionFactory.cs" />
+    <Compile Include="Factories\System.Linq.Expressions\ConstantExpressionFactory.cs" />
     <Compile Include="Factories\DictionaryDictionaryFactory.cs" />
     <Compile Include="Factories\DownloaderFactory.cs" />
+    <Compile Include="Factories\System.Linq.Expressions\MemberExpressionFactory.cs" />
+    <Compile Include="Factories\System.Linq.Expressions\MethodCallExpressionFactory.cs" />
     <Compile Include="Factories\NamespaceFactory.cs" />
+    <Compile Include="Factories\System.Linq.Expressions\ParameterExpressionFactory.cs" />
     <Compile Include="Factories\TupleListFactory.cs" />
+    <Compile Include="Factories\RuntimeTypeFactory.cs" />
+    <Compile Include="Factories\System.Linq.Expressions\UnaryExpressionFactory.cs" />
+    <Compile Include="Factories\UsedPropertiesGathererFactory.cs" />
     <Compile Include="Factories\WikiInfoFactory.cs" />
+    <Compile Include="PageExpressionParserTest.cs" />
+    <Compile Include="PageExpressionParserTest.ParseSelect.g.cs">
+      <DependentUpon>PageExpressionParserTest.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\PexAssemblyInfo.cs" />
     <Compile Include="TupleListT1T2Test.Add.g.cs">
@@ -94,7 +147,18 @@
     <Compile Include="TupleListT1T2Test.ItemSet.g.cs">
       <DependentUpon>TupleListT1T2Test.cs</DependentUpon>
     </Compile>
+    <Compile Include="UsedPropertiesGathererTest.cs" />
+    <Compile Include="UsedPropertiesGathererTest.Gather.g.cs">
+      <DependentUpon>UsedPropertiesGathererTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UsedPropertiesGathererTest.UsedPropertiesGet.g.cs">
+      <DependentUpon>UsedPropertiesGathererTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UsedPropertiesGathererTest.Visit.g.cs">
+      <DependentUpon>UsedPropertiesGathererTest.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
       <ItemGroup>
