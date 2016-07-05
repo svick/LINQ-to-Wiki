@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using LinqToWiki.Download;
 using LinqToWiki.Parameters;
@@ -25,6 +26,15 @@ namespace LinqToWiki.Internals
             HttpQueryParameter primaryQueryContinue,
             Dictionary<string, HttpQueryParameter> secondaryQueryContinues)
         {
+            if (wiki == null)
+                throw new ArgumentNullException(nameof(wiki));
+            if (propQueryParametersCollection == null)
+                throw new ArgumentNullException(nameof(propQueryParametersCollection));
+            if (currentParameters == null)
+                throw new ArgumentNullException(nameof(currentParameters));
+            if (pageProperties == null)
+                throw new ArgumentNullException(nameof(pageProperties));
+
             m_wiki = wiki;
             m_generator = generator;
             m_propQueryParametersCollection = propQueryParametersCollection;

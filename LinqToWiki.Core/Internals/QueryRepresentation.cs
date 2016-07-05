@@ -15,6 +15,9 @@ namespace LinqToWiki.Internals
         /// </summary>
         public static string ToQueryString(this Namespace ns)
         {
+            if (ns == null)
+                throw new ArgumentNullException(nameof(ns));
+
             return ns.Id.ToQueryString();
         }
 
@@ -66,6 +69,9 @@ namespace LinqToWiki.Internals
         /// </summary>
         public static string ToQueryString(this StringValue stringValue)
         {
+            if (stringValue == null)
+                throw new ArgumentNullException(nameof(stringValue));
+
             return stringValue.ToString();
         }
 

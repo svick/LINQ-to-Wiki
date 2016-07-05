@@ -17,6 +17,11 @@ namespace LinqToWiki.Internals
 
         public QueryProcessor(WikiInfo wiki, QueryTypeProperties<T> queryTypeProperties)
         {
+            if (wiki == null)
+                throw new ArgumentNullException(nameof(wiki));
+            if (queryTypeProperties == null)
+                throw new ArgumentNullException(nameof(queryTypeProperties));
+
             m_wiki = wiki;
             m_queryTypeProperties = queryTypeProperties;
         }
@@ -26,6 +31,9 @@ namespace LinqToWiki.Internals
         /// </summary>
         public IEnumerable<TResult> ExecuteList<TResult>(QueryParameters<T, TResult> parameters)
         {
+            if (parameters == null)
+                throw new ArgumentNullException(nameof(parameters));
+
             var processedParameters = ProcessParameters(parameters, true).ToArray();
 
             HttpQueryParameter queryContinue = null;
@@ -73,6 +81,9 @@ namespace LinqToWiki.Internals
         /// </summary>
         public TResult ExecuteSingle<TResult>(QueryParameters<T, TResult> parameters)
         {
+            if (parameters == null)
+                throw new ArgumentNullException(nameof(parameters));
+
             var downloaded = Download(ProcessParameters(parameters, false));
 
             switch (m_queryTypeProperties.QueryType)
@@ -152,6 +163,11 @@ namespace LinqToWiki.Internals
             WikiInfo wiki, IEnumerable<HttpQueryParameterBase> processedParameters,
             IEnumerable<HttpQueryParameter> queryContinues = null)
         {
+            if (wiki == null)
+                throw new ArgumentNullException(nameof(wiki));
+            if (processedParameters == null)
+                throw new ArgumentNullException(nameof(processedParameters));
+
             if (queryContinues != null)
                 processedParameters = processedParameters.Concat(queryContinues.Where(x => x != null));
 
@@ -198,6 +214,11 @@ namespace LinqToWiki.Internals
             QueryTypeProperties queryTypeProperties, QueryParameters parameters,
             bool list, bool generator = false, int limit = -1)
         {
+            if (queryTypeProperties == null)
+                throw new ArgumentNullException(nameof(queryTypeProperties));
+            if (parameters == null)
+                throw new ArgumentNullException(nameof(parameters));
+
             var parsedParameters = new List<HttpQueryParameterBase>();
 
             Action<string, string> addParameter = (name, value) => parsedParameters.Add(new HttpQueryParameter(name, value));
@@ -286,6 +307,9 @@ namespace LinqToWiki.Internals
         /// </summary>
         public static HttpQueryParameter GetQueryContinue(XElement downloaded, string moduleName)
         {
+            if (moduleName == null)
+                throw new ArgumentNullException(nameof(moduleName));
+
             HttpQueryParameter result;
             GetQueryContinues(downloaded).TryGetValue(moduleName, out result);
             return result;
@@ -296,6 +320,9 @@ namespace LinqToWiki.Internals
         /// </summary>
         public static Dictionary<string, HttpQueryParameter> GetQueryContinues(XElement downloaded)
         {
+            if (downloaded == null)
+                throw new ArgumentNullException(nameof(downloaded));
+
             var queryContinueElement = downloaded.Element("query-continue");
 
             if (queryContinueElement == null)

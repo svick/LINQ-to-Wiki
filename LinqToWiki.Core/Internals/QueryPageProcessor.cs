@@ -86,6 +86,13 @@ namespace LinqToWiki.Internals
             Dictionary<string, QueryTypeProperties> pageProperties,
             bool withInfo = true, IEnumerable<string> includedProperties = null)
         {
+            if (propQueryParametersCollection == null)
+                throw new ArgumentNullException(nameof(propQueryParametersCollection));
+            if (currentParameters == null)
+                throw new ArgumentNullException(nameof(currentParameters));
+            if (pageProperties == null)
+                throw new ArgumentNullException(nameof(pageProperties));
+
             var propParameters = new List<HttpQueryParameterBase>();
 
             var propNames = new List<string>();

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,9 @@ namespace LinqToWiki.Internals
         /// <param name="namespaces"></param>
         internal NamespaceInfo(IEnumerable<Namespace> namespaces)
         {
+            if (namespaces == null)
+                throw new ArgumentNullException(nameof(namespaces));
+
             m_namespaces = namespaces.ToDictionary(ns => ns.Id);
         }
 

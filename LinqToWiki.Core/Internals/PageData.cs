@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -25,6 +26,15 @@ namespace LinqToWiki.Internals
             WikiInfo wiki, XElement element, Dictionary<string, QueryTypeProperties> pageProperties,
             PagingManager pagingManager)
         {
+            if (wiki == null)
+                throw new ArgumentNullException(nameof(wiki));
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
+            if (pageProperties == null)
+                throw new ArgumentNullException(nameof(pageProperties));
+            if (pagingManager == null)
+                throw new ArgumentNullException(nameof(pagingManager));
+
             m_wiki = wiki;
             m_pageProperties = pageProperties;
             m_pagingManager = pagingManager;

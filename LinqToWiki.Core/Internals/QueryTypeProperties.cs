@@ -17,6 +17,9 @@ namespace LinqToWiki.Internals
             string moduleName, string prefix, QueryType? queryType, SortType? sortType,
             IEnumerable<Tuple<string, string>> baseParameters, IDictionary<string, string[]> props)
         {
+            if (baseParameters == null)
+                throw new ArgumentNullException(nameof(baseParameters));
+
             ModuleName = moduleName;
             Prefix = prefix;
             QueryType = queryType;

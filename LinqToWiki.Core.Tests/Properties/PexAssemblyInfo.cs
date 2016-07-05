@@ -1,9 +1,12 @@
-﻿using Microsoft.Pex.Framework.Suppression;
+﻿using System.Xml.Linq;
+using Microsoft.Pex.Framework.Suppression;
 using System.Linq.Expressions;
 using System.Globalization;
 using System;
+using System.Collections.Generic;
 using System.Dynamic;
 using LinqToWiki.Download;
+using LinqToWiki.Internals;
 using Microsoft.Pex.Framework.Using;
 // <copyright file="PexAssemblyInfo.cs">Copyright ©  2011</copyright>
 using Microsoft.Pex.Framework.Coverage;
@@ -49,6 +52,13 @@ using Microsoft.Pex.Framework.Validation;
 [assembly: PexUseType(typeof(GC), "System.Reflection.RuntimeMethodInfo")]
 [assembly: PexUseType(typeof(GC), "System.Reflection.RuntimePropertyInfo")]
 [assembly: PexUseType(typeof(GC), "System.Reflection.RuntimeConstructorInfo")]
-[assembly: PexSuppressStaticFieldStore("System.Linq.Expressions.SR", "loader")]
-[assembly: PexSuppressStaticFieldStore("System.Linq.SR", "loader")]
+[assembly: PexUseType(typeof(QueryTypeProperties<int>))]
+[assembly: PexUseType(typeof(XText))]
+[assembly: PexUseType(typeof(XCData))]
+[assembly: PexUseType(typeof(XElement))]
+[assembly: PexUseType(typeof(XComment))]
+[assembly: PexUseType(typeof(XProcessingInstruction))]
+[assembly: PexUseType(typeof(XAttribute))]
+[assembly: PexUseType(typeof(XDocument))]
+[assembly: PexUseType(typeof(Dictionary<string, string[]>))]
 

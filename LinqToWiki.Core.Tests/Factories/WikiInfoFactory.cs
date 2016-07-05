@@ -20,6 +20,9 @@ namespace LinqToWiki.Internals
             IEnumerable<Namespace> namespaces_iEnumerable
         )
         {
+            // when namespaces is null, the WikiInfo constructor hits network
+            PexAssume.IsNotNull(namespaces_iEnumerable);
+
             WikiInfo wikiInfo
                = new WikiInfo(userAgent_s, baseUrl_s1, apiPath_s2, namespaces_iEnumerable);
             return wikiInfo;

@@ -41,10 +41,15 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\Pex\Microsoft.ExtendedReflection.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.ExtendedReflection.Reasoning, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\Pex\Microsoft.ExtendedReflection.Reasoning.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Pex.Framework">
       <HintPath>C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\Microsoft\Pex\Microsoft.Pex.Framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
@@ -110,7 +115,20 @@
     <Compile Include="ExpressionReplacerTest.Replace.g.cs">
       <DependentUpon>ExpressionReplacerTest.cs</DependentUpon>
     </Compile>
+    <Compile Include="Factories\FactoryTest.XElementCreateTest.g.cs">
+      <DependentUpon>XElementFactory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Factories\FactoryTest.XNameCreateTest.g.cs">
+      <DependentUpon>XElementFactory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Factories\HttpQueryParameterFactory.cs" />
     <Compile Include="Factories\LabelTargetFactory.cs" />
+    <Compile Include="Factories\NamespaceInfoFactory.cs" />
+    <Compile Include="Factories\PageDataFactory.cs" />
+    <Compile Include="Factories\PagingManagerFactory.cs" />
+    <Compile Include="Factories\QueryPageProcessorFactory.cs" />
+    <Compile Include="Factories\QueryProcessorFactory.cs" />
+    <Compile Include="Factories\QueryTypePropertiesFactory.cs" />
     <Compile Include="Factories\RuntimeConstructorInfoFactory.cs" />
     <Compile Include="Factories\RuntimePropertyInfoFactory.cs" />
     <Compile Include="Factories\RuntimeFieldInfoFactory.cs" />
@@ -128,12 +146,70 @@
     <Compile Include="Factories\System.Linq.Expressions\UnaryExpressionFactory.cs" />
     <Compile Include="Factories\UsedPropertiesGathererFactory.cs" />
     <Compile Include="Factories\WikiInfoFactory.cs" />
+    <Compile Include="Factories\XAttributeFactory.cs" />
+    <Compile Include="Factories\XElementFactory.cs" />
+    <Compile Include="Factories\XNameFactory.cs" />
+    <Compile Include="Factories\XNamespaceFactory.cs" />
+    <Compile Include="Factories\XProcessingInstructionFactory.cs" />
+    <Compile Include="NamespaceInfoTest.Constructor.g.cs">
+      <DependentUpon>NamespaceInfoTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="NamespaceInfoTest.cs" />
+    <Compile Include="NamespaceInfoTest.GetEnumerator.g.cs">
+      <DependentUpon>NamespaceInfoTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="NamespaceInfoTest.ItemGet.g.cs">
+      <DependentUpon>NamespaceInfoTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PageDataTest.Constructor.g.cs">
+      <DependentUpon>PageDataTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PageDataTest.cs" />
     <Compile Include="PageExpressionParserTest.cs" />
     <Compile Include="PageExpressionParserTest.ParseSelect.g.cs">
       <DependentUpon>PageExpressionParserTest.cs</DependentUpon>
     </Compile>
+    <Compile Include="PagePropertiesTPageTest.cs" />
+    <Compile Include="PagePropertiesTPageTest.PropertiesGet.g.cs">
+      <DependentUpon>PagePropertiesTPageTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PagingManagerTest.Constructor.g.cs">
+      <DependentUpon>PagingManagerTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PagingManagerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\PexAssemblyInfo.cs" />
+    <Compile Include="QueryPageProcessorTest.Constructor.g.cs">
+      <DependentUpon>QueryPageProcessorTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="QueryPageProcessorTest.cs" />
+    <Compile Include="QueryPageProcessorTest.ExecuteList.g.cs">
+      <DependentUpon>QueryPageProcessorTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="QueryPageProcessorTest.ProcessParameters.g.cs">
+      <DependentUpon>QueryPageProcessorTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="QueryProcessorTest.cs" />
+    <Compile Include="QueryProcessorTest.Download.g.cs">
+      <DependentUpon>QueryProcessorTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="QueryProcessorTest.GetQueryContinue.g.cs">
+      <DependentUpon>QueryProcessorTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="QueryProcessorTest.GetQueryContinues.g.cs">
+      <DependentUpon>QueryProcessorTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="QueryProcessorTest.ProcessParameters.g.cs">
+      <DependentUpon>QueryProcessorTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="QueryProcessorTTest.Constructor.g.cs">
+      <DependentUpon>QueryProcessorTTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="QueryProcessorTTest.cs" />
+    <Compile Include="QueryRepresentationTest.cs" />
+    <Compile Include="QueryRepresentationTest.ToQueryString.g.cs">
+      <DependentUpon>QueryRepresentationTest.cs</DependentUpon>
+    </Compile>
     <Compile Include="TupleListT1T2Test.Add.g.cs">
       <DependentUpon>TupleListT1T2Test.cs</DependentUpon>
     </Compile>

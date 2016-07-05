@@ -10,6 +10,9 @@ namespace LinqToWiki.Parameters
     {
         public PageQueryParameters(IPagesCollection pagesCollection)
         {
+            if (pagesCollection == null)
+                throw new ArgumentNullException(nameof(pagesCollection));
+
             PagesCollection = pagesCollection;
         }
 
